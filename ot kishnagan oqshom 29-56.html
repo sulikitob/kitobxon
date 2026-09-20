@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ot kishnagan oqshom </title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Arial', sans-serif; 
+            background: linear-gradient(135deg, #050505, #121212, #1d1d1d); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px; 
+            min-height: 100vh; 
+        }
+
+        /* ===== Raqam tanlash ekrani ===== */
+        #select-screen {
+            width: 100%; max-width: 700px;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 25px; padding: 20px 0;
+        }
+        #select-screen h1 {
+            font-size: 26px; color: #00ff99; text-align: center;
+        }
+        #select-screen p { color: #999; font-size: 14px; text-align: center; }
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 10px;
+            background: #111;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(0,255,150,0.15);
+        }
+        .number-grid::-webkit-scrollbar { width: 8px; }
+        .number-grid::-webkit-scrollbar-thumb { background: #00ff99; border-radius: 10px; }
+        .num-btn {
+            background: #1b1b1b;
+            border: 2px solid #00ff99;
+            color: #00ff99;
+            border-radius: 12px;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.25s;
+            text-shadow: 0 0 8px rgba(0,255,153,0.6);
+        }
+        .num-btn:hover {
+            background: #00ff99;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(0,255,150,0.8);
+            transform: scale(1.08);
+        }
+        .num-btn.picked {
+            background: #ff9900;
+            border-color: #ff9900;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(255,153,0,0.8);
+        }
+        #range-info {
+            color: #ff9900; font-size: 15px; font-weight: bold; min-height: 22px;
+        }
+
+        /* ===== Funksiya tanlash ekrani ===== */
+            #mode-screen {
+            display: none;
+            width: 100%; max-width: 700px;
+            flex-direction: column; align-items: center;
+            gap: 25px; padding: 20px 0;
+        }
+
+    .mode-icon-top {
+    width: 100%;
+    max-width: 450px;
+    aspect-ratio: 4 / 3;
+    position: relative;
+    background: rgba(5, 5, 5, 0.4);
+    border-radius: 20px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mode-icon-top img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+        #mode-screen h1 {
+            font-size: 24px; color: #00ff99; text-align: center;
+            margin: 5px 0;
+        }
+
+        .mode-wrapper {
+            width: 100%;
+            background: rgba(5, 5, 5, 0.4);
+            border-radius: 20px;
+            padding: 25px;
+       
+        }
+        .mode-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .mode-card {
+            background: rgba(27, 27, 27, 0.85);
+            border-radius: 20px;
+            padding: 30px 15px;
+            text-align: center;
+            transition: 0.4s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            backdrop-filter: blur(3px);
+        }
+        .mode-card::before {
+            content: ""; position: absolute; width: 200%; height: 200%;
+            background: linear-gradient(45deg,transparent,#00ff99,transparent);
+            top: -150%; left: -150%; transform: rotate(25deg); transition: 0.7s;
+        }
+        .mode-card:hover::before { top: 100%; left: 100%; }
+        .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+@media(max-width:600px){ 
+    .mode-grid{ grid-template-columns: repeat(2, 1fr); } 
+    .mode-icon-top{ display: flex; justify-content: center; }
+    .mode-icon-top img{ width: 85%; max-width: 220px; }
+}
+
+        /* ===== Intro (countdown) ekran ===== */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #050505; display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 5;
+            transition: opacity 0.8s ease;
+        }
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        #select-screen, #mode-screen, .quiz-box, #intro-screen .content-box, #intro-screen #countdown {
+            position: relative; z-index: 2;
+        }
+        .star {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2.5s infinite ease-in-out;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.6); }
+        }
+        .content-box { text-align: center; margin-bottom: 50px; z-index: 1; position: relative; padding: 0 20px; }
+        #countdown { 
+            position: absolute; bottom: 50px;
+            font-size: 80px; color: #00ff99; font-weight: bold;
+            animation: pulse 1s infinite;
+            z-index: 1;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.5; }
+        }
+
+        /* Qur'on sarlavhalari uslubidagi tilla naqshinkor to'rtburchak hoshiya */
+        .quran-box {
+            display: block;
+            margin: 25px auto 0 auto;
+            padding: 20px 30px;
+            max-width: 550px;
+            border: 4px double #ffd700; 
+            background: rgba(20, 16, 5, 0.6);
+            text-align: center;
+        }
+        .quran-ayat-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #f0f0f0;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .quran-meta {
+            display: inline-block;
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffd700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            padding-top: 8px;
+            width: 100%;
+        }
+
+        /* ===== Quiz ekrani ===== */
+        .quiz-box { 
+            display: none;
+            width: 100%; max-width: 600px; background: #1b1b1b; padding: 30px; 
+            border-radius: 25px; box-shadow: 0 0 35px rgba(0, 255, 150, 0.1); 
+            text-align: center; margin-top: 50px;
+        }
+        h2 { color: #00ff99; margin-bottom: 20px; font-size: 22px; }
+        .option { 
+            display: block; width: 100%; padding: 15px; margin: 10px 0; 
+            background: #2a2a2a; border: 2px solid #333; border-radius: 15px; 
+            cursor: pointer; transition: 0.3s; text-align: left;
+        }
+        .option:hover { border-color: #00ff99; }
+        .correct { 
+            background: #00ff99 !important; color: black; font-weight: bold; 
+            animation: bubbleEffect 0.5s ease-out;
+        }
+        @keyframes bubbleEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .wrong { background: #ff4d4d !important; color: white; }
+        .btn-finish { 
+            width: 100%; padding: 15px; background: transparent; border: 2px solid #00ff99; 
+            color: #00ff99; border-radius: 15px; cursor: pointer; margin-top: 20px; 
+            font-weight: bold; transition: 0.3s; 
+        }
+        .btn-finish:hover { background: #00ff99; color: black; }
+        
+        .closed-input {
+            width: 100%; padding: 15px; margin-top: 10px; border: 2px solid #333;
+            border-radius: 12px; font-size: 17px; outline: none; background: #2a2a2a;
+            color: white;
+        }
+        .closed-input:focus { border-color: #00ff99; }
+        .btn-check {
+            width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #00ff99; border-radius: 15px;
+            background: transparent; color: #00ff99; font-weight: bold; cursor: pointer; font-size: 17px;
+            transition: 0.3s;
+        }
+        .btn-check:hover { background: #00ff99; color: black; }
+        #closed-result { margin-top: 15px; font-size: 18px; min-height: 30px; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="select-screen">
+    <h1>🌙 29-56***</h1>
+    <p>Savollar sonini belgilang</p>
+    <div id="range-info">Boshlang'ich raqamni tanlang</div>
+    <div class="number-grid" id="numberGrid"></div>
+</div>
+
+<div id="mode-screen">
+    <div class="mode-icon-top">
+        <img src="Bu.jpg">
+    </div>
+    <h1>Qaysi funksiyani xohlaysiz?</h1>
+    <div class="mode-wrapper">
+        <div class="mode-grid">
+            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
+            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
+            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
+            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
+        </div>
+    </div>
+</div>
+
+<div id="intro-screen">
+    <div class="content-box">
+        <h1 style="color:#00ff99; font-size: 32px;">1-Qism</h1>
+        <div id="random-ayat"></div>
+    </div>
+    <div id="countdown">3</div>
+</div>
+
+<div class="quiz-box" id="quiz">
+    <h2 id="question">Yuklanmoqda...</h2>
+    <div id="options"></div>
+    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
+</div>
+
+<script>
+const quizData = [
+
+
+// ===== 29*** =====
+{q: "[29***] Jo'ra boboning otiga qarab iskatib ko'rsatib keldim, bu payt uloqni kim oldi?", a: ["Bir chil (chil ot egasi)", "Fayzulla chavandoz", "Hamdam chavandoz", "Safar chavandoz"], correct: "Bir chil (chil ot egasi)"},
+{q: "[29***] Bir teri ko'k, bir yeri oq, yana bir yeri qora bo'ladi - qaysi otning?", a: ["Chilning", "Burnochning", "Samanning", "Tarlonning"], correct: "Chilning"},
+{q: "[29***] Chil ot egasi qayerlik edi?", a: ["Darbandlik", "Sho'rchilik", "Bo'ysunlik", "Obshirlik"], correct: "Darbandlik"},
+{q: "[29***] Darbandlik chavandoz otni nima deb ataydi?", a: ["Otam", "Do'stim", "Ukam", "Jonim"], correct: "Otam"},
+{q: "[29***] Endigi zotga solganda 1 to'yni to'ydiradigan nima qo'yildi?", a: ["Ho'kiz", "Serka", "Qo'y", "Tuya"], correct: "Ho'kiz"},
+{q: "[29***] Uloq bu gal qaysi otda bo'ldi?", a: ["8-Martlik Samanda", "Chil otda", "Tarlon otda", "Burnoch otda"], correct: "8-Martlik Samanda"},
+{q: "[29***] Ho'kiz kimlarda ketdi?", a: ["8-martliklarda", "Darbandliklarda", "Bo'ysunliklarda", "Sho'rchiliklarda"], correct: "8-martliklarda"},
+ 
+// ===== 30*** =====
+{q: "[30***] Bu safargi uloqni kim olib chiqdi?", a: ["Men", "Fayzulla chavandoz", "Safar chavandoz", "Hamdam chavandoz"], correct: "Men"},
+{q: "[30***] \"Yolg'iz otning changi chiqmas, changi chiqsa ham dong'i chiqmas\" - bu naql nima haqida?", a: ["Yolg'iz ot haqida", "Yosh ot haqida", "Kasal ot haqida", "Charchagan ot haqida"], correct: "Yolg'iz ot haqida"},
+{q: "[30***] Meni boshqa otlar o'rab olgan, alamdan xunob bo'ldim, qachon o'zimizning chavandozlar o'ziga keldi?", a: ["\"Jonlaring bormi?! Kelinglar-da endi!\" deganda", "Uloq qo'ldan ketganda", "Ot yiqilganda", "Bakovul chaqirganda"], correct: "\"Jonlaring bormi?! Kelinglar-da endi!\" deganda"},
+ 
+// ===== 31*** =====
+{q: "[31***] Qish qaridi, havoda ko'klam isi angidi. Boychechaklar ketidan nimalar ochildi?", a: ["Qoraqoshlar", "Lolalar", "Bo'tako'zlar", "Nastarinlar"], correct: "Qoraqoshlar"},
+{q: "[31***] Qaysi gap ko'klam kayfiyatimni qish qildi, ko'klam rangimni sindirdi?", a: ["Jamiki otlar go'shtga topshirilar emish", "Suv taqchil bo'lar emish", "Paxta yer kamayar emish", "Yaylovlar tortib olinar emish"], correct: "Jamiki otlar go'shtga topshirilar emish"},
+{q: "[31***] \"Jamiki otlar go'shtga topshirilar emish\" degan gapni kim aytdi?", a: ["Kobez radiouzeli", "Rayon kotibi", "Muharrir", "Bakovul"], correct: "Kobez radiouzeli"},
+{q: "[31***] Bu gapni uyma-uy kirib kim aytib chiqdi?", a: ["Brigadir", "Rayon vakili", "Militsioner", "Muharrir"], correct: "Brigadir"},
+{q: "[31***] El ot bermayin desa, kattalar el yoqalashayin desa, yonida nimalar bor edi?", a: ["Shapkalar (militsionerlar)", "Tayoqlar", "Hujjatlar", "Qurollar"], correct: "Shapkalar (militsionerlar)"},
+ 
+// ===== 32*** =====
+{q: "[32***] Qaysi qassobdan 2 kilo qo'y go'shti oldim?", a: ["Hofiz qassobdan", "Rustam qassobdan", "Karim qassobdan", "Yusuf qassobdan"], correct: "Hofiz qassobdan"},
+{q: "[32***] Tarlon bo'ktamay dingilladi, o'ylab qarasam nima dondi?", a: ["Go'balak", "Chivin", "Chayon", "Ari"], correct: "Go'balak"},
+{q: "[32***] Nimada bingal nishday zahar nish bo'ladi va ot badaniga surtib-surtib ola beradi?", a: ["Go'balakda", "Chivinda", "Chayonda", "Ilonda"], correct: "Go'balakda"},
+{q: "[32***] Go'balak osmondan tushmaydi, yerdan chiqmaydi, chetdan ham uchib kelmaydi - unda qayerdan keladi?", a: ["Go'balak otning o'zida bo'ladi", "Boshqa hayvondan yuqadi", "Yem-xashakdan tushadi", "Suvdan chiqadi"], correct: "Go'balak otning o'zida bo'ladi"},
+{q: "[32***] Ot deb atalmish har bir jonivorning o'z nimasi bo'ladi?", a: ["Go'balagi", "Kasali", "Rangi", "Yoli"], correct: "Go'balagi"},
+{q: "[32***] Go'balak otning qayerida bino bo'ladi?", a: ["Otning dumi ostida", "Otning bo'ynida", "Otning qulog'ida", "Otning oyog'ida"], correct: "Otning dumi ostida"},
+{q: "[32***] Go'balak yana nima deyiladi?", a: ["Otpasha", "Otqurt", "Otbit", "Otchivin"], correct: "Otpasha"},
+{q: "[32***] Go'balakni nima bilan urib o'ldirdim?", a: ["Telpagim bilan", "Tayoq bilan", "Qo'lim bilan", "Qamchi bilan"], correct: "Telpagim bilan"},
+{q: "[32***] It tuyoqlarni g'ajib yeydi, faqat nima qoladi?", a: ["Nag'allar", "Suyaklar", "Terisi", "Yoli"], correct: "Nag'allar"},
+{q: "[32***] Tarlonning yolini Ziyodulla kal nimaga o'xshatadi?", a: ["Ipak do'mbira toriga", "Kumush ipga", "Oltin torga", "Zar ipakka"], correct: "Ipak do'mbira toriga"},
+{q: "[32***] Tarlon ot emas, nima deb tasvirlaydi Ziyodulla kal?", a: ["Jumanbulbul kuylagan Kuntug'mish, Fozil Yo'ldosh kuylagan Alpomish", "Oddiy bir jonivor", "Kambag'al bir hayvon", "Cho'l qushi"], correct: "Jumanbulbul kuylagan Kuntug'mish, Fozil Yo'ldosh kuylagan Alpomish"},
+{q: "[32***] Gajak-gajak bo'yinlar emas, nima deydi Ziyodulla kal?", a: ["Do'mbira", "Nay", "Rubob", "Doira"], correct: "Do'mbira"},
+{q: "[32***] Tarlon oyog'ini ko'tarib qaysi tog' cho'qqilariga qaradi?", a: ["Bobo tog' cho'qqilariga", "Qizil tog' cho'qqilariga", "Oq tog' cho'qqilariga", "Qora tog' cho'qqilariga"], correct: "Bobo tog' cho'qqilariga"},
+{q: "[32***] Tarlon kishnadi, nima eshitganday bo'ldim?", a: ["Do'mbira sozi, ruboiy musiqa", "Qo'shiq ovozi", "Karnay-surnay", "Bolalar kulgusi"], correct: "Do'mbira sozi, ruboiy musiqa"},
+{q: "[32***] Nima ruboiy musiqa, nima ko'rkam suvrat?", a: ["Ot", "Doston", "Tarlon yoli", "Ko'pkari"], correct: "Ot"},
+ 
+// ===== 33*** =====
+{q: "[33***] Qaysi qishloq kunbotarida oq tuproqli adirlar, tepalar mo'l?", a: ["Obshir qishlog'ida", "Sho'rchi qishlog'ida", "Bo'ysun qishlog'ida", "Nishon qishlog'ida"], correct: "Obshir qishlog'ida"},
+{q: "[33***] Tepalar nishobida nimalar ko'p?", a: ["Zimiston kamarlar", "Tut daraxtlari", "Toshloq yerlar", "Buloqlar"], correct: "Zimiston kamarlar"},
+{q: "[33***] Tarlonni qayerga olib kirib bog'ladim?", a: ["Zimiston kamarlardan biriga", "Oxurga", "Otxonaga", "Hovli o'rtasiga"], correct: "Zimiston kamarlardan biriga"},
+{q: "[33***] Oqshom vaqti qancha arpa bilan 1 qop somonni aralashtirdim?", a: ["10 kilo", "5 kilo", "15 kilo", "20 kilo"], correct: "10 kilo"},
+{q: "[33***] Itimizning ismi nima?", a: ["Otapar", "Bo'ribosar", "Aloqol", "Sherkuch"], correct: "Otapar"},
+{q: "[33***] Raisimiz do'ppili odam bilan nechta militsioner keldi?", a: ["2", "1", "3", "4"], correct: "2"},
+{q: "[33***] Boshida do'ppili kishi kim edi?", a: ["Rayon vakili, qishloq xo'jalik boshqarmasidan", "Rayon kotibi", "Muharrir", "Bakovul"], correct: "Rayon vakili, qishloq xo'jalik boshqarmasidan"},
+{q: "[33***] Katta mendayin kal bo'ldi - bu kim edi?", a: ["Rayon vakili, do'ppili kishi", "Murod", "Jo'ra bobo", "Brigadir"], correct: "Rayon vakili, do'ppili kishi"},
+{q: "[33***] Onam nima olib qolishni buyurdi?", a: ["Ulgu", "Non", "Tuz", "Choy"], correct: "Ulgu"},
+{q: "[33***] Ulgu nima?", a: ["Chaqaloqli uyga bemahal kelgan odamdan nimadir olib isiriqqa solib tutatish", "Chaqaloqqa kiyim tikish", "Chaqaloqqa ism qo'yish marosimi", "Uyga mehmon chaqirish"], correct: "Chaqaloqli uyga bemahal kelgan odamdan nimadir olib isiriqqa solib tutatish"},
+{q: "[33***] O'g'limning ismi nima?", a: ["Ibrohim", "Ismoil", "Yusuf", "Sulaymon"], correct: "Ibrohim"},
+{q: "[33***] Onam ulgu bermaganlarni qarg'ab-qarg'ab qanday toboqda isiriq tutatdi?", a: ["Taypoq toboqda", "Mis toboqda", "Sopol toboqda", "Kulolchilik toboqda"], correct: "Taypoq toboqda"},
+{q: "[33***] Chaqaloqli uyni necha marta aylantirdi va ziyon-zahmatlarni quvdi?", a: ["3", "2", "5", "7"], correct: "3"},
+ 
+// ===== 34*** =====
+{q: "[34***] \"Katta, menga qaysi bozordan ot olib beruvdiz\" deb qaysi bozorlarni aytdim?", a: ["Denovning yoki Sho'rchining bozoridan", "Toshkentning yoki Samarqandning bozoridan", "Buxoroning yoki Xivaning bozoridan", "Farg'onaning yoki Andijonning bozoridan"], correct: "Denovning yoki Sho'rchining bozoridan"},
+{q: "[34***] Ziyodullaga nima deb ayb qo'yib, \"qanday jamiyatda yashayapmiz\" deb qattiq gapiradi Katta?", a: ["Kapitalist bo'lmoqchimisan, biz sotsialistik jamiyatda yashayapmiz", "Xoin bo'lmoqchimisan", "Qonunbuzar bo'lmoqchimisan", "Dushman bo'lmoqchimisan"], correct: "Kapitalist bo'lmoqchimisan, biz sotsialistik jamiyatda yashayapmiz"},
+{q: "[34***] Sotsialistik jamiyatda yashayapmiz, nima sari bormoqdamiz?", a: ["Kommunizm sari", "Demokratiya sari", "Boylik sari", "Ozodlik sari"], correct: "Kommunizm sari"},
+{q: "[34***] Otam kim deb qurbon bo'lgan?", a: ["Sovet tuzumi deb", "Vatan deb", "Xalq deb", "Kolxoz deb"], correct: "Sovet tuzumi deb"},
+{q: "[34***] Yigitning yo'ldoshi nima?", a: ["Ot", "Qilich", "Kitob", "Pul"], correct: "Ot"},
+{q: "[34***] Katta ko'pkarini nima deb ataydi?", a: ["Eskilik sarqiti, yovvoyilar o'yini", "Zamonaviy sport", "Foydali mashg'ulot", "Xalq bayrami"], correct: "Eskilik sarqiti, yovvoyilar o'yini"},
+{q: "[34***] Katta nima deb haqorat qiladi Ziyodullani?", a: ["Kal kalla, kalla emas ekan-da", "Ahmoq, tentak deb", "Loqayd, beparvo deb", "Qo'rqoq, laganbardor deb"], correct: "Kal kalla, kalla emas ekan-da"},
+{q: "[34***] Ziyodulla \"kalla-kalla emas ekan-da\" degan Kattaga qanday javob qaytaradi?", a: ["Somiqiyam menikidan qolishmaydi", "Sizga aloqasi yo'q", "Meni tinch qo'ying", "Bu haqorat"], correct: "Somiqiyam menikidan qolishmaydi"},
+{q: "[34***] Katta quloch cho'zib mening qayerimga urdi?", a: ["Jag'imga", "Ko'ksimga", "Boshimga", "Qorinimga"], correct: "Jag'imga"},
+{q: "[34***] \"Qo'li ayolning qo'liday ekan, jag'im og'rimadi\" - kim haqida gap ketyapti?", a: ["Do'ppili katta kal haqida", "Murod haqida", "Jo'ra bobo haqida", "Brigadir haqida"], correct: "Do'ppili katta kal haqida"},
+{q: "[34***] \"Men ham sizning ...dan o'kinaman\" - kimdan (nimadan) o'kingan?", a: ["Erasidan", "Davridan", "Zamonidan", "Millatidan"], correct: "Erasidan"},
+{q: "[34***] Katta meni ketimga tepmoqchi bo'ldi, men chap berdim, u o'z shashti bilan qayerdan uchib ketdi?", a: ["Supadan", "Zinapoyadan", "Ayvondan", "Eshikdan"], correct: "Supadan"},
+{q: "[34***] Katta \"ushlanglar\" deb kimni ko'rsatadi?", a: ["Meni (\"Banditni\" deb)", "Murodni", "Jo'ra boboni", "Brigadirni"], correct: "Meni (\"Banditni\" deb)"},
+{q: "[34***] Ikki militsioner qo'llarimni ketimga qayirib, ketimga bir tepib qayerga olib bordi?", a: ["Kobez idorasiga", "Rayon markaziga", "Qishloq kengashiga", "O'zining uyiga"], correct: "Kobez idorasiga"},
+{q: "[34***] Nimaning hidini yomon ko'raman, boshimni aylantiradi, ko'nglimni aynitadi, qustiradi?", a: ["Benzinning hidi", "Tamakining hidi", "Spirtning hidi", "Dorining hidi"], correct: "Benzinning hidi"},
+{q: "[34***] Militsioner boshliq qayerimga urdi?", a: ["Ichimga", "Yuzimga", "Oyog'imga", "Qo'limga"], correct: "Ichimga"},
+{q: "[34***] Baqaloq odam kim edi?", a: ["Polkovnik", "Leytenant", "Serjant", "Yefreytor"], correct: "Polkovnik"},
+{q: "[34***] Meni urgan kishi kim edi?", a: ["Leytenant Ismatov", "Polkovnik", "Serjant Xalilov", "Rayon vakili"], correct: "Leytenant Ismatov"},
+{q: "[34***] Leytenant \"men urmadim, ishonmasangiz so'rang\" deb kimni ko'rsatdi?", a: ["Serjant Xalilovni", "Polkovnikni", "Boshqa militsionerni", "Haydovchini"], correct: "Serjant Xalilovni"},
+ 
+// ===== 35*** =====
+{q: "[35***] Badboy hujrada yotganimda Leytenant Ismatov kelib qayerimga tepdi?", a: ["Chotimga", "Yelkamga", "Boshimga", "Yuzimga"], correct: "Chotimga"},
+{q: "[35***] Tong saharlab qayerni tozaladim, hovli va ko'cha supurdim?", a: ["Badrabxonani", "Otxonani", "Omborni", "Molxonani"], correct: "Badrabxonani"},
+{q: "[35***] Onam qarg'ish aytib \"sendaychikin shapkalar\" deb kimlarga qarg'ish yog'dirdi?", a: ["Militsionerlarga (shapkalarga)", "Qo'shnilarga", "Rayon vakiliga", "Brigadirga"], correct: "Militsionerlarga (shapkalarga)"},
+{q: "[35***] Onamiz bilan ayolimizga Tarlonni aytmadim, nega?", a: ["Ayol zoti og'zi bo'sh bo'ladi, birov-yarimga aytib qo'yadi", "Ular qo'rqib ketishardi", "Ular ishonmasdi", "Vaqtim yo'q edi"], correct: "Ayol zoti og'zi bo'sh bo'ladi, birov-yarimga aytib qo'yadi"},
+{q: "[35***] Tarlon mendan o'zgani yoniga yo'latmaydi, faqat kimning qo'lidan yem yeydi?", a: ["Mening qo'limdan", "Onamning qo'lidan", "Ayolimning qo'lidan", "O'g'limning qo'lidan"], correct: "Mening qo'limdan"},
+ 
+// ===== 36*** =====
+{q: "[36***] Rosa necha kunda ozod bo'ldim?", a: ["10 kunda", "5 kunda", "15 kunda", "20 kunda"], correct: "10 kunda"},
+{q: "[36***] Uyim qolib qayga yo'l oldim?", a: ["Obshirga", "Sho'rchiga", "Bo'ysunga", "Nishonga"], correct: "Obshirga"},
+ 
+// ===== 37*** =====
+{q: "[37***] Chavandozlar kim misol mung'ayib qoldi?", a: ["Urushdan qaytmagan bo'z bola misol", "Otidan judo bo'lgan chavandoz misol", "Yetim qolgan bola misol", "Kasal bo'lib qolgan odam misol"], correct: "Urushdan qaytmagan bo'z bola misol"},
+{q: "[37***] Kelinlar orda emas, nimada keladigan bo'ldi?", a: ["Mashinada", "Otda", "Aravada", "Piyoda"], correct: "Mashinada"},
+ 
+// ===== 38*** =====
+{q: "[38***] Qachon Tarlonni uyga olib keldim?", a: ["Ora sovib, qishloq tinchigach", "Ko'pkaridan keyin darrov", "Qish tugagach", "Yozda"], correct: "Ora sovib, qishloq tinchigach"},
+{q: "[38***] Chavandozlar beligacha pul o'rab qayerga yo'l oldi?", a: ["Oboqliga", "Irg'aliga", "Surxonga", "Bo'ysunga"], correct: "Oboqliga"},
+{q: "[38***] Qo'shiga ot olish ko'pga kelgan to'y emas emish, qaysi tarafda otlar bus-butun emish?", a: ["Oboqlida", "Irg'alida", "Surxonda", "Nishonda"], correct: "Oboqlida"},
+ 
+// ===== 39*** =====
+{q: "[39***] Arzabozlar sultoni kim?", a: ["Botir mirob", "Jo'ra bobo", "Hamidov", "Bakovul"], correct: "Botir mirob"},
+{q: "[39***] To'qay bo'ri bechoraning o'g'li nimani kitob qilib yozdi?", a: ["Olishni", "Ko'pkarini", "Otchilikni", "Cho'ponchilikni"], correct: "Olishni"},
+{q: "[39***] To'qay yana nimani kitob qilayotgan emish?", a: ["Ko'pkarini", "Olishni", "Palvonlikni", "Chavandozlikni"], correct: "Ko'pkarini"},
+{q: "[39***] Qayg'uli asar nima deyiladi?", a: ["Tragediya", "Komediya", "Drama", "Fojia (boshqa nom)"], correct: "Tragediya"},
+{q: "[39***] Militsionerni nima deb atashadi?", a: ["Shapka", "Papaha", "Do'ppi", "Telpak"], correct: "Shapka"},
+{q: "[39***] Nimani javobgarlikka tortib bo'lmaydi, chunki u inson emas, latta, qarton qog'oz?", a: ["Shapkani", "Formani", "Hujjatni", "Qonunni"], correct: "Shapkani"},
+{q: "[39***] Linka nimaga borib aytilsin (shikoyat)?", a: ["Suvga", "Yerga", "Shamolga", "Havoga"], correct: "Suvga"},
+{q: "[39***] Arzabozlardan qayerlar qolmasin idorama-idora chopdi?", a: ["Denov, Termiz, Toshkent", "Sho'rchi, Bo'ysun, Nishon", "Farg'ona, Andijon, Namangan", "Buxoro, Samarqand, Xiva"], correct: "Denov, Termiz, Toshkent"},
+ 
+// ===== 40*** =====
+{q: "[40***] Arzabozlarga ergashdim, qayerga yo'l oldim?", a: ["Dushanbega", "Moskvaga", "Toshkentga", "Samarqandga"], correct: "Dushanbega"},
+{q: "[40***] Dushanbega borishda necha marotaba qusdim?", a: ["2", "1", "3", "4"], correct: "2"},
+{q: "[40***] Dushanbedan qayerga uchdim?", a: ["Moskvaga", "Toshkentga", "Sankt-Peterburgga", "Kiyevga"], correct: "Moskvaga"},
+{q: "[40***] Mirob Arzaboshlar boshlig'ining familiyasi nima?", a: ["Hamidov", "Ermatov", "Rixsiyev", "Qurbonov"], correct: "Hamidov"},
+{q: "[40***] Nimani men pasta deb adashibman?", a: ["Bulutni", "Tumanni", "Tog'ni", "Qorni"], correct: "Bulutni"},
+{q: "[40***] Moskvada nima ko'p, ot yo'q emish?", a: ["Mashina", "Odam", "Bino", "Ko'cha"], correct: "Mashina"},
+{q: "[40***] Oldimga bir moshina keldi, u qanday moshina edi?", a: ["Tramvay", "Avtobus", "Taksi", "Metro"], correct: "Tramvay"},
+{q: "[40***] Tramvay qimmat, ketsa bir qo'yning puli ketar edi deb o'ylab nima qildim?", a: ["Mindim", "Minmadim", "Piyoda ketdim", "Kutib turdim"], correct: "Mindim"},
+{q: "[40***] 4 kishining haqqini tramvayga kim to'ladi?", a: ["Botir Mirob", "Hamidov", "Men o'zim", "Haydovchi"], correct: "Botir Mirob"},
+{q: "[40***] Bizning soy nima deyiladi?", a: ["Vaxshivorsoy", "Obshirsoy", "Bo'ysunsoy", "Nishonsoy"], correct: "Vaxshivorsoy"},
+ 
+// ===== 41*** =====
+{q: "[41***] Qishloqda necha kun ko'rinmadim?", a: ["3 kun", "5 kun", "7 kun", "10 kun"], correct: "3 kun"},
+{q: "[41***] Hech kim mendan xabar olmadi, nimaga kuydim?", a: ["Qadrimga", "Puliga", "Sog'lig'imga", "Yolg'izligimga"], correct: "Qadrimga"},
+{q: "[41***] Moskvadan 1 kilocha nima olib edim?", a: ["Qand-qura", "Shokolad", "Kolbasa", "Konservalar"], correct: "Qand-qura"},
+{q: "[41***] Tarlonni minib qayerga bordim?", a: ["Mamatni uyiga", "Bozorga", "Rais huzuriga", "Cho'ponlarnikiga"], correct: "Mamatni uyiga"},
+ 
+// ===== 44*** =====
+{q: "[44***] Kalning hiylasi nechta kishini charchatdi?", a: ["40 kishini", "20 kishini", "30 kishini", "50 kishini"], correct: "40 kishini"},
+{q: "[44***] Shlyapali katta kal kattani urishib-urishib amalidan olibdi, partiyadan o'chirmoqchi bo'libdi. Shunda kal katta \"erkak odamning nimasi o'lgani\" debdi?", a: ["Yig'lagani", "Qo'rqqani", "Yolg'on gapirgani", "Xiyonat qilgani"], correct: "Yig'lagani"},
+{q: "[44***] Choynagidagi choyi qanday ekan kal kattani?", a: ["Oq", "Qora", "Sariq", "Qizil"], correct: "Oq"},
+{q: "[44***] Choynagidagi choyi oq emish, o'zi quyib o'zi ichar emish, elga ermak, xalqqa shaloq emish - bu kim haqida?", a: ["Kal katta", "Murod", "Jo'ra bobo", "Brigadir"], correct: "Kal katta"},
+ 
+// ===== 45*** =====
+{q: "[45***] Kimlarning boriga shukur, nohaqlikka yo'l qo'ymaydi, harom tomoqlarga kun bermaydi, elning haqqini birovga yedirmaydi?", a: ["Arizabozlar", "Cho'ponlar", "Chavandozlar", "Bakovullar"], correct: "Arizabozlar"},
+{q: "[45***] Kimlarga mehrim tushib qoldi?", a: ["Arizabozlarga", "Chavandozlarga", "Cho'ponlarga", "Muharrirlarga"], correct: "Arizabozlarga"},
+{q: "[45***] Bozor oqshomi barcha kimlarni uyimga aytib keldim?", a: ["Arizabozlarni", "Chavandozlarni", "Qo'shnilarni", "Qarindoshlarni"], correct: "Arizabozlarni"},
+{q: "[45***] Arizabozlarga boqib yotgan 1 nimamni so'yib berdim?", a: ["Qo'yimni", "Serkamni", "Ho'kizimni", "Tovug'imni"], correct: "Qo'yimni"},
+ 
+// ===== 47*** =====
+{q: "[47***] Qayerda to'y bo'ldi, Tarlon yo'lda tezak tashlab-tashlab bordi?", a: ["Qarluqda", "Obshirda", "Sho'rchida", "Bo'ysunda"], correct: "Qarluqda"},
+{q: "[47***] Otni zo'r biladigan sinchi chol bor edi, shuni chaqirib keldik qayerda?", a: ["Qarluqda", "Obshirda", "Nishonda", "Darbandda"], correct: "Qarluqda"},
+{q: "[47***] Qarluq \"otingni menga sot, qancha qo'y beraman\" deydi, nechta?", a: ["20", "10", "15", "25"], correct: "20"},
+{q: "[47***] Nega Tarlonni mazasi yo'q edi?", a: ["10 kun och qolganini o'ylab, erta ko'pkarida chopa olamanmi deya", "Kasal bo'lib qolgani uchun", "Uzoq yo'l yurgani uchun", "Sovuq olgani uchun"], correct: "10 kun och qolganini o'ylab, erta ko'pkarida chopa olamanmi deya"},
+{q: "[47***] Emishki, otlar bir yilda qancha marta kavsh qaytaradi?", a: ["1 marta", "2 marta", "3 marta", "4 marta"], correct: "1 marta"},
+{q: "[47***] Ot qachon yonadi - badanlari tovlanadi, ko'zni qamashtiradi, ko'zlari porlab yonadi?", a: ["Kavsh qaytarganda", "Chopganda", "Suv ichganda", "Uxlaganda"], correct: "Kavsh qaytarganda"},
+{q: "[47***] Ot kavsh qaytarishini ko'rgan odam qanday bo'ladi?", a: ["Yo telbanamo, yo sho'rpeshona, yo baxtli, yo dono, yo nuktadon bo'ladi", "Faqat boy bo'ladi", "Faqat kasal bo'ladi", "Hech narsa bo'lmaydi"], correct: "Yo telbanamo, yo sho'rpeshona, yo baxtli, yo dono, yo nuktadon bo'ladi"},
+{q: "[47***] \"Ko'p qayg'ura bermang, chol sinchi, bilong'ich\" - chol qanday odam ekani aytib berildi, u qanday odam edi?", a: ["Ot kavsh qaytarganini ko'rgan odam", "Otlarni davolagan tabib", "Ot savdosi bilan shug'ullangan sotuvchi", "Ko'pkarida g'olib chiqqan chavandoz"], correct: "Ot kavsh qaytarganini ko'rgan odam"},
+ 
+// ===== 48*** =====
+{q: "[48***] Ko'pkari bu safar qayerda bo'ldi?", a: ["Ekinsiz qisirpoyada", "Lalmi dashtda", "Sug'orma dalada", "Tog' etagida"], correct: "Ekinsiz qisirpoyada"},
+{q: "[48***] Ayni qachon ot mo'l yig'ildi?", a: ["Qishning ilk ko'pkarisida", "Yozning issiq kunida", "Kuzning oxirida", "Bahorning boshida"], correct: "Qishning ilk ko'pkarisida"},
+{q: "[48***] Ko'pkarida yerdan uloq olish mushkul bo'ladigan holat qanday tasvirlanadi?", a: ["Oz otli ko'pkarida", "Mo'l otli ko'pkarida", "Kechqurungi ko'pkarida", "Yomg'irli ko'pkarida"], correct: "Oz otli ko'pkarida"},
+{q: "[48***] Qachon aksincha bo'ladi - zo'rlar zo'ri uloqqa talpinadi, boshqalari to'da chetida tomoshago'y bo'ladi?", a: ["Ot mo'l bo'lsa", "Ot oz bo'lsa", "Uloq katta bo'lsa", "Havo issiq bo'lsa"], correct: "Ot mo'l bo'lsa"},
+{q: "[48***] Shu boisdan qanday ko'pkarida to'dadan uloq olib chiqish oson bo'ladi?", a: ["Mo'l otli ko'pkarida", "Oz otli ko'pkarida", "Yosh otli ko'pkarida", "Keksa otli ko'pkarida"], correct: "Mo'l otli ko'pkarida"},
+ 
+// ===== 49*** =====
+{q: "[49***] Hozirgi uloq necha kilo kelar edi?", a: ["50-60 kilolar", "30-40 kilolar", "70-80 kilolar", "20-30 kilolar"], correct: "50-60 kilolar"},
+{q: "[49***] Bakovul zotlarni aytdi, zotlar nima edi?", a: ["Bir juft kalish, o'n so'm puli", "Bir qo'y, o'n so'm puli", "Bir ro'mol, besh so'm puli", "Bir serka, yigirma so'm puli"], correct: "Bir juft kalish, o'n so'm puli"},
+{q: "[49***] Bir juft kalish, o'n so'm puli bo'lgan zotni qaysi ot oldi?", a: ["Jiyron", "Saman", "Tarlon", "Burnoch"], correct: "Jiyron"},
+{q: "[49***] Keyingi zot qo'yildi, nima edi?", a: ["Bir qo'y, bir to'n, o'n so'm pul", "Bir ho'kiz, yigirma so'm pul", "Bir serka, o'n besh so'm pul", "Bir tuya, o'ttiz so'm pul"], correct: "Bir qo'y, bir to'n, o'n so'm pul"},
+{q: "[49***] Ko'p otlar avval-avval asta-asta chopadi, keyin tezlab chopadi. Bizning Tarlon esa qanday chopadi?", a: ["Turgan joyidan zabt oladi, birinchi qadamidanoq shiddat bilan otilib chopadi", "Sekin-asta tezlashib boradi", "Doim bir maromda chopadi", "Avval tez, keyin sekinlashadi"], correct: "Turgan joyidan zabt oladi, birinchi qadamidanoq shiddat bilan otilib chopadi"},
+{q: "[49***] Biror ot Tarlonga yetib olsa, Tarlon shu ot bilan baravar chopadi, o'zib ketmaydi. Ammo shunda Tarlon nima qiladi?", a: ["Birdan zabt oladi, shiddat oladi va qabatidagi ot keyinda qolib ketadi", "Doim baravar chopishda davom etadi", "Charchab to'xtab qoladi", "Yo'lni almashtiradi"], correct: "Birdan zabt oladi, shiddat oladi va qabatidagi ot keyinda qolib ketadi"},
+{q: "[49***] Ko'pkarining sakson-to'qson foizi kimning bo'ynida bo'lyapti?", a: ["Otning", "Chavandozning", "Bakovulning", "Cho'ponning"], correct: "Otning"},
+{q: "[49***] Ko'pkarida chavandoz emas, nima nomi jaranglaydi, sharaflanadi, ulug'lanadi?", a: ["Ot", "Uloq", "Bakovul", "Qishloq"], correct: "Ot"},
+{q: "[49***] Uloqning nimasi bor - otga ana shu narsa quvvat beradi, qanot beradi?", a: ["Havo", "Og'irligi", "Rangi", "Hidi"], correct: "Havo"},
+{q: "[49***] Tarlon g'ayrat qildi va necha marta uloq ayirdim?", a: ["2", "1", "3", "4"], correct: "2"},
+{q: "[49***] Tarlon halollagan pullarni va to'nni kimga berdim?", a: ["Sinchi cholga", "Qarluqqa", "Bakovulga", "Hamsoyamga"], correct: "Sinchi cholga"},
+ 
+// ===== 50*** =====
+{q: "[50***] Hamsoyamiz kim bozorlab keldi?", a: ["Qulmat polvon", "Safar chavandoz", "Jo'ra bobo", "Murod"], correct: "Qulmat polvon"},
+{q: "[50***] Qulmat polvon bozorlab nima sotib keldi?", a: ["Mayiz", "Qand", "Non", "Choy"], correct: "Mayiz"},
+{q: "[50***] Mayiz nechi so'm edi?", a: ["10 so'm", "5 so'm", "15 so'm", "20 so'm"], correct: "10 so'm"},
+{q: "[50***] Qulmat polvon qancha mayiz bor deydi?", a: ["6 unxalta mayiz", "3 unxalta mayiz", "10 unxalta mayiz", "2 unxalta mayiz"], correct: "6 unxalta mayiz"},
+{q: "[50***] Mayizlarini qanday tasvirlaydi Qulmat polvon?", a: ["Saratonday sariq mayiz deb", "Oltinday tovlanadigan mayiz deb", "Boldan shirin mayiz deb", "Marvariddek mayiz deb"], correct: "Saratonday sariq mayiz deb"},
+{q: "[50***] Qulmat polvon mayizlarni nima uchun bosib yotgan edi?", a: ["Qo'chqorday o'g'illarining to'yiga", "Bozorda sotish uchun", "Qishga zaxira uchun", "Mehmonlarga tortish uchun"], correct: "Qo'chqorday o'g'illarining to'yiga"},
+{q: "[50***] Qaysi kun oqshomi ombordan bir xalta mayiz sudrab chiqdim va subhi sodiqda Tarlon bilan bozorladim?", a: ["Shanba", "Yakshanba", "Payshanba", "Juma"], correct: "Shanba"},
+{q: "[50***] Shanba oqshomi bozorlashga ketayotib, daryodan kechib o'tib, qayerga yuqoriladim?", a: ["Qizilsuvga", "Obshirga", "Sho'rchiga", "Nishonga"], correct: "Qizilsuvga"},
+{q: "[50***] \"Noz ne'mat\" nima degani?", a: ["Dehqonning peshona teri degani", "Boylikning belgisi degani", "Muhabbat ramzi degani", "Sabr-toqat degani"], correct: "Dehqonning peshona teri degani"},
+{q: "[50***] Sochim bo'lmasa ham nimam tillodan?", a: ["Tarog'im", "Uzugim", "Soatim", "Belbog'im"], correct: "Tarog'im"},
+{q: "[50***] Chipor galastukli odamga necha so'm dedim mayizni?", a: ["10 so'm", "7 so'm", "15 so'm", "5 so'm"], correct: "10 so'm"},
+{q: "[50***] Bir mayiz jallobga qanchaga sotdim mayizni?", a: ["7 so'mdan", "10 so'mdan", "5 so'mdan", "3 so'mdan"], correct: "7 so'mdan"},
+{q: "[50***] Ayolim nimaga boshqorong'i edi?", a: ["Jiydaga", "Uzumga", "Olmaga", "Anorga"], correct: "Jiydaga"},
+{q: "[50***] Jiydaga boshqorong'u ayolimga nima olib bordim?", a: ["Xorazm jiydasi", "Farg'ona jiydasi", "Buxoro jiydasi", "Samarqand jiydasi"], correct: "Xorazm jiydasi"},
+{q: "[50***] O'g'illarimizga nima oldim?", a: ["Xo'rozqand, qog'ozida kuchugi bor qand, teshik kulcha", "Shokolad va konfet", "Kitob va ruchka", "Kiyim-kechak"], correct: "Xo'rozqand, qog'ozida kuchugi bor qand, teshik kulcha"},
+ 
+// ===== 51*** =====
+{q: "[51***] Ko'chaning narigi yuzida bir sermo'ylov odam katta qozonda baliq qovurdi, ana shu mo'ylovdan qancha kilo baliq olib keldim?", a: ["Ikki kilo", "Bir kilo", "Uch kilo", "Besh kilo"], correct: "Ikki kilo"},
+ 
+// ===== 52*** =====
+{q: "[52***] Beqasam cho'ponlikni nechta kishi o'lasi qilib do'pposlaydi, hech kim ajratib ololmaydi?", a: ["3 kishi", "2 kishi", "4 kishi", "5 kishi"], correct: "3 kishi"},
+ 
+// ===== 53*** =====
+{q: "[53***] Beqasam choponlikni bemorxonaga olib jo'nadim, bemorxona olmadi, oppoq kiyimlik ayol \"bu qanday ish!\" deb bu holatni nima dedi?", a: ["Sudebniy (sud ishi)", "Tasodifiy hodisa", "Oddiy jarohat", "Kasallik"], correct: "Sudebniy (sud ishi)"},
+{q: "[53***] Bemorxonaga borgan mashinaga nechi pul tutdim, olmadi?", a: ["3 so'm", "5 so'm", "1 so'm", "10 so'm"], correct: "3 so'm"},
+ 
+// ===== 54*** =====
+{q: "[54***] Bozorga qaytib keldim, nimam joyida yo'q edi?", a: ["Xaltam", "Pulim", "Telpagim", "Etigim"], correct: "Xaltam"},
+{q: "[54***] Bozorlikni qaytib qilib chiqishda qorovulga qancha pul berdim?", a: ["1 so'm", "2 so'm", "50 tiyin", "3 so'm"], correct: "1 so'm"},
+ 
+// ===== 55*** =====
+{q: "[55***] \"Birodarlar, nasib etsa, kelar qayerdan, nasib yitsa, ketar qosh-u qaboqdan\"?", a: ["Shom-u Iroqdan", "Sharq-u G'arbdan", "Tog'-u dashtdan", "Yer-u osmondan"], correct: "Shom-u Iroqdan"},
+{q: "[55***] Kimning ko'pkarisida shunday bo'ldi - to'daga kirolmadim, kirsam uloqni ololmadim, olsam yulib ketishdi?", a: ["Xurram soliqchining", "Qulmat polvonning", "Jo'ra boboning", "Safar chavandozning"], correct: "Xurram soliqchining"},
+{q: "[55***] Nima sabab alamimdan arazlab ketdim?", a: ["Qoraga tashlangan uloq qoraga emas, labiga tushgach", "Uloqni umuman ololmagach", "Otim yiqilib qolgach", "Chilvir solganlari uchun"], correct: "Qoraga tashlangan uloq qoraga emas, labiga tushgach"},
+{q: "[55***] Tarlon suvga talpindi, suv ichirmadim, kimning tomidan chiqib turgan dastak uchiga bog'ladim?", a: ["Shokirqulning", "Qulmat polvonning", "Safar chavandozning", "Hamdam chavandozning"], correct: "Shokirqulning"},
+{q: "[55***] Shokirqulning o'g'lining ismi kim?", a: ["Karim", "Ibrohim", "Yusuf", "Sodiq"], correct: "Karim"},
+{q: "[55***] Kim sababli, kimning gapi uchun ko'pkariga qaytdim?", a: ["Karimning", "Shokirqulning", "Qulmat polvonning", "Bakovulning"], correct: "Karimning"},
+{q: "[55***] Bakovul meni ko'rib, yonidagi chavandozga qarab nima deganday bo'ldi?", a: ["Itga o'xshab, o'zi ketib, o'zi keladi dedi", "Yaxshi chavandoz dedi", "Otini tanimadim dedi", "Uloqni oldi dedi"], correct: "Itga o'xshab, o'zi ketib, o'zi keladi dedi"},
+{q: "[55***] Saman chavandozga kim uzangimni ushlab qayt dedi, yuzidan o'tolmadim dedim?", a: ["Karimning (otasi/vakolatidan)", "Shokirqulning", "Bakovulning", "Qulmat polvonning"], correct: "Karimning (otasi/vakolatidan)"},
+{q: "[55***] \"Karim desa, ishtoni ho'l bola deymanmi, kim deyman\" dedi?", a: ["Karim muallim", "Karim bakovul", "Karim chavandoz", "Karim polvon"], correct: "Karim muallim"},
+ 
+// ===== 56*** =====
+{q: "[56***] Meni shaharga militsionerlar chaqiribdi soat 10 ga, men shaharga bordim, kim meni kutib oldi?", a: ["Kapitan Ro'ziyev", "Leytenant Ismatov", "Polkovnik", "Serjant Xalilov"], correct: "Kapitan Ro'ziyev"},
+{q: "[56***] Men soat nechiga bordim shaharga, militsiyalar aytgan joyga?", a: ["12 ga, 2 soat kechga qolib bordim", "10 ga, o'z vaqtida bordim", "11 ga, 1 soat kechga qolib bordim", "1 ga, 3 soat kechga qolib bordim"], correct: "12 ga, 2 soat kechga qolib bordim"}
+ 
+];
+
+
+const ayats = [
+    { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
+    { text: "Albatta bir qiyinchilik bilan osonchilik bordir.", meta: "Sharh 94:5" },
+    { text: "Yaratgan Robbing nomi bilan o'qi!", meta: "Alaq 96:1" },
+    { text: "O'qi, Robbing karamlilar karamlisidir.", meta: "Alaq 96:3" },
+    { text: "Va tezda Robbing senga ato qilur va sen rozi bo'lursan.", meta: "Zuho 93:5" },
+    { text: "Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.", meta: "Layl 92:5-7" },
+    { text: "Albatta hidoyatga boshlash Bizning zimmamizdadir.", meta: "Layl 92:12" },
+    { text: "Va albatta tezda rozi bo'ladir.", meta: "Layl 92:21" },
+    { text: "Seni oson yo'lga muyassar etamiz.", meta: "A'lo 87:8" },
+    { text: "Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.", meta: "Naba 78:39" },
+    { text: "Albatta Biz senga ochiq g'alaba berdik.", meta: "Fath 48:1" }
+];
+
+let activeQuiz = [];
+let currentQ = 0, score = 0, answered = 0;
+let nextTimer = null; // keyingi savolga o'tish taymeri
+
+// Fisher-Yates: to'g'ri aralashtirish
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Yopiq rejimda javobni solishtirish uchun: apostroflar va bo'sh joylarni tenglashtirish
+function normalize(str) {
+    return String(str)
+        .toLowerCase()
+        .replace(/[’‘ʻʼ`´]/g, "'")
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function buildStars() {
+    const container = document.getElementById('stars');
+    container.innerHTML = '';
+    const count = 100; // Yulduzlar zichligi oshirildi
+    for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        const size = (Math.random() * 2 + 1).toFixed(1);
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.animationDelay = (Math.random() * 2.5).toFixed(2) + 's';
+        s.style.animationDuration = (1.5 + Math.random() * 2).toFixed(2) + 's';
+        container.appendChild(s);
+    }
+}
+
+let rangeStart = null;
+let numButtons = [];
+let rangeChosen = false; // ikki marta ishga tushishdan himoya
+
+window.onload = function() {
+    const grid = document.getElementById('numberGrid');
+    for (let i = 1; i <= quizData.length; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn';
+        btn.innerText = i;
+        btn.onclick = () => pickNumber(i, btn);
+        grid.appendChild(btn);
+        numButtons.push(btn);
+    }
+    buildStars();
+    
+    const randomIdx = Math.floor(Math.random() * ayats.length);
+    const selectedAyat = ayats[randomIdx];
+    document.getElementById('random-ayat').innerHTML = `
+        <div class="quran-box">
+            <span class="quran-ayat-text">"${selectedAyat.text}"</span>
+            <span class="quran-meta">${selectedAyat.meta}</span>
+        </div>
+    `;
+};
+
+function pickNumber(num, btnEl) {
+    if (rangeChosen) return;
+    const info = document.getElementById('range-info');
+
+    if (rangeStart === null) {
+        rangeStart = num;
+        btnEl.classList.add('picked');
+        info.innerText = `Boshlang'ich: ${num}. Endi oxirgi raqamni tanlang`;
+    } else {
+        rangeChosen = true;
+        let start = rangeStart;
+        let end = num;
+        if (end < start) { const t = start; start = end; end = t; }
+        btnEl.classList.add('picked');
+        info.innerText = `Tanlandi: ${start} - ${end}`;
+        setTimeout(() => startWithRange(start, end), 400);
+    }
+}
+
+function startWithRange(start, end) {
+    activeQuiz = quizData.slice(start - 1, end);
+    document.getElementById('select-screen').style.display = 'none';
+    document.getElementById('mode-screen').style.display = 'flex';
+}
+
+let quizMode = 'quiz';
+
+function chooseMode(mode) {
+    quizMode = mode;
+    if (mode === 'quiz-aralash' || mode === 'yopiq-aralash') {
+        activeQuiz = shuffle([...activeQuiz]);
+    }
+    document.getElementById('mode-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'flex';
+    document.getElementById('intro-screen').style.opacity = '1';
+    startTimer();
+}
+
+function startTimer() {
+    let count = 3;
+    let disp = document.getElementById("countdown");
+    disp.innerText = count;
+    let timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+            disp.innerText = count;
+        } else if (count === 0) {
+            disp.innerText = "Boshladik!";
+        } else {
+            clearInterval(timer);
+            document.getElementById("intro-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("intro-screen").style.display = "none";
+                document.getElementById("quiz").style.display = "block";
+                loadQ();
+            }, 800);
+        }
+    }, 1000);
+}
+
+// quizData formati: { q: "...", a: [variantlar], correct: "..." }
+function getOptionsFor(qData) {
+    return shuffle([...qData.a]);
+}
+
+function loadQ() {
+    const qData = activeQuiz[currentQ];
+    document.getElementById('question').innerText = `${currentQ + 1}/${activeQuiz.length}. ${qData.q}`;
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+
+    if (quizMode === 'yopiq' || quizMode === 'yopiq-aralash') {
+        loadClosedQ(qData, optDiv);
+    } else {
+        loadMultipleChoiceQ(qData, optDiv);
+    }
+}
+
+function loadMultipleChoiceQ(qData, optDiv) {
+    let shuffledOptions = getOptionsFor(qData);
+
+    shuffledOptions.forEach((opt) => {
+        const btn = document.createElement('div');
+        btn.className = 'option';
+        btn.innerText = opt;
+        btn.onclick = () => check(opt, btn, qData.correct);
+        optDiv.appendChild(btn);
+    });
+}
+
+function loadClosedQ(qData, optDiv) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'closed-input';
+    input.id = 'closed-answer';
+    input.placeholder = 'Javob yozing...';
+    input.onkeypress = (e) => { if (e.key === 'Enter') checkClosed(qData); };
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'btn-check';
+    checkBtn.innerText = 'Tekshirish';
+    checkBtn.onclick = () => checkClosed(qData);
+
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'closed-result';
+
+    optDiv.appendChild(input);
+    optDiv.appendChild(checkBtn);
+    optDiv.appendChild(resultDiv);
+
+    input.focus();
+}
+
+function checkClosed(qData) {
+    const inputEl = document.getElementById('closed-answer');
+    const resultDiv = document.getElementById('closed-result');
+    if (!inputEl || inputEl.disabled) return; // ikki marta bosishdan himoya
+    const user = normalize(inputEl.value);
+    const correct = normalize(qData.correct);
+
+    answered++;
+    inputEl.disabled = true;
+    document.querySelector('.btn-check').disabled = true;
+
+    if (user === correct) {
+        resultDiv.innerHTML = '<b style="color:#00ff99;">✅ To\'g\'ri</b>';
+        score++;
+    } else {
+        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ' + qData.correct;
+    }
+
+    nextTimer = setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, 2000);
+}
+
+function check(selected, element, correct) {
+    const options = element.parentElement.querySelectorAll('.option');
+    options.forEach(opt => opt.style.pointerEvents = 'none');
+    answered++;
+
+    if (selected === correct) {
+        element.classList.add('correct');
+        score++;
+    } else {
+        element.classList.add('wrong');
+        options.forEach(opt => {
+            if (opt.innerText === correct) opt.classList.add('correct');
+        });
+    }
+    nextTimer = setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, 1000);
+}
+
+function finishQuiz() {
+    if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; } // kutilayotgan o'tishni bekor qilish
+    let wrong = answered - score;
+    document.getElementById('quiz').innerHTML = `
+        <h2>Natijalar</h2>
+        <div style="line-height: 2.2; font-size: 19px;">
+            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
+            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+        </div>
+        <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>
+    `;
+}
+</script>
+</body>
+</html>
