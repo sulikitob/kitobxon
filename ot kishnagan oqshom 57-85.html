@@ -2,19 +2,20 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ot kishnagan oqshom </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Ot kishnagan oqshom</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background: linear-gradient(135deg, #050505, #121212, #1d1d1d); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px; 
-            min-height: 100vh; 
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #050505, #121212, #1d1d1d);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            min-height: 100dvh;
         }
 
         /* ===== Raqam tanlash ekrani ===== */
@@ -53,11 +54,19 @@
             transition: 0.25s;
             text-shadow: 0 0 8px rgba(0,255,153,0.6);
         }
-        .num-btn:hover {
-            background: #00ff99;
-            color: #050505;
-            box-shadow: 0 0 20px rgba(0,255,150,0.8);
-            transform: scale(1.08);
+        /* hover faqat sichqoncha bor qurilmalarda (telefonda "yopishib" qolmasligi uchun) */
+        @media (hover: hover) {
+            .num-btn:hover {
+                background: #00ff99;
+                color: #050505;
+                box-shadow: 0 0 20px rgba(0,255,150,0.8);
+                transform: scale(1.08);
+            }
+        }
+        .num-btn.in-range {
+            background: rgba(255,153,0,0.25);
+            border-color: #ff9900;
+            color: #ff9900;
         }
         .num-btn.picked {
             background: #ff9900;
@@ -66,35 +75,35 @@
             box-shadow: 0 0 20px rgba(255,153,0,0.8);
         }
         #range-info {
-            color: #ff9900; font-size: 15px; font-weight: bold; min-height: 22px;
+            color: #ff9900; font-size: 15px; font-weight: bold; min-height: 22px; text-align: center;
         }
 
         /* ===== Funksiya tanlash ekrani ===== */
-            #mode-screen {
+        #mode-screen {
             display: none;
             width: 100%; max-width: 700px;
             flex-direction: column; align-items: center;
             gap: 25px; padding: 20px 0;
         }
 
-    .mode-icon-top {
-    width: 100%;
-    max-width: 450px;
-    aspect-ratio: 4 / 3;
-    position: relative;
-    background: rgba(5, 5, 5, 0.4);
-    border-radius: 20px;
-    padding: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.mode-icon-top img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
+        .mode-icon-top {
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 4 / 3;
+            position: relative;
+            background: rgba(5, 5, 5, 0.4);
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .mode-icon-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
 
         #mode-screen h1 {
             font-size: 24px; color: #00ff99; text-align: center;
@@ -106,7 +115,6 @@
             background: rgba(5, 5, 5, 0.4);
             border-radius: 20px;
             padding: 25px;
-       
         }
         .mode-grid {
             width: 100%;
@@ -116,6 +124,7 @@
         }
         .mode-card {
             background: rgba(27, 27, 27, 0.85);
+            border: 2px solid transparent;
             border-radius: 20px;
             padding: 30px 15px;
             text-align: center;
@@ -126,25 +135,35 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
+            -webkit-backdrop-filter: blur(3px);
             backdrop-filter: blur(3px);
         }
         .mode-card::before {
             content: ""; position: absolute; width: 200%; height: 200%;
             background: linear-gradient(45deg,transparent,#00ff99,transparent);
             top: -150%; left: -150%; transform: rotate(25deg); transition: 0.7s;
+            pointer-events: none; z-index: 0; opacity: 0.35;
         }
-        .mode-card:hover::before { top: 100%; left: 100%; }
-        .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
-@media(max-width:600px){ 
-    .mode-grid{ grid-template-columns: repeat(2, 1fr); } 
-    .mode-icon-top{ display: flex; justify-content: center; }
-    .mode-icon-top img{ width: 85%; max-width: 220px; }
-}
+        @media (hover: hover) {
+            .mode-card:hover::before { top: 100%; left: 100%; }
+            .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
+        }
+        @media (max-width: 600px) {
+            .mode-icon-top { display: flex; justify-content: center; }
+            .mode-icon-top img { width: 85%; max-width: 220px; }
+        }
+
+        .btn-back {
+            background: transparent; border: 2px solid #555; color: #aaa;
+            border-radius: 15px; padding: 12px 25px; cursor: pointer;
+            font-weight: bold; font-size: 15px; transition: 0.3s;
+        }
+        .btn-back:hover { border-color: #00ff99; color: #00ff99; }
 
         /* ===== Intro (countdown) ekran ===== */
         #intro-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505; display: none; flex-direction: column;
+            background: transparent; display: none; flex-direction: column;
             justify-content: center; align-items: center; z-index: 5;
             transition: opacity 0.8s ease;
         }
@@ -152,7 +171,7 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 0; overflow: hidden;
         }
-        #select-screen, #mode-screen, .quiz-box, #intro-screen .content-box, #intro-screen #countdown {
+        #select-screen, #mode-screen, .quiz-box, #intro-screen .content-box {
             position: relative; z-index: 2;
         }
         .star {
@@ -166,12 +185,13 @@
             0%, 100% { opacity: 0.15; transform: scale(1); }
             50% { opacity: 1; transform: scale(1.6); }
         }
-        .content-box { text-align: center; margin-bottom: 50px; z-index: 1; position: relative; padding: 0 20px; }
-        #countdown { 
+        .content-box { text-align: center; margin-bottom: 50px; padding: 0 20px; }
+        #countdown {
             position: absolute; bottom: 50px;
-            font-size: 80px; color: #00ff99; font-weight: bold;
+            font-size: 64px; color: #00ff99; font-weight: bold;
             animation: pulse 1s infinite;
-            z-index: 1;
+            z-index: 2;
+            max-width: 100%; text-align: center;
         }
         @keyframes pulse {
             0% { transform: scale(0.9); opacity: 0.5; }
@@ -185,7 +205,7 @@
             margin: 25px auto 0 auto;
             padding: 20px 30px;
             max-width: 550px;
-            border: 4px double #ffd700; 
+            border: 4px double #ffd700;
             background: rgba(20, 16, 5, 0.6);
             text-align: center;
         }
@@ -209,21 +229,25 @@
         }
 
         /* ===== Quiz ekrani ===== */
-        .quiz-box { 
+        .quiz-box {
             display: none;
-            width: 100%; max-width: 600px; background: #1b1b1b; padding: 30px; 
-            border-radius: 25px; box-shadow: 0 0 35px rgba(0, 255, 150, 0.1); 
-            text-align: center; margin-top: 50px;
+            width: 100%; max-width: 600px; background: #1b1b1b; padding: 30px;
+            border-radius: 25px; box-shadow: 0 0 35px rgba(0, 255, 150, 0.1);
+            text-align: center; margin-top: 20px;
         }
         h2 { color: #00ff99; margin-bottom: 20px; font-size: 22px; }
-        .option { 
-            display: block; width: 100%; padding: 15px; margin: 10px 0; 
-            background: #2a2a2a; border: 2px solid #333; border-radius: 15px; 
+        .option {
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            background: #2a2a2a; border: 2px solid #333; border-radius: 15px;
             cursor: pointer; transition: 0.3s; text-align: left;
+            color: white; font-family: inherit; font-size: 16px;
         }
-        .option:hover { border-color: #00ff99; }
-        .correct { 
-            background: #00ff99 !important; color: black; font-weight: bold; 
+        @media (hover: hover) {
+            .option:hover { border-color: #00ff99; }
+        }
+        .option:focus-visible { outline: 2px solid #00ff99; }
+        .correct {
+            background: #00ff99 !important; color: black !important; font-weight: bold;
             animation: bubbleEffect 0.5s ease-out;
         }
         @keyframes bubbleEffect {
@@ -231,14 +255,14 @@
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
-        .wrong { background: #ff4d4d !important; color: white; }
-        .btn-finish { 
-            width: 100%; padding: 15px; background: transparent; border: 2px solid #00ff99; 
-            color: #00ff99; border-radius: 15px; cursor: pointer; margin-top: 20px; 
-            font-weight: bold; transition: 0.3s; 
+        .wrong { background: #ff4d4d !important; color: white !important; }
+        .btn-finish {
+            width: 100%; padding: 15px; background: transparent; border: 2px solid #00ff99;
+            color: #00ff99; border-radius: 15px; cursor: pointer; margin-top: 20px;
+            font-weight: bold; transition: 0.3s; font-size: 16px;
         }
         .btn-finish:hover { background: #00ff99; color: black; }
-        
+
         .closed-input {
             width: 100%; padding: 15px; margin-top: 10px; border: 2px solid #333;
             border-radius: 12px; font-size: 17px; outline: none; background: #2a2a2a;
@@ -259,7 +283,7 @@
 <div id="stars"></div>
 
 <div id="select-screen">
-    <h1>🌙 57-85***</h1>
+    <h1 id="main-title">🌙 Savollar</h1>
     <p>Savollar sonini belgilang</p>
     <div id="range-info">Boshlang'ich raqamni tanlang</div>
     <div class="number-grid" id="numberGrid"></div>
@@ -267,7 +291,7 @@
 
 <div id="mode-screen">
     <div class="mode-icon-top">
-        <img src="Bu.jpg">
+        <img src="Bu.jpg" alt="" onerror="this.style.display='none'">
     </div>
     <h1>Qaysi funksiyani xohlaysiz?</h1>
     <div class="mode-wrapper">
@@ -278,11 +302,12 @@
             <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
         </div>
     </div>
+    <button class="btn-back" onclick="goBack()">← Orqaga</button>
 </div>
 
 <div id="intro-screen">
     <div class="content-box">
-        <h1 style="color:#00ff99; font-size: 32px;">1-Qism</h1>
+        <h1 id="intro-title" style="color:#00ff99; font-size: 32px;">1-Qism</h1>
         <div id="random-ayat"></div>
     </div>
     <div id="countdown">3</div>
@@ -295,422 +320,12 @@
 </div>
 
 <script>
+// ============================================================
+//  QUIZ DATA: savollarni shu massiv ichiga qo'ying.
+//  Format:  {q: "Savol?", a: ["Javob 1", "Javob 2", "Javob 3", "Javob 4"], correct: "Javob 1"},
+//  Har bir savoldan keyin vergul bo'lishi shart (oxirgisidan keyin bo'lmasa ham bo'ladi).
+// ============================================================
 const quizData = [
-
-
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ot kishnagan oqshom </title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background: linear-gradient(135deg, #050505, #121212, #1d1d1d); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            padding: 20px; 
-            min-height: 100vh; 
-        }
-
-        /* ===== Raqam tanlash ekrani ===== */
-        #select-screen {
-            width: 100%; max-width: 700px;
-            display: flex; flex-direction: column; align-items: center;
-            gap: 25px; padding: 20px 0;
-        }
-        #select-screen h1 {
-            font-size: 26px; color: #00ff99; text-align: center;
-        }
-        #select-screen p { color: #999; font-size: 14px; text-align: center; }
-        .number-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
-            gap: 10px;
-            width: 100%;
-            max-height: 60vh;
-            overflow-y: auto;
-            padding: 10px;
-            background: #111;
-            border-radius: 20px;
-            box-shadow: 0 0 25px rgba(0,255,150,0.15);
-        }
-        .number-grid::-webkit-scrollbar { width: 8px; }
-        .number-grid::-webkit-scrollbar-thumb { background: #00ff99; border-radius: 10px; }
-        .num-btn {
-            background: #1b1b1b;
-            border: 2px solid #00ff99;
-            color: #00ff99;
-            border-radius: 12px;
-            padding: 12px 0;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.25s;
-            text-shadow: 0 0 8px rgba(0,255,153,0.6);
-        }
-        .num-btn:hover {
-            background: #00ff99;
-            color: #050505;
-            box-shadow: 0 0 20px rgba(0,255,150,0.8);
-            transform: scale(1.08);
-        }
-        .num-btn.picked {
-            background: #ff9900;
-            border-color: #ff9900;
-            color: #050505;
-            box-shadow: 0 0 20px rgba(255,153,0,0.8);
-        }
-        #range-info {
-            color: #ff9900; font-size: 15px; font-weight: bold; min-height: 22px;
-        }
-
-        /* ===== Funksiya tanlash ekrani ===== */
-            #mode-screen {
-            display: none;
-            width: 100%; max-width: 700px;
-            flex-direction: column; align-items: center;
-            gap: 25px; padding: 20px 0;
-        }
-
-    .mode-icon-top {
-    width: 100%;
-    max-width: 450px;
-    aspect-ratio: 4 / 3;
-    position: relative;
-    background: rgba(5, 5, 5, 0.4);
-    border-radius: 20px;
-    padding: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.mode-icon-top img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-}
-
-        #mode-screen h1 {
-            font-size: 24px; color: #00ff99; text-align: center;
-            margin: 5px 0;
-        }
-
-        .mode-wrapper {
-            width: 100%;
-            background: rgba(5, 5, 5, 0.4);
-            border-radius: 20px;
-            padding: 25px;
-       
-        }
-        .mode-grid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-        .mode-card {
-            background: rgba(27, 27, 27, 0.85);
-            border-radius: 20px;
-            padding: 30px 15px;
-            text-align: center;
-            transition: 0.4s;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            backdrop-filter: blur(3px);
-        }
-        .mode-card::before {
-            content: ""; position: absolute; width: 200%; height: 200%;
-            background: linear-gradient(45deg,transparent,#00ff99,transparent);
-            top: -150%; left: -150%; transform: rotate(25deg); transition: 0.7s;
-        }
-        .mode-card:hover::before { top: 100%; left: 100%; }
-        .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.2); }
-@media(max-width:600px){ 
-    .mode-grid{ grid-template-columns: repeat(2, 1fr); } 
-    .mode-icon-top{ display: flex; justify-content: center; }
-    .mode-icon-top img{ width: 85%; max-width: 220px; }
-}
-
-        /* ===== Intro (countdown) ekran ===== */
-        #intro-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050505; display: none; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 5;
-            transition: opacity 0.8s ease;
-        }
-        #stars {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; z-index: 0; overflow: hidden;
-        }
-        #select-screen, #mode-screen, .quiz-box, #intro-screen .content-box, #intro-screen #countdown {
-            position: relative; z-index: 2;
-        }
-        .star {
-            position: absolute;
-            width: 2px; height: 2px;
-            background: #fff;
-            border-radius: 50%;
-            animation: twinkle 2.5s infinite ease-in-out;
-        }
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.15; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.6); }
-        }
-        .content-box { text-align: center; margin-bottom: 50px; z-index: 1; position: relative; padding: 0 20px; }
-        #countdown { 
-            position: absolute; bottom: 50px;
-            font-size: 80px; color: #00ff99; font-weight: bold;
-            animation: pulse 1s infinite;
-            z-index: 1;
-        }
-        @keyframes pulse {
-            0% { transform: scale(0.9); opacity: 0.5; }
-            50% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.9); opacity: 0.5; }
-        }
-
-        /* Qur'on sarlavhalari uslubidagi tilla naqshinkor to'rtburchak hoshiya */
-        .quran-box {
-            display: block;
-            margin: 25px auto 0 auto;
-            padding: 20px 30px;
-            max-width: 550px;
-            border: 4px double #ffd700; 
-            background: rgba(20, 16, 5, 0.6);
-            text-align: center;
-        }
-        .quran-ayat-text {
-            font-size: 18px;
-            line-height: 1.6;
-            color: #f0f0f0;
-            margin-bottom: 15px;
-            display: block;
-        }
-        .quran-meta {
-            display: inline-block;
-            font-size: 15px;
-            font-weight: bold;
-            color: #ffd700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border-top: 1px solid rgba(255, 215, 0, 0.3);
-            padding-top: 8px;
-            width: 100%;
-        }
-
-        /* ===== Quiz ekrani ===== */
-        .quiz-box { 
-            display: none;
-            width: 100%; max-width: 600px; background: #1b1b1b; padding: 30px; 
-            border-radius: 25px; box-shadow: 0 0 35px rgba(0, 255, 150, 0.1); 
-            text-align: center; margin-top: 50px;
-        }
-        h2 { color: #00ff99; margin-bottom: 20px; font-size: 22px; }
-        .option { 
-            display: block; width: 100%; padding: 15px; margin: 10px 0; 
-            background: #2a2a2a; border: 2px solid #333; border-radius: 15px; 
-            cursor: pointer; transition: 0.3s; text-align: left;
-        }
-        .option:hover { border-color: #00ff99; }
-        .correct { 
-            background: #00ff99 !important; color: black; font-weight: bold; 
-            animation: bubbleEffect 0.5s ease-out;
-        }
-        @keyframes bubbleEffect {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-        .wrong { background: #ff4d4d !important; color: white; }
-        .btn-finish { 
-            width: 100%; padding: 15px; background: transparent; border: 2px solid #00ff99; 
-            color: #00ff99; border-radius: 15px; cursor: pointer; margin-top: 20px; 
-            font-weight: bold; transition: 0.3s; 
-        }
-        .btn-finish:hover { background: #00ff99; color: black; }
-        
-        .closed-input {
-            width: 100%; padding: 15px; margin-top: 10px; border: 2px solid #333;
-            border-radius: 12px; font-size: 17px; outline: none; background: #2a2a2a;
-            color: white;
-        }
-        .closed-input:focus { border-color: #00ff99; }
-        .btn-check {
-            width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #00ff99; border-radius: 15px;
-            background: transparent; color: #00ff99; font-weight: bold; cursor: pointer; font-size: 17px;
-            transition: 0.3s;
-        }
-        .btn-check:hover { background: #00ff99; color: black; }
-        #closed-result { margin-top: 15px; font-size: 18px; min-height: 30px; text-align: center; }
-    </style>
-</head>
-<body>
-
-<div id="stars"></div>
-
-<div id="select-screen">
-    <h1>🌙 57-85*** </h1>
-    <p>Savollar sonini belgilang</p>
-    <div id="range-info">Boshlang'ich raqamni tanlang</div>
-    <div class="number-grid" id="numberGrid"></div>
-</div>
-
-<div id="mode-screen">
-    <div class="mode-icon-top">
-        <img src="Bu.jpg">
-    </div>
-    <h1>Qaysi funksiyani xohlaysiz?</h1>
-    <div class="mode-wrapper">
-        <div class="mode-grid">
-            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
-            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
-            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
-            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
-        </div>
-    </div>
-</div>
-
-<div id="intro-screen">
-    <div class="content-box">
-        <h1 style="color:#00ff99; font-size: 32px;">1-Qism</h1>
-        <div id="random-ayat"></div>
-    </div>
-    <div id="countdown">3</div>
-</div>
-
-<div class="quiz-box" id="quiz">
-    <h2 id="question">Yuklanmoqda...</h2>
-    <div id="options"></div>
-    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
-</div>
-
-<script>
-const quizData = [
-
-
-// ===== 57*** =====
-{q: "[57***] Rixsiyev qancha vaqt doklad o'qidi?", a: ["20 minut 40 sekund", "15 minut 20 sekund", "30 minut 10 sekund", "10 minut 50 sekund"], correct: "20 minut 40 sekund"},
-{q: "[57***] Rixsiyev nima haqida doklad o'qidi?", a: ["Xalqaro ahvol xususida", "Qishloq xo'jaligi haqida", "Ko'pkari tarixi haqida", "Adabiyot haqida"], correct: "Xalqaro ahvol xususida"},
-{q: "[57***] NATO mamlakatlari Yevropada nima joylashtiryapti?", a: ["Qanotli raketa", "Yadro qurollari", "Harbiy bazalar", "Samolyotlar"], correct: "Qanotli raketa"},
-{q: "[57***] Qayerda qonli jang bo'lyapti?", a: ["Salvadorda", "Nikaraguada", "Polshada", "Falastinda"], correct: "Salvadorda"},
-{q: "[57***] Qayerda vaziyat tobora murakkablashyapti?", a: ["Nikaraguada", "Salvadorda", "Polshada", "Falastinda"], correct: "Nikaraguada"},
-{q: "[57***] Qayer xalqining ahvoli ayanchli?", a: ["Falastin", "Salvador", "Nikaragua", "Polsha"], correct: "Falastin"},
-{q: "[57***] Yevropadagi raketalar, Salvadordagi jang, Nikaraguadagi murakkab vaziyat, Falastin xalqining ayanchli ahvoli - hammasiga kim aybdor?", a: ["AQSH imperialistlari", "NATO", "Yevropa Ittifoqi", "BMT"], correct: "AQSH imperialistlari"},
-{q: "[57***] AQSH imperialistlari qaysi davlatda diversiya-provokatsiya tashkil qilib, xalqni mafkuraviy zaharladi?", a: ["Polsha", "Vengriya", "Chexoslovakiya", "Bolgariya"], correct: "Polsha"},
-{q: "[57***] AQSH imperialistlari qayerda sotsialistik jamiyatni qo'porib tashlamoqchi bo'ldi, lekin Birlashgan Ishchi partiyasi sotsializmni himoya qildi?", a: ["Polshada", "Vengriyada", "Chexoslovakiyada", "Ruminiyada"], correct: "Polshada"},
- 
-// ===== 58*** =====
-{q: "[58***] Necha kun deganda uchastka militsionerimiz tag'in qog'oz olib keldi?", a: ["2 kun", "5 kun", "1 kun", "10 kun"], correct: "2 kun"},
-{q: "[58***] Beqasam cho'ponlik va 3 kishining mushtlashuvi qachon bo'lgan edi?", a: ["24-yanvar, yakshanba, soat 10 da", "15-fevral, shanba, soat 12 da", "3-mart, seshanba, soat 9 da", "20-yanvar, juma, soat 11 da"], correct: "24-yanvar, yakshanba, soat 10 da"},
-{q: "[58***] Urushda militsalar bo'lgani, u militsalar qayerga qaraydigan edi?", a: ["Vinzavodga", "Bozorga", "Bekatga", "Idoraga"], correct: "Vinzavodga"},
- 
-// ===== 59*** =====
-{q: "[59***] Endigi qog'oz kelishida bormadim, boisi kim bandalik qildi?", a: ["Dono momo", "Xasan bobo", "Qurbon tabib", "Xidir mirob"], correct: "Dono momo"},
-{q: "[59***] Rixsiyevga \"hech qachon eldan qolmang, xususan ikki vaqt elning yonida bo'ling\" dedim, biri qachon?", a: ["To'yida", "Azasida", "Bayramida", "Bozorida"], correct: "To'yida"},
-{q: "[59***] Elning nimasida belingizni bog'lab xizmat qilib, o'ynab-kulib xush-xushvaqt o'tkazib bering?", a: ["To'yda", "Bayramda", "Sayilda", "Yig'inda"], correct: "To'yda"},
-{q: "[59***] Nima ko'pniki (hamma birga qatnashadigan)?", a: ["To'y", "Bayram", "Bozor", "Sayil"], correct: "To'y"},
-{q: "[59***] Ikki vaqtdan 2-si nimasida elning yonida bo'lish kerak?", a: ["Azasida", "To'yida", "Bayramida", "Sayilida"], correct: "Azasida"},
-{q: "[59***] Yig'lab-siqtab elning qayg'usiga hamdard bo'lish kerak, chunki nima qayg'usini bir odam ko'tarolmaydi?", a: ["O'lim", "Kasallik", "Qashshoqlik", "Ayriliq"], correct: "O'lim"},
-{q: "[59***] Dono momo kim edi?", a: ["Qorovul", "Muallima", "Feldsher", "Kutubxonachi"], correct: "Qorovul"},
-{q: "[59***] Kimlarning o'limi \"mahalliy gap, e'tiborga molik emas\" deb aytildi Rixsiyev tomonidan?", a: ["Kampirlarning", "Yigitlarning", "Chavandozlarning", "Bolalarning"], correct: "Kampirlarning"},
-{q: "[59***] Eron shohi kim?", a: ["Pahlaviy", "Xumayniy", "Rizoshoh", "Doro"], correct: "Pahlaviy"},
-{q: "[59***] Eron shohi Pahlaviy yashirin buyruq berib bir kinoteatrni yoqib yuboribdi, ichida qancha inson bor ekan?", a: ["500", "300", "700", "1000"], correct: "500"},
- 
-// ===== 60*** =====
-{q: "[60***] Uyimizga militsioner keldi, qanaqa mashinada?", a: ["Sap-sariq militsiya mashinasida", "Qora Volga mashinasida", "Oq Jiguli mashinasida", "Yashil UAZ mashinasida"], correct: "Sap-sariq militsiya mashinasida"},
-{q: "[60***] \"Hech bandaning eshigiga kimning mashinasi bilan kimning mashinasi kelgulik qilmasin, tez ket, birov ko'rmasin\" - qaysi ikkita mashina haqida gap?", a: ["Do'xtirning va militsiyaning", "Rais va muharrirning", "Bakovul va cho'ponning", "Sinchi va qassobning"], correct: "Do'xtirning va militsiyaning"},
-{q: "[60***] \"Mana, otib tashla! Lekin kimning mashinasiga chiqmayman!\" - qaysi mashinaga chiqmaslikni aytdi?", a: ["Militsiyaning", "Do'xtirning", "Raisning", "Muharrirning"], correct: "Militsiyaning"},
-{q: "[60***] Mo'min qaysi ko'chada turadi?", a: ["Furqat ko'chasida", "Navoiy ko'chasida", "Yoshlik ko'chasida", "Do'stlik ko'chasida"], correct: "Furqat ko'chasida"},
- 
-// ===== 61*** =====
-{q: "[61***] Kim dovdirab, qalamni qo'shqo'llab ushlab olishiga bir baxya qoldi va menga ro'para bo'lib bosh irg'ab so'rashdi?", a: ["Mahalla ijro qo'mitasi raisi (choyxonachi)", "Rayon kotibi", "Muharrir Rixsiyev", "Kapitan Ro'ziyev"], correct: "Mahalla ijro qo'mitasi raisi (choyxonachi)"},
-{q: "[61***] Shukurov kim?", a: ["Baliqchi", "Do'xtir", "Militsioner", "Muallim"], correct: "Baliqchi"},
- 
-// ===== 62*** =====
-{q: "[62***] Baliqchining nimasi urushga aralashgan, ammo bilmaganga oldi?", a: ["Iti", "O'g'li", "Otasi", "Akasi"], correct: "Iti"},
- 
-// ===== 63*** =====
-{q: "[63***] Kimni juvozkash deyishadi?", a: ["Nazirni", "Shukurovni", "Xidirni", "Qulmat polvonni"], correct: "Nazirni"},
-{q: "[63***] Nazir juvozkash qaysi otini minib keldi?", a: ["Olmako'z Baytal", "Qora To'riq", "Tarlon", "Saman"], correct: "Olmako'z Baytal"},
-{q: "[63***] Ko'zlari bo'taloq ko'zlariday katta-katta, dum-dumaloq, olmaday, sag'rinlari lo'mbillaydigan - bu nimning tasviri?", a: ["Nazir juvozkashning baytali", "Fayzulla chavandozning oti", "Safar chavandozning oti", "Jo'ra boboning oti"], correct: "Nazir juvozkashning baytali"},
-{q: "[63***] Tarlonning ko'zi kimga tushdi?", a: ["Olmako'zga", "Qora to'riqqa", "Samanga", "Jiyronga"], correct: "Olmako'zga"},
-{q: "[63***] \"Yomon ot - yomon kimday gap\" deyiladi?", a: ["Ayolday", "Erkakday", "Boladay", "Qariday"], correct: "Ayolday"},
- 
-// ===== 64*** =====
-{q: "[64***] \"Kelibsan-da... kelmasang, oq butim qora kuyarmidi\" - deya to'ng'illadim, kimga?", a: ["Tarlonga", "Olmako'zga", "Nazirga", "Shokirqulga"], correct: "Tarlonga"},
- 
-// ===== 65*** =====
-{q: "[65***] Kimni Payg'ambarlar siylagan?", a: ["Kuyovni", "Kelinni", "Cho'ponni", "Chavandozni"], correct: "Kuyovni"},
- 
-// ===== 66*** =====
-{q: "[66***] Boshqa chavandozlar uyi yaqin bo'lib, otlarini bog'lab kelaveradi. Bizniki xiyla olis bo'lgani uchun Tarlonni bog'lab kelgunimcha qozon necha marta qaynaydi?", a: ["2 marta", "1 marta", "3 marta", "4 marta"], correct: "2 marta"},
-{q: "[66***] Kenja qaynimiz kim?", a: ["Qoraqul", "Karim", "Odina", "Mamat"], correct: "Qoraqul"},
-{q: "[66***] Samad chavandoz mixda osig'liq nimasini oldi?", a: ["Do'mbirasini", "Nayini", "Rubobini", "Qamchisini"], correct: "Do'mbirasini"},
-{q: "[66***] Tarlon dirk-dirk o'ynadi, bepoyon qaysi adirlarga qarab kishnadi?", a: ["Vaxshivor adirlariga", "Obshir adirlariga", "Sho'rchi adirlariga", "Bo'ysun adirlariga"], correct: "Vaxshivor adirlariga"},
-{q: "[66***] \"...o'ttizni urib qo'ydi, hali-da uylanmadi, bir qitig'iga tegayin\" deb qaysi chavandozni ashulaga solmoqchi bo'lishdi?", a: ["Odina chavandozni", "Samad chavandozni", "Safar chavandozni", "Fayzulla chavandozni"], correct: "Odina chavandozni"},
-{q: "[66***] \"Bo'ydoqning aqli qayerida bo'ladi!\" - qayerida?", a: ["Ikki ko'zida", "Boshida", "Qalbida", "Tilida"], correct: "Ikki ko'zida"},
-{q: "[66***] Odina chavandozning dili kimga ketgan edi?", a: ["Ziyodulla kalning qaynsinglisiga", "Qulmat polvonning qizi ga", "Jo'ra boboning nabirasiga", "Bakovulning singlisiga"], correct: "Ziyodulla kalning qaynsinglisiga"},
- 
-// ===== 67*** =====
-{q: "[67***] Qaynimning ismi-familiyasi kim?", a: ["Qodirov Qoraqul", "Ermatov Xorunboy", "Rixsiyev Alisher", "Xidirov Mirob"], correct: "Qodirov Qoraqul"},
-{q: "[67***] Ertalab Tarlonni otxonadan yetaklab chiqdim, qorin etlari dir-dir uchdi, pir-pir uchdi - otga nima bo'lsa shunday bo'ladi?", a: ["Suv tushsa", "Kasal bo'lsa", "Ochlik chekkan bo'lsa", "Charchagan bo'lsa"], correct: "Suv tushsa"},
-{q: "[67***] Ot g'arq terga botsa, nima qilib bo'lmaydi?", a: ["Suv ichirib otxonaga bog'lab bo'lmaydi", "Yem berib bo'lmaydi", "Yotqizib bo'lmaydi", "Egar solib bo'lmaydi"], correct: "Suv ichirib otxonaga bog'lab bo'lmaydi"},
-{q: "[67***] Ot g'arq terga botganda mabodo suv ichirilsa, keyin ot ko'pkariga yaramay qolmasligi uchun nima qilinishi lozim bo'ladi?", a: ["Xiyla yo'l yurish lozim bo'ladi", "Darrov dam berish lozim bo'ladi", "Sovuq joyga qo'yish lozim bo'ladi", "Ovqat berish lozim bo'ladi"], correct: "Xiyla yo'l yurish lozim bo'ladi"},
-{q: "[67***] Qodirov Qoraqul qayerda katta (faol) edi?", a: ["Komsomolda", "Partiyada", "Kolxozda", "Maktabda"], correct: "Komsomolda"},
-{q: "[67***] Bittayam 4 (baho) yo'q a'lochi kim edi?", a: ["Qodirov Qoraqul", "Omon surnaychi", "Odina chavandoz", "Samad chavandoz"], correct: "Qodirov Qoraqul"},
-{q: "[67***] Kimning qizi bilan partaning ostidan xat olishib turishga yetgan aqling shunga yetmay qoldimi, deyilgan?", a: ["Omon surnaychining", "Qodirov Qoraqulning", "Samad chavandozning", "Odina chavandozning"], correct: "Omon surnaychining"},
- 
-// ===== 69*** =====
-{q: "[69***] Mag'ribdagi oppoq tog' qaysi tog' bo'ldi?", a: ["Keragatog'", "Bobotog'", "Hisortog'", "Zarafshontog'"], correct: "Keragatog'"},
-{q: "[69***] Keragatog' - qaysi tog'larning davomi?", a: ["Hisor tog'larining", "Zarafshon tog'larining", "Tyanshan tog'larining", "Pomir tog'larining"], correct: "Hisor tog'larining"},
-{q: "[69***] \"Bir yaxshiga bir yomon har yerda bor\" gapidan keyin qanday naql aytiladi?", a: ["Indamagin kalga, o'zi kelar holga", "So'zla, lekin o'ylab so'zla", "Sabr qil, oxiri xayr bo'lar", "Ko'p gapirgan ko'p yanglishar"], correct: "Indamagin kalga, o'zi kelar holga"},
- 
-// ===== 70*** =====
-{q: "[70***] Chavandoz ostidagi ot maydagina, yermitti ot bo'ldi, sariq junlari buzoqnikiday uzun-uzun bo'ldi, uzangisiz oyog'i qorga shalvirab turdi - kim edi bu?", a: ["Qatron kal katta", "Do'ppili katta kal", "Kal katta", "Shlyapali katta"], correct: "Qatron kal katta"},
-{q: "[70***] Bu to'y kimning to'yi edi, ammo kal Qatron buni ham otini olib yig'latib qo'yayotgandi?", a: ["Kal Qatronning og'aynisining to'yi", "Qulmat polvonning o'g'lining to'yi", "Jo'ra boboning to'yi", "Murodning to'yi"], correct: "Kal Qatronning og'aynisining to'yi"},
-{q: "[70***] Qatron kal ot so'radi, o'zi dir-dir qaltiraydi, g'irt mast, \"siz kattasiz, ko'pkarini nazorat qilib turing\" deb kimni aldashdi?", a: ["Hojiqulboyni", "Murodni", "Safar chavandozni", "Qulmat polvonni"], correct: "Hojiqulboyni"},
-{q: "[70***] \"Kal o'zini ovutar, qayerini sovitar, degani shu-da\" - qayerini?", a: ["Qo'ltig'ini", "Boshini", "Ko'ksini", "Yelkasini"], correct: "Qo'ltig'ini"},
-{q: "[70***] Ziyodulla kal To'riqdan yiqilganda qayeri sindi?", a: ["O'ng qo'li", "Chap oyog'i", "Boshi", "Umurtqasi"], correct: "O'ng qo'li"},
- 
-// ===== 74*** =====
-{q: "[74***] Do'xtirning ismi nima edi?", a: ["Xudoyqul", "Xasan", "Qurbon", "Xidir"], correct: "Xudoyqul"},
-{q: "[74***] Tirsagim yo'g'onligi sog' tirsagimdan qancha keldi?", a: ["Uchov (uch barobar)", "Ikki barobar", "To'rt barobar", "Besh barobar"], correct: "Uchov (uch barobar)"},
-{q: "[74***] Qaysi do'xtir bosh chayqab meni mashinasiga solib, qaysi sovxoz bemorxonasiga olib bordi?", a: ["Xazorbog'", "Qizilsuv", "Obshir", "Sho'rchi"], correct: "Xazorbog'"},
-{q: "[74***] Ziyodullani qo'li nima bo'ldi?", a: ["Tirsakdan chiqqan ekan", "Bilagidan singan ekan", "Yelkadan chiqqan ekan", "Panjadan singan ekan"], correct: "Tirsakdan chiqqan ekan"},
- 
-// ===== 75*** =====
-{q: "[75***] Shu yotishimda necha kun yotdim?", a: ["20 kun", "10 kun", "30 kun", "15 kun"], correct: "20 kun"},
-{q: "[75***] Gips yoki yog'ochmi, qo'limni ko'rib kim aytdi?", a: ["Xasan bobo", "Xudoyqul do'xtir", "Qurbon tabib", "Xidir mirob"], correct: "Xasan bobo"},
-{q: "[75***] Xasan bobo kimga borishni maslahat beradi?", a: ["Qurbon tabibga", "Xudoyqul do'xtirga", "Xidir mirobga", "Boshqa do'xtirga"], correct: "Qurbon tabibga"},
-{q: "[75***] Qurbon tabib qayerlik?", a: ["Qoraxonlik", "Obshirlik", "Sho'rchilik", "Darbandlik"], correct: "Qoraxonlik"},
- 
-// ===== 76*** =====
-{q: "[76***] Qoraxonda kim degich (mashhur) bo'ldi?", a: ["Xidir", "Qurbon tabib", "Xasan bobo", "Qurbonnazar"], correct: "Xidir"},
-{q: "[76***] Xidir kim edi?", a: ["Mirob", "Tabib", "Muharrir", "Bakovul"], correct: "Mirob"},
-{q: "[76***] Chiqqan suyaklarni joyiga solib, singan suyaklarni davolagan kim edi?", a: ["Xidir mirob", "Qurbon tabib", "Xasan bobo", "Xudoyqul do'xtir"], correct: "Xidir mirob"},
-{q: "[76***] \"Shunday odam-da ketdi-ya! Hech ishongim kelmaydi...\" kimni nazarda tutgan?", a: ["Xidir mirobni", "Jo'ra boboni", "Qurbon tabibni", "Xasan boboni"], correct: "Xidir mirobni"},
-{q: "[76***] Kimning Qurbonnazar degan o'g'li qoldi, kasbini olib?", a: ["Xidirning", "Qurbon tabibning", "Xasan boboning", "Qodirov Qoraqulning"], correct: "Xidirning"},
-{q: "[76***] \"O'zi rais! Lekin men raisman demaydi, kattaga-da bir, kichikka-da bir\" - kim haqida gap?", a: ["Qurbonnazar", "Xidir mirob", "Qurbon tabib", "Xasan bobo"], correct: "Qurbonnazar"},
-{q: "[76***] Qurbonnazar aytishicha qo'limning qayeri lat yegan ekan?", a: ["Sag'al (yengil)", "Qattiq", "Og'ir", "Butunlay singan"], correct: "Sag'al (yengil)"},
-{q: "[76***] Otga nima bo'lsa oyog'i qotib qoladi, paylari dirillab-dirillab uchadi?", a: ["Oyog'iga yem tushsa", "Kasal bo'lsa", "Charchasa", "Sovuq olsa"], correct: "Oyog'iga yem tushsa"},
-{q: "[76***] Qora ot qanday bo'ladi?", a: ["Yomon", "Yaxshi", "O'rtacha", "Zo'r"], correct: "Yomon"},
-{q: "[76***] \"Qora ot yomon ot\" deb kim chin yozgan edi?", a: ["Ernest Seton Tompson", "Jek London", "Lev Tolstoy", "Anton Chexov"], correct: "Ernest Seton Tompson"},
-{q: "[76***] Ernest Seton Tompson qayerlik?", a: ["Kanadalik", "Amerikalik", "Angliyalik", "Fransuzlik"], correct: "Kanadalik"},
-{q: "[76***] Ot moy tashlab, keyin ko'pkariga yaramay qolib, ichida moy to'lib qolishi qachon yuz beradi?", a: ["Ot xomlasa", "Ot charchasa", "Ot kasal bo'lsa", "Ot yosh bo'lsa"], correct: "Ot xomlasa"},
-{q: "[76***] Bunday (xomlagan) otni bir yilgacha ko'pkarida chopib bo'lmaydi - qanday otni?", a: ["Xomlagan otni", "Charchagan otni", "Kasal otni", "Yosh otni"], correct: "Xomlagan otni"},
-{q: "[76***] Ot odamni bosmaydi, boisi ot odamzodni ulug'laydi va vafo qiladi - hayvonlar ichida ot bilan yana qaysi hayvon shunday?", a: ["It", "Mushuk", "Qo'y", "Tuya"], correct: "It"},
-{q: "[76***] \"U suyuqoyoq ayolday gap, qornini to'yg'azsa bo'ldi, boshini silasa ergashib keta beradi\" - bu qaysi hayvon haqida?", a: ["Pishak (mushuk)", "It", "Qo'y", "Ho'kiz"], correct: "Pishak (mushuk)"},
-{q: "[76***] Eshak egasini tanimaydi, pishak kimni tanimaydi?", a: ["Bekasini", "Egasini", "Xo'jayinini", "Cho'ponini"], correct: "Bekasini"},
 {q: "[76***] Ot joyida taqqa to'xtay oladi, ot tormozi eng yaxshi qaysi mashina tormozidan-da yaxshi ishlaydi?", a: ["Chayka", "Volga", "Moskvich", "Jiguli"], correct: "Chayka"},
 {q: "[76***] Aytishlaricha, kim boqqan ot yaxshi bo'lar emish?", a: ["Ayol", "Erkak", "Bola", "Chol"], correct: "Ayol"},
 {q: "[76***] Ot ko'ngli kimning ko'ngliday nozik bo'ladi?", a: ["Ayolning", "Bolaning", "Erkakning", "Cholning"], correct: "Ayolning"},
@@ -760,7 +375,10 @@ const quizData = [
 {q: "[85***] \"Ayo, sen mening birodarimsan, birodarim... qiyomatlik birodarim\" - kimga aytilgan?", a: ["Tarlonga", "Qoraqulga", "Karimga", "Odinaga"], correct: "Tarlonga"}
  
 ];
- 
+
+
+];
+// ============================================================
 
 const ayats = [
     { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
@@ -778,7 +396,13 @@ const ayats = [
 
 let activeQuiz = [];
 let currentQ = 0, score = 0, answered = 0;
-let nextTimer = null; // keyingi savolga o'tish taymeri
+let nextTimer = null;       // keyingi savolga o'tish taymeri
+let countdownTimer = null;  // 3-2-1 taymeri
+let introTimer = null;      // intro yopilish taymeri
+let quizMode = 'quiz';
+let rangeStart = null;
+let rangeChosen = false;
+let numButtons = [];
 
 // Fisher-Yates: to'g'ri aralashtirish
 function shuffle(array) {
@@ -789,7 +413,7 @@ function shuffle(array) {
     return array;
 }
 
-// Yopiq rejimda javobni solishtirish uchun: apostroflar va bo'sh joylarni tenglashtirish
+// Yopiq rejimda javobni solishtirish: apostroflar va bo'sh joylarni tenglashtirish
 function normalize(str) {
     return String(str)
         .toLowerCase()
@@ -798,10 +422,22 @@ function normalize(str) {
         .trim();
 }
 
+// Savol matnidagi [12***] prefiksidan bo'lim raqamlarini olib, "min-max***" ko'rinishini qaytaradi
+function sectionLabel(list) {
+    const nums = [];
+    list.forEach(item => {
+        const m = /^\[(\d+)\*+\]/.exec(item.q || '');
+        if (m) nums.push(parseInt(m[1], 10));
+    });
+    if (!nums.length) return null;
+    const min = Math.min(...nums), max = Math.max(...nums);
+    return min === max ? `${min}***` : `${min}-${max}***`;
+}
+
 function buildStars() {
     const container = document.getElementById('stars');
     container.innerHTML = '';
-    const count = 100; // Yulduzlar zichligi oshirildi
+    const count = 100;
     for (let i = 0; i < count; i++) {
         const s = document.createElement('div');
         s.className = 'star';
@@ -816,12 +452,16 @@ function buildStars() {
     }
 }
 
-let rangeStart = null;
-let numButtons = [];
-let rangeChosen = false; // ikki marta ishga tushishdan himoya
+window.onload = function () {
+    buildStars();
 
-window.onload = function() {
     const grid = document.getElementById('numberGrid');
+    const info = document.getElementById('range-info');
+
+    if (!quizData.length) {
+        info.innerText = "Savollar topilmadi: quizData massiviga savollarni qo'shing";
+    }
+
     for (let i = 1; i <= quizData.length; i++) {
         const btn = document.createElement('button');
         btn.className = 'num-btn';
@@ -830,10 +470,11 @@ window.onload = function() {
         grid.appendChild(btn);
         numButtons.push(btn);
     }
-    buildStars();
-    
-    const randomIdx = Math.floor(Math.random() * ayats.length);
-    const selectedAyat = ayats[randomIdx];
+
+    const label = sectionLabel(quizData);
+    if (label) document.getElementById('main-title').innerText = '🌙 ' + label;
+
+    const selectedAyat = ayats[Math.floor(Math.random() * ayats.length)];
     document.getElementById('random-ayat').innerHTML = `
         <div class="quran-box">
             <span class="quran-ayat-text">"${selectedAyat.text}"</span>
@@ -855,7 +496,11 @@ function pickNumber(num, btnEl) {
         let start = rangeStart;
         let end = num;
         if (end < start) { const t = start; start = end; end = t; }
-        btnEl.classList.add('picked');
+        for (let i = start; i <= end; i++) {
+            numButtons[i - 1].classList.add('in-range');
+        }
+        numButtons[start - 1].classList.add('picked');
+        numButtons[end - 1].classList.add('picked');
         info.innerText = `Tanlandi: ${start} - ${end}`;
         setTimeout(() => startWithRange(start, end), 400);
     }
@@ -863,13 +508,25 @@ function pickNumber(num, btnEl) {
 
 function startWithRange(start, end) {
     activeQuiz = quizData.slice(start - 1, end);
+    const label = sectionLabel(activeQuiz);
+    document.getElementById('intro-title').innerText = label ? label : `${start}-${end}`;
     document.getElementById('select-screen').style.display = 'none';
     document.getElementById('mode-screen').style.display = 'flex';
 }
 
-let quizMode = 'quiz';
+// Mode ekranidan diapazon tanlashga qaytish
+function goBack() {
+    rangeStart = null;
+    rangeChosen = false;
+    activeQuiz = [];
+    numButtons.forEach(b => b.classList.remove('picked', 'in-range'));
+    document.getElementById('range-info').innerText = "Boshlang'ich raqamni tanlang";
+    document.getElementById('mode-screen').style.display = 'none';
+    document.getElementById('select-screen').style.display = 'flex';
+}
 
 function chooseMode(mode) {
+    if (!activeQuiz.length) return;
     quizMode = mode;
     if (mode === 'quiz-aralash' || mode === 'yopiq-aralash') {
         activeQuiz = shuffle([...activeQuiz]);
@@ -882,20 +539,22 @@ function chooseMode(mode) {
 
 function startTimer() {
     let count = 3;
-    let disp = document.getElementById("countdown");
+    const disp = document.getElementById('countdown');
     disp.innerText = count;
-    let timer = setInterval(() => {
+    countdownTimer = setInterval(() => {
         count--;
         if (count > 0) {
             disp.innerText = count;
         } else if (count === 0) {
-            disp.innerText = "Boshladik!";
+            disp.innerText = 'Boshladik!';
         } else {
-            clearInterval(timer);
-            document.getElementById("intro-screen").style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById("intro-screen").style.display = "none";
-                document.getElementById("quiz").style.display = "block";
+            clearInterval(countdownTimer);
+            countdownTimer = null;
+            document.getElementById('intro-screen').style.opacity = '0';
+            introTimer = setTimeout(() => {
+                introTimer = null;
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('quiz').style.display = 'block';
                 loadQ();
             }, 800);
         }
@@ -921,267 +580,11 @@ function loadQ() {
 }
 
 function loadMultipleChoiceQ(qData, optDiv) {
-    let shuffledOptions = getOptionsFor(qData);
+    const shuffledOptions = getOptionsFor(qData);
 
     shuffledOptions.forEach((opt) => {
-        const btn = document.createElement('div');
-        btn.className = 'option';
-        btn.innerText = opt;
-        btn.onclick = () => check(opt, btn, qData.correct);
-        optDiv.appendChild(btn);
-    });
-}
-
-function loadClosedQ(qData, optDiv) {
-    const input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'closed-input';
-    input.id = 'closed-answer';
-    input.placeholder = 'Javob yozing...';
-    input.onkeypress = (e) => { if (e.key === 'Enter') checkClosed(qData); };
-
-    const checkBtn = document.createElement('button');
-    checkBtn.className = 'btn-check';
-    checkBtn.innerText = 'Tekshirish';
-    checkBtn.onclick = () => checkClosed(qData);
-
-    const resultDiv = document.createElement('div');
-    resultDiv.id = 'closed-result';
-
-    optDiv.appendChild(input);
-    optDiv.appendChild(checkBtn);
-    optDiv.appendChild(resultDiv);
-
-    input.focus();
-}
-
-function checkClosed(qData) {
-    const inputEl = document.getElementById('closed-answer');
-    const resultDiv = document.getElementById('closed-result');
-    if (!inputEl || inputEl.disabled) return; // ikki marta bosishdan himoya
-    const user = normalize(inputEl.value);
-    const correct = normalize(qData.correct);
-
-    answered++;
-    inputEl.disabled = true;
-    document.querySelector('.btn-check').disabled = true;
-
-    if (user === correct) {
-        resultDiv.innerHTML = '<b style="color:#00ff99;">✅ To\'g\'ri</b>';
-        score++;
-    } else {
-        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ' + qData.correct;
-    }
-
-    nextTimer = setTimeout(() => {
-        currentQ++;
-        if (currentQ < activeQuiz.length) loadQ();
-        else finishQuiz();
-    }, 2000);
-}
-
-function check(selected, element, correct) {
-    const options = element.parentElement.querySelectorAll('.option');
-    options.forEach(opt => opt.style.pointerEvents = 'none');
-    answered++;
-
-    if (selected === correct) {
-        element.classList.add('correct');
-        score++;
-    } else {
-        element.classList.add('wrong');
-        options.forEach(opt => {
-            if (opt.innerText === correct) opt.classList.add('correct');
-        });
-    }
-    nextTimer = setTimeout(() => {
-        currentQ++;
-        if (currentQ < activeQuiz.length) loadQ();
-        else finishQuiz();
-    }, 1000);
-}
-
-function finishQuiz() {
-    if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; } // kutilayotgan o'tishni bekor qilish
-    let wrong = answered - score;
-    document.getElementById('quiz').innerHTML = `
-        <h2>Natijalar</h2>
-        <div style="line-height: 2.2; font-size: 19px;">
-            Jami savollar: <b>${activeQuiz.length} ta</b><br>
-            To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
-            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
-        </div>
-        <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>
-    `;
-}
-</script>
-</body>
-</html>
-
-
-const ayats = [
-    { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
-    { text: "Albatta bir qiyinchilik bilan osonchilik bordir.", meta: "Sharh 94:5" },
-    { text: "Yaratgan Robbing nomi bilan o'qi!", meta: "Alaq 96:1" },
-    { text: "O'qi, Robbing karamlilar karamlisidir.", meta: "Alaq 96:3" },
-    { text: "Va tezda Robbing senga ato qilur va sen rozi bo'lursan.", meta: "Zuho 93:5" },
-    { text: "Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.", meta: "Layl 92:5-7" },
-    { text: "Albatta hidoyatga boshlash Bizning zimmamizdadir.", meta: "Layl 92:12" },
-    { text: "Va albatta tezda rozi bo'ladir.", meta: "Layl 92:21" },
-    { text: "Seni oson yo'lga muyassar etamiz.", meta: "A'lo 87:8" },
-    { text: "Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.", meta: "Naba 78:39" },
-    { text: "Albatta Biz senga ochiq g'alaba berdik.", meta: "Fath 48:1" }
-];
-
-let activeQuiz = [];
-let currentQ = 0, score = 0, answered = 0;
-let nextTimer = null; // keyingi savolga o'tish taymeri
-
-// Fisher-Yates: to'g'ri aralashtirish
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-// Yopiq rejimda javobni solishtirish uchun: apostroflar va bo'sh joylarni tenglashtirish
-function normalize(str) {
-    return String(str)
-        .toLowerCase()
-        .replace(/[’‘ʻʼ`´]/g, "'")
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-function buildStars() {
-    const container = document.getElementById('stars');
-    container.innerHTML = '';
-    const count = 100; // Yulduzlar zichligi oshirildi
-    for (let i = 0; i < count; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        s.style.left = Math.random() * 100 + '%';
-        s.style.top = Math.random() * 100 + '%';
-        const size = (Math.random() * 2 + 1).toFixed(1);
-        s.style.width = size + 'px';
-        s.style.height = size + 'px';
-        s.style.animationDelay = (Math.random() * 2.5).toFixed(2) + 's';
-        s.style.animationDuration = (1.5 + Math.random() * 2).toFixed(2) + 's';
-        container.appendChild(s);
-    }
-}
-
-let rangeStart = null;
-let numButtons = [];
-let rangeChosen = false; // ikki marta ishga tushishdan himoya
-
-window.onload = function() {
-    const grid = document.getElementById('numberGrid');
-    for (let i = 1; i <= quizData.length; i++) {
         const btn = document.createElement('button');
-        btn.className = 'num-btn';
-        btn.innerText = i;
-        btn.onclick = () => pickNumber(i, btn);
-        grid.appendChild(btn);
-        numButtons.push(btn);
-    }
-    buildStars();
-    
-    const randomIdx = Math.floor(Math.random() * ayats.length);
-    const selectedAyat = ayats[randomIdx];
-    document.getElementById('random-ayat').innerHTML = `
-        <div class="quran-box">
-            <span class="quran-ayat-text">"${selectedAyat.text}"</span>
-            <span class="quran-meta">${selectedAyat.meta}</span>
-        </div>
-    `;
-};
-
-function pickNumber(num, btnEl) {
-    if (rangeChosen) return;
-    const info = document.getElementById('range-info');
-
-    if (rangeStart === null) {
-        rangeStart = num;
-        btnEl.classList.add('picked');
-        info.innerText = `Boshlang'ich: ${num}. Endi oxirgi raqamni tanlang`;
-    } else {
-        rangeChosen = true;
-        let start = rangeStart;
-        let end = num;
-        if (end < start) { const t = start; start = end; end = t; }
-        btnEl.classList.add('picked');
-        info.innerText = `Tanlandi: ${start} - ${end}`;
-        setTimeout(() => startWithRange(start, end), 400);
-    }
-}
-
-function startWithRange(start, end) {
-    activeQuiz = quizData.slice(start - 1, end);
-    document.getElementById('select-screen').style.display = 'none';
-    document.getElementById('mode-screen').style.display = 'flex';
-}
-
-let quizMode = 'quiz';
-
-function chooseMode(mode) {
-    quizMode = mode;
-    if (mode === 'quiz-aralash' || mode === 'yopiq-aralash') {
-        activeQuiz = shuffle([...activeQuiz]);
-    }
-    document.getElementById('mode-screen').style.display = 'none';
-    document.getElementById('intro-screen').style.display = 'flex';
-    document.getElementById('intro-screen').style.opacity = '1';
-    startTimer();
-}
-
-function startTimer() {
-    let count = 3;
-    let disp = document.getElementById("countdown");
-    disp.innerText = count;
-    let timer = setInterval(() => {
-        count--;
-        if (count > 0) {
-            disp.innerText = count;
-        } else if (count === 0) {
-            disp.innerText = "Boshladik!";
-        } else {
-            clearInterval(timer);
-            document.getElementById("intro-screen").style.opacity = "0";
-            setTimeout(() => {
-                document.getElementById("intro-screen").style.display = "none";
-                document.getElementById("quiz").style.display = "block";
-                loadQ();
-            }, 800);
-        }
-    }, 1000);
-}
-
-// quizData formati: { q: "...", a: [variantlar], correct: "..." }
-function getOptionsFor(qData) {
-    return shuffle([...qData.a]);
-}
-
-function loadQ() {
-    const qData = activeQuiz[currentQ];
-    document.getElementById('question').innerText = `${currentQ + 1}/${activeQuiz.length}. ${qData.q}`;
-    const optDiv = document.getElementById('options');
-    optDiv.innerHTML = '';
-
-    if (quizMode === 'yopiq' || quizMode === 'yopiq-aralash') {
-        loadClosedQ(qData, optDiv);
-    } else {
-        loadMultipleChoiceQ(qData, optDiv);
-    }
-}
-
-function loadMultipleChoiceQ(qData, optDiv) {
-    let shuffledOptions = getOptionsFor(qData);
-
-    shuffledOptions.forEach((opt) => {
-        const btn = document.createElement('div');
+        btn.type = 'button';
         btn.className = 'option';
         btn.innerText = opt;
         btn.onclick = () => check(opt, btn, qData.correct);
@@ -1195,7 +598,8 @@ function loadClosedQ(qData, optDiv) {
     input.className = 'closed-input';
     input.id = 'closed-answer';
     input.placeholder = 'Javob yozing...';
-    input.onkeypress = (e) => { if (e.key === 'Enter') checkClosed(qData); };
+    input.autocomplete = 'off';
+    input.onkeydown = (e) => { if (e.key === 'Enter') checkClosed(qData); };
 
     const checkBtn = document.createElement('button');
     checkBtn.className = 'btn-check';
@@ -1210,6 +614,15 @@ function loadClosedQ(qData, optDiv) {
     optDiv.appendChild(resultDiv);
 
     input.focus();
+}
+
+function goNext(delay) {
+    nextTimer = setTimeout(() => {
+        nextTimer = null;
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, delay);
 }
 
 function checkClosed(qData) {
@@ -1227,14 +640,11 @@ function checkClosed(qData) {
         resultDiv.innerHTML = '<b style="color:#00ff99;">✅ To\'g\'ri</b>';
         score++;
     } else {
-        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ' + qData.correct;
+        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ';
+        resultDiv.appendChild(document.createTextNode(qData.correct));
     }
 
-    nextTimer = setTimeout(() => {
-        currentQ++;
-        if (currentQ < activeQuiz.length) loadQ();
-        else finishQuiz();
-    }, 2000);
+    goNext(2000);
 }
 
 function check(selected, element, correct) {
@@ -1251,22 +661,28 @@ function check(selected, element, correct) {
             if (opt.innerText === correct) opt.classList.add('correct');
         });
     }
-    nextTimer = setTimeout(() => {
-        currentQ++;
-        if (currentQ < activeQuiz.length) loadQ();
-        else finishQuiz();
-    }, 1000);
+    goNext(1000);
 }
 
 function finishQuiz() {
-    if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; } // kutilayotgan o'tishni bekor qilish
-    let wrong = answered - score;
-    document.getElementById('quiz').innerHTML = `
+    if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
+    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+    if (introTimer) { clearTimeout(introTimer); introTimer = null; }
+
+    const total = activeQuiz.length;
+    const wrong = answered - score;
+    const skipped = total - answered;
+
+    document.getElementById('intro-screen').style.display = 'none';
+    const quizEl = document.getElementById('quiz');
+    quizEl.style.display = 'block';
+    quizEl.innerHTML = `
         <h2>Natijalar</h2>
         <div style="line-height: 2.2; font-size: 19px;">
-            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            Jami savollar: <b>${total} ta</b><br>
             To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
             Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+            ${skipped > 0 ? `<br>Javob berilmagan: <span style="color:#ff9900;">${skipped} ta</span>` : ''}
         </div>
         <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>
     `;
