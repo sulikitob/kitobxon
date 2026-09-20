@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200, initial-scale=0.2, maximum-scale=1.0, user-scalable=yes">
+<title>Momoqaldiroq ostida sayr</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    
+    body { 
+        font-family: Arial; 
+        background: url('https://i.pinimg.com/originals/3a/ac/9e/3aac9eee8ff49b3c44d7800323b74333.jpg?nii=t') no-repeat center center fixed;
+        background-size: cover;
+        margin: 0;
+    }
+
+    .wrapper {
+        background: #1b1b1b;
+        max-width: 1300px; 
+        margin: auto;
+        min-height: 100vh;
+        box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    .hero { 
+        width: 100%; 
+        padding: 40px 20px; 
+        display: flex; 
+        flex-direction: column;
+        align-items: center; 
+        justify-content: center;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .hero img { 
+        width: 220px; 
+        height: 300px; 
+        object-fit: cover; 
+        border-radius: 15px;
+    }
+
+    .floating-text h1{ font-size:45px; color: white; }
+
+
+    .container{ padding:20px; }
+    .section-title { text-align: center; margin-top: 50px; margin-bottom: 25px; font-size: 32px; color: white; }
+    .menu-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:30px; margin-bottom: 50px; }
+    
+    .card{ 
+        background:#1b1b1b; border-radius:25px; padding:30px 20px; text-align:center; 
+        transition:0.4s; text-decoration:none; color:white; position:relative; overflow:hidden; 
+        display:flex; flex-direction:column; align-items:center; gap:10px;
+        cursor: pointer;
+    }
+
+    .card:active {
+        animation: electric-shake 0.2s infinite;
+        border: 1px solid #00ff99;
+    }
+
+    /* Neonlar */
+    .card-green { box-shadow:0 0 20px rgba(0,255,150,0.1); }
+    .card-green::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#00ff99,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-green:hover::before{ top:100%; left:100%; }
+    .card-green:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 35px rgba(0,255,150,0.5); }
+
+    .card-red { box-shadow:0 0 20px rgba(255,50,50,0.1); }
+    .card-red::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#ff3232,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-red:hover::before{ top:100%; left:100%; }
+    .card-red:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 35px rgba(255,50,50,0.5); }
+
+    .card-blue { box-shadow:0 0 20px rgba(0,150,255,0.1); }
+    .card-blue::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#00aaff,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-blue:hover::before{ top:100%; left:100%; }
+    .card-blue:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 35px rgba(0,150,255,0.5); }
+
+    /* Tilla rangli karta */
+    .card-gold { box-shadow:0 0 20px rgba(255,204,0,0.15); border: 1px solid #ffcc00; }
+    .card-gold::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#ffcc00,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-gold:hover::before{ top:100%; left:100%; }
+    .card-gold:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 45px rgba(255,204,0,0.6); }
+    .card-gold h2 { color: #ffcc00 !important; }
+
+    .card h2{ position:relative; z-index:2; font-size:20px; color: white !important; }
+    .icon { position:relative; z-index:2; font-size: 35px; margin-bottom: 5px; }
+
+    .footer{ text-align:center; padding:30px; color:#999; }
+
+    @media(max-width:1000px){ .menu-grid{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:600px){ .menu-grid{ grid-template-columns:1fr; } .floating-text h1{ font-size:24px; } }
+
+   .premium { position: relative; }
+   .premium::after {
+    content: "⭐";
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 20px;
+    color: #b388ff;
+    text-shadow: 0 0 10px #b388ff, 0 0 20px #7c4dff;
+    z-index: 3;
+   }
+
+   /* Oltin karta uchun uzluksiz yulduzcha porillashi */
+   .gold-section-title{
+       color: #ffcc00 !important;
+       text-shadow: 0 0 12px rgba(255,204,0,0.7);
+   }
+
+   .sparkle-star{
+       position:absolute;
+       width:3px;
+       height:3px;
+       background:#fff8d6;
+       border-radius:50%;
+       box-shadow:0 0 6px 2px #ffcc00;
+       pointer-events:none;
+       z-index:1;
+       animation-name: twinkle;
+       animation-timing-function: ease-in-out;
+       animation-iteration-count: infinite;
+   }
+
+   @keyframes twinkle{
+       0%, 100% { opacity:0; transform:scale(0.4); }
+       50% { opacity:1; transform:scale(1.3); }
+   }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="hero">
+        <img src="sayr.jpg" alt="Asar">
+        <div class="floating-text"><h1>📚 Momoqaldiroq ostida sayr</h1></div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">Asar boblari</h2>
+        <div class="menu-grid">
+           <a href="1-84***" target="_blank" class="card card-green"><h2><br>1-Bob<br>Se'l</h2></a>
+          
+
+
+          <a href="Momoqaldiroq Umumumiy quiz test va yopiq savol-javoblar pr.html" target="_blank" class="card card-red premium " ><span class="icon">📝</span><h2>Umumiy quiz testlar</h2></a>
+         
+        </div>
+
+        <h2 class="section-title">Kategoriyalar</h2>
+        <div class="menu-grid">
+           <a href="Momoqaldiroq shaxs ismlari.html" target="_blank" class="card card-blue premium" ><span class="icon">👤</span><h2>Shaxs nomlari</h2></a>
+           <a href="Momoqaldiroq Shaxs ta'riflari.html" target="_blank" class="card card-blue premium" ><span class="icon">📝</span><h2>Shaxslar ta'rifi</h2></a>
+           <a href="Momoqaldiroq Shaxs yoshlari.html" target="_blank" class="card card-blue premium" o"><span class="icon">🎂</span><h2>Shaxs yoshlari</h2></a>
+           <a href="Momoqaldiroq Shaxslarning yashash manzillari.html" target="_blank" class="card card-blue premium" ><span class="icon">🏠</span><h2>Shaxslar yashash manzillari</h2></a>
+           <a href="Momoqaldiroq shaxslar kasblari va ishi.html" target="_blank" class="card card-blue premium" ><span class="icon">💼</span><h2>Shaxslar kasblari</h2></a>
+           <a href="Momoqaldiroq Shaxslarning mashinalari.html" target="_blank" class="card card-blue premium" ><span class="icon">🚗</span><h2>Shaxslarga tegishli mashinalar</h2></a>
+           <a href="Momoqaldiroq joy nomlari.html" target="_blank" class="card card-blue premium" ><span class="icon">📍</span><h2>Joy nomlari</h2></a>
+           <a href="Momoqaldiroq joylar ta'riflari.html" target="_blank" class="card card-blue premium" ><span class="icon">🌍</span><h2>Joylar ta'rifi</h2></a>
+      
+           <a href="Momoqaldiroq sonlar va raqamlar.html" target="_blank" class="card card-blue premium" ><span class="icon">🔢</span><h2>Sonlar va raqamlar</h2></a>
+        </div>
+
+        <!-- OLTIN BO'LIM — eng pastda, alohida ajratilgan -->
+        <h2 class="section-title gold-title">✨ Maxsus bo'lim ✨</h2>
+        <div class="menu-grid">
+           <a href="quiz.html" target="_blank" class="card card-gold premium" onclick="checkPremium(event)"><span class="icon">⭐</span><h2>Taqriz</h2></a>
+           <a href="Momoqaldiroq mundarija va savollar statistikasi.html" target="_blank" class="card card-gold premium" ><span class="icon">📖</span><h2>Mundarija va savollar soni</h2></a>
+           <a href="Momoqaldiroq barcha ma'lumotlar.html" target="_blank" class="card card-gold premium""><span class="icon">🏆</span><h2>Barcha ma'lumotlar</h2></a>
+           <a href="quiz.html" target="_blank" class="card card-gold premium" onclick="checkPremium(event)"><span class="icon">🎁</span><h2>Maxsus</h2></a>
+        </div>
+    </div>
+
+    <div class="footer">zuhos.uz ©</div>
+</div>
+   
+<script>
+function checkPremium(e) {
+    e.preventDefault();
+    alert("Bu bo'lim premium obunachilar uchun mo'ljallangan 🔒 Murojat uchun anonimkitobxon2026 telegram kanali adminiga murojat qiling");
+}
+
+// Oltin kartalarga uzluksiz porillovchi yulduzchalar qo'shish
+function addSparkles(card, count) {
+    for (let i = 0; i < count; i++) {
+        const star = document.createElement('span');
+        star.className = 'sparkle-star';
+        star.style.top = Math.random() * 85 + '%';
+        star.style.left = Math.random() * 90 + '%';
+        star.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
+        star.style.animationDelay = (Math.random() * 2) + 's';
+        card.appendChild(star);
+    }
+}
+
+document.querySelectorAll('.card-gold').forEach(function (card) {
+    addSparkles(card, 10);
+});
+</script>
+   
+</body>
+</html>
