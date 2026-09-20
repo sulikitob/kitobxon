@@ -296,7 +296,7 @@
 
 <script>
 const quizData = [
- const quizData = [
+
 
 // ===== 1*** =====
 {q: "[1***] Qishlog'imiz do'xtiri meni qayerdagi kasalxonaga olib jo'nadi?", a: ["Yurchidagi kasalxonaga", "Rayon kasalxonasiga", "Farg'ona kasalxonasiga", "Qishloq shifoxonasiga"], correct: "Yurchidagi kasalxonaga"},
@@ -551,6 +551,7 @@ const quizData = [
 
 ];
 
+
 const ayats = [
     { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
     { text: "Albatta bir qiyinchilik bilan osonchilik bordir.", meta: "Sharh 94:5" },
@@ -567,9 +568,24 @@ const ayats = [
 
 let activeQuiz = [];
 let currentQ = 0, score = 0, answered = 0;
+let nextTimer = null; // keyingi savolga o'tish taymeri
 
+// Fisher-Yates: to'g'ri aralashtirish
 function shuffle(array) {
-    return array.sort(() => Math.random() - 0.5);
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+// Yopiq rejimda javobni solishtirish uchun: apostroflar va bo'sh joylarni tenglashtirish
+function normalize(str) {
+    return String(str)
+        .toLowerCase()
+        .replace(/[’‘ʻʼ`´]/g, "'")
+        .replace(/\s+/g, ' ')
+        .trim();
 }
 
 function buildStars() {
@@ -592,6 +608,7 @@ function buildStars() {
 
 let rangeStart = null;
 let numButtons = [];
+let rangeChosen = false; // ikki marta ishga tushishdan himoya
 
 window.onload = function() {
     const grid = document.getElementById('numberGrid');
@@ -616,6 +633,7 @@ window.onload = function() {
 };
 
 function pickNumber(num, btnEl) {
+    if (rangeChosen) return;
     const info = document.getElementById('range-info');
 
     if (rangeStart === null) {
@@ -623,6 +641,7 @@ function pickNumber(num, btnEl) {
         btnEl.classList.add('picked');
         info.innerText = `Boshlang'ich: ${num}. Endi oxirgi raqamni tanlang`;
     } else {
+        rangeChosen = true;
         let start = rangeStart;
         let end = num;
         if (end < start) { const t = start; start = end; end = t; }
@@ -673,8 +692,9 @@ function startTimer() {
     }, 1000);
 }
 
+// quizData formati: { q: "...", a: [variantlar], correct: "..." }
 function getOptionsFor(qData) {
-    return shuffle([qData.correct, ...qData.wrongs]);
+    return shuffle([...qData.a]);
 }
 
 function loadQ() {
@@ -728,8 +748,9 @@ function loadClosedQ(qData, optDiv) {
 function checkClosed(qData) {
     const inputEl = document.getElementById('closed-answer');
     const resultDiv = document.getElementById('closed-result');
-    const user = inputEl.value.toLowerCase().trim();
-    const correct = qData.correct.toLowerCase().trim();
+    if (!inputEl || inputEl.disabled) return; // ikki marta bosishdan himoya
+    const user = normalize(inputEl.value);
+    const correct = normalize(qData.correct);
 
     answered++;
     inputEl.disabled = true;
@@ -742,7 +763,7 @@ function checkClosed(qData) {
         resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ' + qData.correct;
     }
 
-    setTimeout(() => {
+    nextTimer = setTimeout(() => {
         currentQ++;
         if (currentQ < activeQuiz.length) loadQ();
         else finishQuiz();
@@ -763,7 +784,7 @@ function check(selected, element, correct) {
             if (opt.innerText === correct) opt.classList.add('correct');
         });
     }
-    setTimeout(() => {
+    nextTimer = setTimeout(() => {
         currentQ++;
         if (currentQ < activeQuiz.length) loadQ();
         else finishQuiz();
@@ -771,6 +792,7 @@ function check(selected, element, correct) {
 }
 
 function finishQuiz() {
+    if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; } // kutilayotgan o'tishni bekor qilish
     let wrong = answered - score;
     document.getElementById('quiz').innerHTML = `
         <h2>Natijalar</h2>
