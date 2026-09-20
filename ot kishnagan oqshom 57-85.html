@@ -54,7 +54,6 @@
             transition: 0.25s;
             text-shadow: 0 0 8px rgba(0,255,153,0.6);
         }
-        /* hover faqat sichqoncha bor qurilmalarda (telefonda "yopishib" qolmasligi uchun) */
         @media (hover: hover) {
             .num-btn:hover {
                 background: #00ff99;
@@ -199,7 +198,6 @@
             100% { transform: scale(0.9); opacity: 0.5; }
         }
 
-        /* Qur'on sarlavhalari uslubidagi tilla naqshinkor to'rtburchak hoshiya */
         .quran-box {
             display: block;
             margin: 25px auto 0 auto;
@@ -326,6 +324,8 @@
 //  Har bir savoldan keyin vergul bo'lishi shart (oxirgisidan keyin bo'lmasa ham bo'ladi).
 // ============================================================
 
+const quizData = [
+
 // ===== 57*** =====
 {q: "[57***] Rixsiyev qancha vaqt doklad o'qidi?", a: ["20 minut 40 sekund", "15 minut 20 sekund", "30 minut 10 sekund", "10 minut 50 sekund"], correct: "20 minut 40 sekund"},
 {q: "[57***] Rixsiyev nima haqida doklad o'qidi?", a: ["Xalqaro ahvol xususida", "Qishloq xo'jaligi haqida", "Ko'pkari tarixi haqida", "Adabiyot haqida"], correct: "Xalqaro ahvol xususida"},
@@ -336,12 +336,12 @@
 {q: "[57***] Yevropadagi raketalar, Salvadordagi jang, Nikaraguadagi murakkab vaziyat, Falastin xalqining ayanchli ahvoli - hammasiga kim aybdor?", a: ["AQSH imperialistlari", "NATO", "Yevropa Ittifoqi", "BMT"], correct: "AQSH imperialistlari"},
 {q: "[57***] AQSH imperialistlari qaysi davlatda diversiya-provokatsiya tashkil qilib, xalqni mafkuraviy zaharladi?", a: ["Polsha", "Vengriya", "Chexoslovakiya", "Bolgariya"], correct: "Polsha"},
 {q: "[57***] AQSH imperialistlari qayerda sotsialistik jamiyatni qo'porib tashlamoqchi bo'ldi, lekin Birlashgan Ishchi partiyasi sotsializmni himoya qildi?", a: ["Polshada", "Vengriyada", "Chexoslovakiyada", "Ruminiyada"], correct: "Polshada"},
- 
+
 // ===== 58*** =====
 {q: "[58***] Necha kun deganda uchastka militsionerimiz tag'in qog'oz olib keldi?", a: ["2 kun", "5 kun", "1 kun", "10 kun"], correct: "2 kun"},
 {q: "[58***] Beqasam cho'ponlik va 3 kishining mushtlashuvi qachon bo'lgan edi?", a: ["24-yanvar, yakshanba, soat 10 da", "15-fevral, shanba, soat 12 da", "3-mart, seshanba, soat 9 da", "20-yanvar, juma, soat 11 da"], correct: "24-yanvar, yakshanba, soat 10 da"},
 {q: "[58***] Urushda militsalar bo'lgani, u militsalar qayerga qaraydigan edi?", a: ["Vinzavodga", "Bozorga", "Bekatga", "Idoraga"], correct: "Vinzavodga"},
- 
+
 // ===== 59*** =====
 {q: "[59***] Endigi qog'oz kelishida bormadim, boisi kim bandalik qildi?", a: ["Dono momo", "Xasan bobo", "Qurbon tabib", "Xidir mirob"], correct: "Dono momo"},
 {q: "[59***] Rixsiyevga \"hech qachon eldan qolmang, xususan ikki vaqt elning yonida bo'ling\" dedim, biri qachon?", a: ["To'yida", "Azasida", "Bayramida", "Bozorida"], correct: "To'yida"},
@@ -353,33 +353,33 @@
 {q: "[59***] Kimlarning o'limi \"mahalliy gap, e'tiborga molik emas\" deb aytildi Rixsiyev tomonidan?", a: ["Kampirlarning", "Yigitlarning", "Chavandozlarning", "Bolalarning"], correct: "Kampirlarning"},
 {q: "[59***] Eron shohi kim?", a: ["Pahlaviy", "Xumayniy", "Rizoshoh", "Doro"], correct: "Pahlaviy"},
 {q: "[59***] Eron shohi Pahlaviy yashirin buyruq berib bir kinoteatrni yoqib yuboribdi, ichida qancha inson bor ekan?", a: ["500", "300", "700", "1000"], correct: "500"},
- 
+
 // ===== 60*** =====
 {q: "[60***] Uyimizga militsioner keldi, qanaqa mashinada?", a: ["Sap-sariq militsiya mashinasida", "Qora Volga mashinasida", "Oq Jiguli mashinasida", "Yashil UAZ mashinasida"], correct: "Sap-sariq militsiya mashinasida"},
 {q: "[60***] \"Hech bandaning eshigiga kimning mashinasi bilan kimning mashinasi kelgulik qilmasin, tez ket, birov ko'rmasin\" - qaysi ikkita mashina haqida gap?", a: ["Do'xtirning va militsiyaning", "Rais va muharrirning", "Bakovul va cho'ponning", "Sinchi va qassobning"], correct: "Do'xtirning va militsiyaning"},
 {q: "[60***] \"Mana, otib tashla! Lekin kimning mashinasiga chiqmayman!\" - qaysi mashinaga chiqmaslikni aytdi?", a: ["Militsiyaning", "Do'xtirning", "Raisning", "Muharrirning"], correct: "Militsiyaning"},
 {q: "[60***] Mo'min qaysi ko'chada turadi?", a: ["Furqat ko'chasida", "Navoiy ko'chasida", "Yoshlik ko'chasida", "Do'stlik ko'chasida"], correct: "Furqat ko'chasida"},
- 
+
 // ===== 61*** =====
 {q: "[61***] Kim dovdirab, qalamni qo'shqo'llab ushlab olishiga bir baxya qoldi va menga ro'para bo'lib bosh irg'ab so'rashdi?", a: ["Mahalla ijro qo'mitasi raisi (choyxonachi)", "Rayon kotibi", "Muharrir Rixsiyev", "Kapitan Ro'ziyev"], correct: "Mahalla ijro qo'mitasi raisi (choyxonachi)"},
 {q: "[61***] Shukurov kim?", a: ["Baliqchi", "Do'xtir", "Militsioner", "Muallim"], correct: "Baliqchi"},
- 
+
 // ===== 62*** =====
 {q: "[62***] Baliqchining nimasi urushga aralashgan, ammo bilmaganga oldi?", a: ["Iti", "O'g'li", "Otasi", "Akasi"], correct: "Iti"},
- 
+
 // ===== 63*** =====
 {q: "[63***] Kimni juvozkash deyishadi?", a: ["Nazirni", "Shukurovni", "Xidirni", "Qulmat polvonni"], correct: "Nazirni"},
 {q: "[63***] Nazir juvozkash qaysi otini minib keldi?", a: ["Olmako'z Baytal", "Qora To'riq", "Tarlon", "Saman"], correct: "Olmako'z Baytal"},
 {q: "[63***] Ko'zlari bo'taloq ko'zlariday katta-katta, dum-dumaloq, olmaday, sag'rinlari lo'mbillaydigan - bu nimning tasviri?", a: ["Nazir juvozkashning baytali", "Fayzulla chavandozning oti", "Safar chavandozning oti", "Jo'ra boboning oti"], correct: "Nazir juvozkashning baytali"},
 {q: "[63***] Tarlonning ko'zi kimga tushdi?", a: ["Olmako'zga", "Qora to'riqqa", "Samanga", "Jiyronga"], correct: "Olmako'zga"},
 {q: "[63***] \"Yomon ot - yomon kimday gap\" deyiladi?", a: ["Ayolday", "Erkakday", "Boladay", "Qariday"], correct: "Ayolday"},
- 
+
 // ===== 64*** =====
 {q: "[64***] \"Kelibsan-da... kelmasang, oq butim qora kuyarmidi\" - deya to'ng'illadim, kimga?", a: ["Tarlonga", "Olmako'zga", "Nazirga", "Shokirqulga"], correct: "Tarlonga"},
- 
+
 // ===== 65*** =====
 {q: "[65***] Kimni Payg'ambarlar siylagan?", a: ["Kuyovni", "Kelinni", "Cho'ponni", "Chavandozni"], correct: "Kuyovni"},
- 
+
 // ===== 66*** =====
 {q: "[66***] Boshqa chavandozlar uyi yaqin bo'lib, otlarini bog'lab kelaveradi. Bizniki xiyla olis bo'lgani uchun Tarlonni bog'lab kelgunimcha qozon necha marta qaynaydi?", a: ["2 marta", "1 marta", "3 marta", "4 marta"], correct: "2 marta"},
 {q: "[66***] Kenja qaynimiz kim?", a: ["Qoraqul", "Karim", "Odina", "Mamat"], correct: "Qoraqul"},
@@ -388,7 +388,7 @@
 {q: "[66***] \"...o'ttizni urib qo'ydi, hali-da uylanmadi, bir qitig'iga tegayin\" deb qaysi chavandozni ashulaga solmoqchi bo'lishdi?", a: ["Odina chavandozni", "Samad chavandozni", "Safar chavandozni", "Fayzulla chavandozni"], correct: "Odina chavandozni"},
 {q: "[66***] \"Bo'ydoqning aqli qayerida bo'ladi!\" - qayerida?", a: ["Ikki ko'zida", "Boshida", "Qalbida", "Tilida"], correct: "Ikki ko'zida"},
 {q: "[66***] Odina chavandozning dili kimga ketgan edi?", a: ["Ziyodulla kalning qaynsinglisiga", "Qulmat polvonning qizi ga", "Jo'ra boboning nabirasiga", "Bakovulning singlisiga"], correct: "Ziyodulla kalning qaynsinglisiga"},
- 
+
 // ===== 67*** =====
 {q: "[67***] Qaynimning ismi-familiyasi kim?", a: ["Qodirov Qoraqul", "Ermatov Xorunboy", "Rixsiyev Alisher", "Xidirov Mirob"], correct: "Qodirov Qoraqul"},
 {q: "[67***] Ertalab Tarlonni otxonadan yetaklab chiqdim, qorin etlari dir-dir uchdi, pir-pir uchdi - otga nima bo'lsa shunday bo'ladi?", a: ["Suv tushsa", "Kasal bo'lsa", "Ochlik chekkan bo'lsa", "Charchagan bo'lsa"], correct: "Suv tushsa"},
@@ -397,31 +397,31 @@
 {q: "[67***] Qodirov Qoraqul qayerda katta (faol) edi?", a: ["Komsomolda", "Partiyada", "Kolxozda", "Maktabda"], correct: "Komsomolda"},
 {q: "[67***] Bittayam 4 (baho) yo'q a'lochi kim edi?", a: ["Qodirov Qoraqul", "Omon surnaychi", "Odina chavandoz", "Samad chavandoz"], correct: "Qodirov Qoraqul"},
 {q: "[67***] Kimning qizi bilan partaning ostidan xat olishib turishga yetgan aqling shunga yetmay qoldimi, deyilgan?", a: ["Omon surnaychining", "Qodirov Qoraqulning", "Samad chavandozning", "Odina chavandozning"], correct: "Omon surnaychining"},
- 
+
 // ===== 69*** =====
 {q: "[69***] Mag'ribdagi oppoq tog' qaysi tog' bo'ldi?", a: ["Keragatog'", "Bobotog'", "Hisortog'", "Zarafshontog'"], correct: "Keragatog'"},
 {q: "[69***] Keragatog' - qaysi tog'larning davomi?", a: ["Hisor tog'larining", "Zarafshon tog'larining", "Tyanshan tog'larining", "Pomir tog'larining"], correct: "Hisor tog'larining"},
 {q: "[69***] \"Bir yaxshiga bir yomon har yerda bor\" gapidan keyin qanday naql aytiladi?", a: ["Indamagin kalga, o'zi kelar holga", "So'zla, lekin o'ylab so'zla", "Sabr qil, oxiri xayr bo'lar", "Ko'p gapirgan ko'p yanglishar"], correct: "Indamagin kalga, o'zi kelar holga"},
- 
+
 // ===== 70*** =====
 {q: "[70***] Chavandoz ostidagi ot maydagina, yermitti ot bo'ldi, sariq junlari buzoqnikiday uzun-uzun bo'ldi, uzangisiz oyog'i qorga shalvirab turdi - kim edi bu?", a: ["Qatron kal katta", "Do'ppili katta kal", "Kal katta", "Shlyapali katta"], correct: "Qatron kal katta"},
 {q: "[70***] Bu to'y kimning to'yi edi, ammo kal Qatron buni ham otini olib yig'latib qo'yayotgandi?", a: ["Kal Qatronning og'aynisining to'yi", "Qulmat polvonning o'g'lining to'yi", "Jo'ra boboning to'yi", "Murodning to'yi"], correct: "Kal Qatronning og'aynisining to'yi"},
 {q: "[70***] Qatron kal ot so'radi, o'zi dir-dir qaltiraydi, g'irt mast, \"siz kattasiz, ko'pkarini nazorat qilib turing\" deb kimni aldashdi?", a: ["Hojiqulboyni", "Murodni", "Safar chavandozni", "Qulmat polvonni"], correct: "Hojiqulboyni"},
 {q: "[70***] \"Kal o'zini ovutar, qayerini sovitar, degani shu-da\" - qayerini?", a: ["Qo'ltig'ini", "Boshini", "Ko'ksini", "Yelkasini"], correct: "Qo'ltig'ini"},
 {q: "[70***] Ziyodulla kal To'riqdan yiqilganda qayeri sindi?", a: ["O'ng qo'li", "Chap oyog'i", "Boshi", "Umurtqasi"], correct: "O'ng qo'li"},
- 
+
 // ===== 74*** =====
 {q: "[74***] Do'xtirning ismi nima edi?", a: ["Xudoyqul", "Xasan", "Qurbon", "Xidir"], correct: "Xudoyqul"},
 {q: "[74***] Tirsagim yo'g'onligi sog' tirsagimdan qancha keldi?", a: ["Uchov (uch barobar)", "Ikki barobar", "To'rt barobar", "Besh barobar"], correct: "Uchov (uch barobar)"},
 {q: "[74***] Qaysi do'xtir bosh chayqab meni mashinasiga solib, qaysi sovxoz bemorxonasiga olib bordi?", a: ["Xazorbog'", "Qizilsuv", "Obshir", "Sho'rchi"], correct: "Xazorbog'"},
 {q: "[74***] Ziyodullani qo'li nima bo'ldi?", a: ["Tirsakdan chiqqan ekan", "Bilagidan singan ekan", "Yelkadan chiqqan ekan", "Panjadan singan ekan"], correct: "Tirsakdan chiqqan ekan"},
- 
+
 // ===== 75*** =====
 {q: "[75***] Shu yotishimda necha kun yotdim?", a: ["20 kun", "10 kun", "30 kun", "15 kun"], correct: "20 kun"},
 {q: "[75***] Gips yoki yog'ochmi, qo'limni ko'rib kim aytdi?", a: ["Xasan bobo", "Xudoyqul do'xtir", "Qurbon tabib", "Xidir mirob"], correct: "Xasan bobo"},
 {q: "[75***] Xasan bobo kimga borishni maslahat beradi?", a: ["Qurbon tabibga", "Xudoyqul do'xtirga", "Xidir mirobga", "Boshqa do'xtirga"], correct: "Qurbon tabibga"},
 {q: "[75***] Qurbon tabib qayerlik?", a: ["Qoraxonlik", "Obshirlik", "Sho'rchilik", "Darbandlik"], correct: "Qoraxonlik"},
- 
+
 // ===== 76*** =====
 {q: "[76***] Qoraxonda kim degich (mashhur) bo'ldi?", a: ["Xidir", "Qurbon tabib", "Xasan bobo", "Qurbonnazar"], correct: "Xidir"},
 {q: "[76***] Xidir kim edi?", a: ["Mirob", "Tabib", "Muharrir", "Bakovul"], correct: "Mirob"},
@@ -443,12 +443,12 @@
 {q: "[76***] Aytishlaricha, kim boqqan ot yaxshi bo'lar emish?", a: ["Ayol", "Erkak", "Bola", "Chol"], correct: "Ayol"},
 {q: "[76***] Ot ko'ngli kimning ko'ngliday nozik bo'ladi?", a: ["Ayolning", "Bolaning", "Erkakning", "Cholning"], correct: "Ayolning"},
 {q: "[76***] Ayol boqqan otning yaxshi bo'lishiga yana bir sabab, ayol qanday bo'ladi?", a: ["Hamisha uyda bo'ladi", "Ko'p ishlaydi", "Mehribon bo'ladi", "Toza bo'ladi"], correct: "Hamisha uyda bo'ladi"},
- 
+
 // ===== 77*** =====
 {q: "[77***] Beqasam to'n kiygan odam qaysi kolxozdan edi?", a: ["Navoiy kolxozidan", "Lenin kolxozidan", "Qizil Yulduz kolxozidan", "Kommunizm kolxozidan"], correct: "Navoiy kolxozidan"},
 {q: "[77***] Beqasam to'n kiygan odamning ismi kim edi?", a: ["Rahmon", "Karim", "Odina", "Mamat"], correct: "Rahmon"},
 {q: "[77***] \"Shu gap ko'nglimni oldi\" - qaysi gap uchun sudga boraman dedim?", a: ["Birodaringiz (degan gap) uchun", "Ayb (degan gap) uchun", "Haqorat (degan gap) uchun", "Yolg'on (degan gap) uchun"], correct: "Birodaringiz (degan gap) uchun"},
- 
+
 // ===== 78*** =====
 {q: "[78***] Kimning qulog'i 50 ta?", a: ["Elning", "Shohning", "Raisning", "Muharrirning"], correct: "Elning"},
 {q: "[78***] Yomon gap raketadan oldin yuradi, yaxshi gap nimadan keyin yuradi?", a: ["Toshbaqadan", "Quyondan", "Ilondan", "Tuyadan"], correct: "Toshbaqadan"},
@@ -460,39 +460,34 @@
 {q: "[78***] AQSH ma'muriyati 1983-yilda qancha million dollar miqdorida ximiya-bakteriologiya quroli ishlab chiqarishni planlashtirgan edi?", a: ["810 million", "500 million", "1000 million", "650 million"], correct: "810 million"},
 {q: "[78***] Ximiya-bakteriologiya quroli nima deb ataladi?", a: ["Zaharli ingredient", "Yadro moddasi", "Kimyoviy dori", "Bakteriologik modda"], correct: "Zaharli ingredient"},
 {q: "[78***] Ikki xil suyuq moddadan tashkil topgan, miyani shol qilib tashlaydigan, o'n-o'n besh daqiqada vafot ettiradigan zaharli dori nima deyiladi?", a: ["Zaharli ingredient", "Kimyoviy modda", "Bakteriologik qurol", "Zaharli gaz"], correct: "Zaharli ingredient"},
- 
+
 // ===== 79*** =====
 {q: "[79***] Kuygan - o'lanchi bo'ladi, suygan - kim bo'ladi?", a: ["Laparchi", "Dostonchi", "Baxshi", "Qo'shiqchi"], correct: "Laparchi"},
 {q: "[79***] \"O'lim, bir nima esingda bo'lsin, Gagarinday boshing osmonga yetsa-da, olim bo'lib yetti iqlimni so'rasang-da, sen avvalambor kimning o'g'li bo'l\"?", a: ["Ziyodulla chavandozning o'g'li", "Jo'ra boboning o'g'li", "Rixsiyevning o'g'li", "Xidir mirobning o'g'li"], correct: "Ziyodulla chavandozning o'g'li"},
- 
+
 // ===== 80*** =====
 {q: "[80***] 8-mart kolxozidan o'tib qaysi daraga bordim?", a: ["Hayron daraga", "Zimiston daraga", "Qorong'i daraga", "Uzun daraga"], correct: "Hayron daraga"},
- 
+
 // ===== 81*** =====
 {q: "[81***] Meni qaysi mashina ta'qib qilib keldi?", a: ["Qizil mashina", "Oq mashina", "Qora mashina", "Sariq mashina"], correct: "Qizil mashina"},
 {q: "[81***] Qizil mashinadan nechta odam tushdi?", a: ["4", "2", "3", "5"], correct: "4"},
- 
+
 // ===== 82*** =====
 {q: "[82***] 4 yigit Ziyodulla kalni kim deydi?", a: ["20-asr Ritsari Don Kixot", "Zamonaviy Alpomish", "Yangi Robin Gud", "Yovvoyi Chapayev"], correct: "20-asr Ritsari Don Kixot"},
- 
+
 // ===== 83*** =====
 {q: "[83***] Ot qachon kishnadi - 4 yigit biqinimdan urganda jonim halqumimga kelgan payt?", a: ["Yigitlar meni urgan paytda", "Ot yiqilganda", "Uloq olganda", "Ko'pkari boshlanganda"], correct: "Yigitlar meni urgan paytda"},
- 
+
 // ===== 84*** =====
 {q: "[84***] Oqshom, Tarlon kishnashi nimadan-da mungli, nimadan-da ayanchli bo'ldi?", a: ["Oqshomdan-da", "Yig'idan-da", "Qorong'ulikdan-da", "Sovuqdan-da"], correct: "Oqshomdan-da"},
- 
+
 // ===== 85*** =====
 {q: "[85***] \"Ayo, sen mening ukamsan, ukam... o'zi menga o'xshaysan, ukasi akasiga o'xshaydi-da\" - kimga aytilgan?", a: ["Tarlonga", "Qoraqulga", "Karimga", "Odinaga"], correct: "Tarlonga"},
 {q: "[85***] \"Ayo, sen mening jiyanimsan, jiyanim... jiyan tog'asiga tortmasa, kimga tortadi\" - kimga aytilgan?", a: ["Tarlonga", "Qoraqulga", "Karimga", "Odinaga"], correct: "Tarlonga"},
 {q: "[85***] \"Ayo, sen mening akamsan, akam... aka desa degulik, sendayin akam bor, nima g'amim bor\" - kimga aytilgan?", a: ["Tarlonga", "Qoraqulga", "Karimga", "Odinaga"], correct: "Tarlonga"},
 {q: "[85***] \"Ayo, sen mening birodarimsan, birodarim... qiyomatlik birodarim\" - kimga aytilgan?", a: ["Tarlonga", "Qoraqulga", "Karimga", "Odinaga"], correct: "Tarlonga"}
- 
+
 ];
- 
-
-
-
-// ============================================================
 
 const ayats = [
     { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
