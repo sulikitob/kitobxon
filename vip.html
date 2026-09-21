@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Umumumiy quiz test va yopiq savol-javoblar</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: radial-gradient(ellipse at 50% 0%, #161616, #0a0a0a 60%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ===== Oltin dizayn elementlari ===== */
+        .gold-badge {
+            width: 84px; height: 84px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #2e2e2e, #0f0f0f 70%);
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 18px rgba(255,215,0,0.55), 0 0 40px rgba(255,215,0,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 38px;
+            margin-bottom: -8px;
+            position: relative; z-index: 3;
+        }
+
+        /* ===== Raqam tanlash ekrani ===== */
+        #select-screen {
+            width: 100%; max-width: 700px;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 25px;
+            padding: 45px 30px 35px 30px;
+            background: linear-gradient(160deg, rgba(16,16,16,0.55), rgba(10,10,10,0.55));
+            backdrop-filter: blur(1px);
+            border: 2px solid #ffd700;
+            border-radius: 26px;
+            box-shadow: 0 0 30px rgba(255,215,0,0.22), inset 0 0 40px rgba(255,215,0,0.03);
+        }
+        #select-screen h1 {
+            font-size: 24px; color: #ffffff; text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+        #select-screen p { color: #999; font-size: 14px; text-align: center; }
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+            gap: 10px;
+            width: 100%;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 10px;
+            background: #111;
+            border-radius: 20px;
+            box-shadow: 0 0 25px rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.15);
+        }
+        .number-grid::-webkit-scrollbar { width: 8px; }
+        .number-grid::-webkit-scrollbar-thumb { background: #ffd700; border-radius: 10px; }
+        .num-btn {
+            background: #1b1b1b;
+            border: 2px solid #00ff99;
+            color: #00ff99;
+            border-radius: 12px;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.25s;
+            text-shadow: 0 0 8px rgba(0,255,153,0.6);
+        }
+        .num-btn:hover {
+            background: #00ff99;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(0,255,150,0.8);
+            transform: scale(1.08);
+        }
+        .num-btn.picked {
+            background: #ffd700;
+            border-color: #ffd700;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(255,215,0,0.8);
+        }
+        #range-info {
+            color: #ffd700; font-size: 15px; font-weight: bold; min-height: 22px;
+        }
+
+        /* ===== Random tanlash bo'limi ===== */
+        .random-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .random-main-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1b1b1b, #262626);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            border-radius: 14px;
+            padding: 14px 0;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.25s;
+            text-shadow: 0 0 8px rgba(255,215,0,0.5);
+            letter-spacing: 0.5px;
+        }
+        .random-main-btn:hover {
+            background: #ffd700;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(255,215,0,0.8);
+            transform: scale(1.02);
+        }
+        .random-options-grid {
+            display: none;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+            width: 100%;
+            padding: 15px;
+            background: #111;
+            border-radius: 18px;
+            box-shadow: 0 0 25px rgba(255,215,0,0.12);
+        }
+        .random-num-btn {
+            background: #1b1b1b;
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            border-radius: 12px;
+            padding: 14px 0;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+        .random-num-btn:hover {
+            background: #ffd700;
+            color: #050505;
+            box-shadow: 0 0 20px rgba(255,215,0,0.8);
+            transform: scale(1.08);
+        }
+        .clear-history-link {
+            color: #666;
+            font-size: 12px;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .clear-history-link:hover { color: #ff9900; }
+
+        /* ===== Funksiya tanlash ekrani ===== */
+        #mode-screen {
+            display: none;
+            width: 100%; max-width: 700px;
+            flex-direction: column; align-items: center;
+            gap: 25px; padding: 20px 0;
+        }
+
+        .mode-icon-top {
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 4 / 3;
+            position: relative;
+            background: radial-gradient(circle at 35% 30%, #2e2e2e, #0f0f0f 70%);
+            border: 3px solid #ffd700;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 18px rgba(255,215,0,0.4), 0 0 40px rgba(255,215,0,0.15);
+        }
+        .mode-icon-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        #mode-screen h1 {
+            font-size: 22px; color: #ffffff; text-align: center;
+            margin: 5px 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+
+        .mode-wrapper {
+            width: 100%;
+            background: linear-gradient(160deg, rgba(16,16,16,0.55), rgba(10,10,10,0.55));
+            backdrop-filter: blur(1px);
+            border-radius: 26px;
+            padding: 30px 25px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.22), inset 0 0 40px rgba(255,215,0,0.03);
+        }
+        .mode-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .mode-card {
+            background: rgba(27, 27, 27, 0.85);
+            border-radius: 20px;
+            padding: 30px 15px;
+            text-align: center;
+            transition: 0.4s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-size: 16px;
+            font-weight: bold;
+            backdrop-filter: blur(3px);
+        }
+        .mode-card::before {
+            content: ""; position: absolute; width: 200%; height: 200%;
+            background: linear-gradient(45deg,transparent,#ffd700,transparent);
+            top: -150%; left: -150%; transform: rotate(25deg); transition: 0.7s;
+            opacity: 0.35;
+        }
+        .mode-card:hover::before { top: 100%; left: 100%; }
+        .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        @media(max-width:600px){ .mode-grid{ grid-template-columns: 1fr; } }
+
+        /* ===== Intro (countdown) ekran ===== */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            height: 100dvh;
+            background: #050505; display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 5;
+            transition: opacity 0.8s ease;
+        }
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        #select-screen, #mode-screen, .quiz-box, #intro-screen .content-box, #intro-screen #countdown {
+            position: relative; z-index: 2;
+        }
+        .star {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2.5s infinite ease-in-out;
+        }
+        .star.glow {
+            box-shadow: 0 0 6px 1px rgba(255, 215, 0, 0.5);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.6); }
+        }
+        .content-box { text-align: center; margin-bottom: 50px; z-index: 1; position: relative; padding: 0 20px; }
+        #countdown {
+            position: absolute; bottom: 50px;
+            font-size: 80px; color: #00ff99; font-weight: bold;
+            animation: pulse 1s infinite;
+            z-index: 1;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.5; }
+        }
+
+        .quran-box {
+            display: block;
+            margin: 25px auto 0 auto;
+            padding: 20px 30px;
+            max-width: 550px;
+            border: 4px double #ffd700;
+            background: rgba(20, 16, 5, 0.6);
+            text-align: center;
+        }
+        .quran-ayat-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #f0f0f0;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .quran-meta {
+            display: inline-block;
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffd700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            padding-top: 8px;
+            width: 100%;
+        }
+
+        /* ===== Quiz ekrani ===== */
+        .quiz-box {
+            display: none;
+            width: 100%; max-width: 600px; background: rgba(16,16,16,0.6); padding: 30px;
+            border-radius: 25px; box-shadow: 0 0 30px rgba(255,215,0,0.18);
+            border: 2px solid #ffd700;
+            backdrop-filter: blur(1px);
+            text-align: center; margin-top: 50px;
+        }
+        h2 { color: #00ff99; margin-bottom: 20px; font-size: 22px; }
+        .option {
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            background: #2a2a2a; border: 2px solid #333; border-radius: 15px;
+            cursor: pointer; transition: 0.3s; text-align: left;
+        }
+        .option:hover { border-color: #00ff99; }
+        .correct {
+            background: #00ff99 !important; color: black; font-weight: bold;
+            animation: bubbleEffect 0.5s ease-out;
+        }
+        @keyframes bubbleEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .wrong { background: #ff4d4d !important; color: white; }
+        .btn-finish {
+            width: 100%; padding: 15px; background: transparent; border: 2px solid #00ff99;
+            color: #00ff99; border-radius: 15px; cursor: pointer; margin-top: 20px;
+            font-weight: bold; transition: 0.3s;
+        }
+        .btn-finish:hover { background: #00ff99; color: black; }
+
+        .closed-input {
+            width: 100%; padding: 15px; margin-top: 10px; border: 2px solid #333;
+            border-radius: 12px; font-size: 17px; outline: none; background: #2a2a2a;
+            color: white;
+        }
+        .closed-input:focus { border-color: #00ff99; }
+        .btn-check {
+            width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #00ff99; border-radius: 15px;
+            background: transparent; color: #00ff99; font-weight: bold; cursor: pointer; font-size: 17px;
+            transition: 0.3s;
+        }
+        .btn-check:hover { background: #00ff99; color: black; }
+        #closed-result { margin-top: 15px; font-size: 18px; min-height: 30px; text-align: center; }
+
+
+        /* ===== Mobil to'liq ekran tuzatishlari ===== */
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            #select-screen { padding: 35px 16px 24px 16px; }
+            #select-screen h1 { font-size: 20px; }
+            .gold-badge { width: 68px; height: 68px; font-size: 30px; }
+            #mode-screen h1 { font-size: 19px; }
+            .mode-wrapper { padding: 20px 14px; }
+            .mode-card { padding: 22px 10px; font-size: 14px; }
+            .quiz-box { padding: 20px 16px; margin-top: 30px; }
+            h2 { font-size: 18px; }
+            .content-box h1 { font-size: 24px !important; }
+            .quran-ayat-text { font-size: 15px; }
+            #countdown { font-size: 60px; bottom: 35px; }
+            .number-grid { grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<div id="select-screen">
+    <div class="gold-badge">📖</div>
+    <h1>🌙 Umumumiy quiz test va yopiq savol-javoblar</h1>
+    <p>Savollar sonini belgilang</p>
+
+    <div class="random-section">
+        <button class="random-main-btn" id="randomToggleBtn" onclick="toggleRandomGrid()">🎲 Random</button>
+        <div class="random-options-grid" id="randomOptionsGrid"></div>
+        <button class="clear-history-link" onclick="clearUsedHistory()">🔄 Ishlatilgan tarixni tozalash</button>
+    </div>
+
+    <div id="range-info">Boshlang'ich raqamni tanlang</div>
+    <div class="number-grid" id="numberGrid"></div>
+</div>
+
+<div id="mode-screen">
+    <div class="mode-icon-top">
+        <img src="sayr.jpg" alt="rasm">
+    </div>
+    <h1>Qaysi funksiyani xohlaysiz?</h1>
+    <div class="mode-wrapper">
+        <div class="mode-grid">
+            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
+            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
+            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
+            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
+        </div>
+    </div>
+</div>
+
+<div id="intro-screen">
+    <div class="content-box">
+        <h1 style="color:#00ff99; font-size: 32px;">🌙 2-Bob.Iskandar-1</h1>
+        <div id="random-ayat"></div>
+    </div>
+    <div id="countdown">3</div>
+</div>
+
+<div class="quiz-box" id="quiz">
+    <h2 id="question">Yuklanmoqda...</h2>
+    <div id="options"></div>
+    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
+</div>
+
+<script>
+const quizData = [
+    { q: "Hamma tug'ilgan kunini qanday bahona bilan ziyorat qilishga kelar edi?", correct: "xotira kuni munosabati bilan", wrongs: ["sayohat qilish istagi bilan", "akshon tadbiri munosabati bilan", "shunchaki yo'qlab qo'yish maqsadida"] },
+    { q: "Qishloqning nomi nima?", correct: "jiydalik", wrongs: ["tolzor", "terakli", "chinorli"] },
+    { q: "Jiydalik qishlog'iga kelganlar nega kira olmay ovvora edilar?", correct: "tog'dan kelgan sel ko'prikni yarmini olib ketgani sababli", wrongs: ["yo'lda katta ko'chki sodir bo'lib yo'lni to'sib qo'ygani sababli", "daryo suvi toshib mashinalar o'ta olmay qolgani sababli", "qishloq ahli kirish yo'lini vaqtincha yopib qo'yganliklari sababli"] },
+    { q: "Tundan kelgan ko'rshapalak deb nimaga ta'rif berilgan?", correct: "mashina", wrongs: ["samolyot", "poyezd", "mototsikl"] },
+    { q: "Sel bir yili butun sigirni olib kelgan edi (ba'zilar to'ng'iz deb ham aytishadi).", correct: "to'g'ri", wrongs: ["noto'g'ri", "bunday voqea bo'lmagan", "isbotlanmagan gap"] },
+    { q: "Sel kelishidan oldin hammayoqni qanday hid bosib ketadi?", correct: "kavrak, xaron", wrongs: ["shuvoq, yalpiz", "rayhon, isiriq", "chirindi, namlik"] },
+    { q: "Ko'prikni sel bosganda undan o'tishning 1-yo'li qanday?", correct: "orqaga qaytib, kamida 60-70 chaqirim etakdagi masofani aylanib, tumanning narigi tarafidan kelish", wrongs: ["to'g'riga qarab yurib, daryoning sayozroq joyidan tavakkal qilib otda yoki piyoda o'tib olish", "suv pasayishini kutib, shu yerning o'zida bir necha kun chodir qurib lager qilib yashash", "ko'prikning qolgan qismiga vaqtincha yog'och taxtalar tashlab, emaklab bo'lsa ham o'tish"] },
+    { q: "Ko'prikni sel bosganda undan o'tishning 2-yo'li qanday?", correct: "so'qmoq bo'ylab so'lga yurib, mahalla guzarlar oralab, tuman markaziga yaqin yangi ko'prik orqali o'tib borish", wrongs: ["tepalikka qarab o'ngga yurib, adirlar oshib, qishloqning yuqori tarafidagi eski osma ko'prikdan o'tish", "pastlikka qarab daryo yoqalab borib, baliqchilarning qayig'i yordamida narigi qirg'oqqa o'tib olish", "katta yo'ldan chetga chiqib, eski tashlandiq temir yo'l tarmog'i ustidagi ko'prikdan foydalanish"] },
+    { q: "Bosh-oyoq jinsi libosdagi g'aybar, boyvachcha kishi kim?", correct: "iskandar", wrongs: ["g'ayrat", "oyravshan", "anvar"] },
+    { q: "Iskandar Jiydalik qishlog'iga qanaqa moshinada keladi?", correct: "prado", wrongs: ["tahoe", "malibu", "captiva"] },
+    { q: "Taksida 7-8 yashar bolasi bilan kelgan kishi kim?", correct: "oyravshan", wrongs: ["iskandar", "g'ayrat", "rustam"] },
+    { q: "Maqolda aytilishicha: Zo'rniki...", correct: "tegirmon yurgizar", wrongs: ["oshini yer", "tog'ni talqon qilar", "yo'lni ochar"] },
+    { q: "Iskandar qayerdan kelayotgan edi?", correct: "toshkentdan", wrongs: ["samarqanddan", "farg'onadan", "buxorodan"] },
+    { q: "Yuki birgina osma sumkadan iborat ozg'inroq kishi kim?", correct: "g'ayrat aka", wrongs: ["iskandar aka", "oyravshan aka", "ahmad aka"] },
+    { q: "G'ayrat aka qanaqa moshinada, necha kishi bilan kelgan edi?", correct: "kumush rang neksiyada 3 nafar kishi bilan", wrongs: ["oq rangli jentrada 2 nafar kishi bilan", "qora rangli kobaltda 4 nafar kishi bilan", "qizil rangli matizda 1 nafar kishi bilan"] },
+
+
+ /* =====2-Bob ===== */
+
+
+    { q: `Toshkentga kelganining nechanchi kuni peshinda unga Xoji bobo telefon qilgan edi?`, correct: `3-kuni`, wrongs: [`2-kuni`, `5-kuni`, `7-kuni`] },
+    { q: `Bu kishi hech odamga o'xshab gapirolmaydi, bir og'izgina gapni ham albatta ohangjamaga solib, qo'yib bersangiz uch tilda birdek, Xayyomdan ruboiylar qo'shib aytsa, kim?`, correct: `Xoji bobo`, wrongs: [`Gena amaki`, `Abdushukur aka`, `G'ayrat aka`] },
+    { q: `Iskandarning nega qaynota va qaynonasini ko'rishga ko'zi yo'q?`, correct: `O'zaro allaqanday yasama "adasi, oyisi" deb muomala qilishlari`, wrongs: [`Mol-dunyoga ortiqcha hirs qo'yishlari`, `Uni doim past ko'rib gapirishlari`, `Farzandlarini haddan tashqari erkalatishlari`] },
+    { q: `Xoji bobo va xotini Toshkentda qancha vaqt yashab ketishgan edi?`, correct: `1 yildan ko'roq`, wrongs: [`6 oydan ko'proq`, `2 yildan ko'proq`, `3 oydan ko'proq`] },
+    { q: `Xoji bobolar Toshkentning qayerida yashab ketishgan edi?`, correct: `Zarangning xuv bir gadoy topmas tog' qishlog'idan, lekin indamasangiz Londonu Parijdan lof urishadi`, wrongs: [`Tumanning eng chekka gadoy ko'p qishlog'idan, lekin so'zlasa Moskva-Peterburgdan gapiradi`, `Viloyatning eng qashshoq mahallasidan, lekin so'rasangiz Dubaydan kelgandek gapiradi`, `Tog'ning etagidagi kambag'al qishlog'idan, lekin gapirsa Nyu-Yorkdan lof uradi`] },
+    { q: `Xoji bobo va xotini Toshkentga uzoq yillar nima bahona borishgan edi?`, correct: `Bebiliska bir sayyohlik yurishi sababdan`, wrongs: [`Bolalarini ko'rgani borish bahonasida`, `Davolanish uchun sayohat qilish niyatida`, `Nabiralarini yo'qlab kelish bahonasida`] },
+    { q: `"Balchiqdan chiqqan beklar" iborasi kimlarga nisbatan aytilgan?`, correct: `Yangi boylarga / Xoji boboga`, wrongs: [`Eski amaldorlarga`, `Qishloq oqsoqollariga`, `Shahar amaldorlariga`] },
+    { q: `Indamas, odamovi, qornini g'amlab, sigaretini tutatib tursa bas, kim?`, correct: `Jo'rabek`, wrongs: [`G'ayrat`, `Iskandar`, `Shokir`] },
+    { q: `Iskandar muovinlikka o'tib, mashina minadigan bo'lganida Xoji bobo unga kimni tavsiya qilgan edi?`, correct: `Chala o'ris jiyanini`, wrongs: [`Uzoq qarindoshi bolasini`, `Qo'shni yigitchani`, `O'ris kelinning ukasini`] },
+    { q: `Xoji bobo Xo'ja Xofizni ko'makka chorlab, 1 odamni 1000 ta kaliti bor deb nimani nazarda tutgan?`, correct: `Odamlarning qalbini / poraxo'rlikni`, wrongs: [`Odamlarning ishonchini`, `Amaldorlarning zaif tomonini`, `Xalqning e'tiqodini`] },
+    { q: `Kimni ko'rib "bu kesakdan o't chiqqan" degan Jo'ra?`, correct: `Oyravshanni`, wrongs: [`Dilyani`, `Diloraning`, `Shurikni`] },
+    { q: `Jo'ra chala musulmonligiga borib, betamizlarcha Oyravshanni ko'rgach nima degan edi?`, correct: `"Besh ketgan, vasha plemyannitsa nastoyashshaya krasavitsa, shef, takix malo!"`, wrongs: [`"Ana xolos, bunaqasi kam-da, chindan ham chiroyli qiz ekan!"`, `"Voy, qanaqa go'zal, bunaqa xushro'y qizlar kam-da!"`, `"E, buni qara-yu, haqiqiy malika-ku, ajoyib!"`] },
+    { q: `Necha yildirki katta do'xtirlikni yig'ishtirib boyvuchcha sifat bo'lib uyda o'tirgan kim?`, correct: `Dilrabo`, wrongs: [`Adolat poshsha`, `Marusa`, `Dilora`] },
+    { q: `Iskandarning nechta farzandi bor edi?`, correct: `2 ta`, wrongs: [`1 ta`, `3 ta`, `4 ta`] },
+    { q: `Prokuraturada Iskandar kim bo'lib ishlar edi?`, correct: `Muovin`, wrongs: [`Boshliq`, `Kotib`, `Yordamchi`] },
+    { q: `Bir vaqtlar harbiylar qal'asi sanalgan shaharning qoq markazida, chorak gektarcha keladigan, gulugulzor bog'i, otxonayu molxonasi bor joy qayer?`, correct: `Xoji boboning chorbog'i`, wrongs: [`Abdushukur akaning hovlisi`, `Gena amakining otxonasi`, `Prokuratura binosi`] },
+    { q: `Bu yerlar asli kechagi zamondan davlat quri bergan... deb ataluvchi bir qolipdagi hovli-joylar edi, nima deb atalardi?`, correct: `Obqomdan qolgan uylar`, wrongs: [`Sovxozdan qolgan binolar`, `Kolxozdan qolgan uylar`, `Harbiy qismdan qolgan joylar`] },
+    { q: `Xoji boboning hovlisi qanday usulda (kengaytirilgan) edi?`, correct: `Sho'rocha`, wrongs: [`Zamonaviy uslubda`, `Yevropacha tarzda`, `Milliy uslubda`] },
+    { q: `Xoji bobo harbiy qismning eski bir bazasini sotib olib nima qilgan edi?`, correct: `Otxonayu-molxona`, wrongs: [`Omborxona`, `Mehmonxona`, `Ombor va do'kon`] },
+    { q: `"Birov miq etolmaydi, viloyatdagi bor mansabini bir-birini butining orasiga olib minib chiqqan Xoji bobomizning murutini bolta kesolmas" iborasi nimani anglatadi?`, correct: `Hammasi xususiy va qonuniy ekanligini`, wrongs: [`Hammasi merosdan qolganini`, `Hammasi davlat mulki ekanini`, `Hammasi qarindoshlariniki ekanini`] },
+    { q: `Xoji bobo avvaldan nimaga ishqiboz?`, correct: `Otga`, wrongs: [`Kiyikka`, `Baliq ovlashga`, `Mashinaga`] },
+    { q: `Xoji boboning nechta oti bor?`, correct: `4 ta`, wrongs: [`3 ta`, `5 ta`, `2 ta`] },
+    { q: `Biri qo'shni turkman ortidan tortiq bo'lib kelgan qanday ot edi?`, correct: `Zotdor qorabayir`, wrongs: [`Zotdor to'riq`, `Zotdor jiyron`, `Zotdor oq ot`] },
+    { q: `Xoji bobo qachondan boshlab otga minmay qo'ygan?`, correct: `Falonchi falonhiyevich atalib, do'rjiroq mansablarni egallagandan keyin`, wrongs: [`Yoshi ulg'ayib, otga minish og'ir kelgandan keyin`, `Shahar hokimi bo'lib tayinlangandan keyin`, `Sog'lig'i yomonlashib, tabib taqiqlagandan keyin`] },
+    { q: `Otxonaning olis bir burchagida yana nima ham bor qafasda?`, correct: `Tog' ohusi`, wrongs: [`Kiyik`, `Tulki`, `Bo'ri bolasi`] },
+    { q: `Tog' ohusi uning qafasiga qayerdan kelib qolgan?`, correct: `Mansabdor qarindoshlariga sovg'a sifatida`, wrongs: [`Qo'shni davlatdan tortiq sifatida`, `Ovchilar tomonidan sotib olingan`, `Tug'ilgan kuniga sovg'a qilingan`] },
+    { q: `Tog'lik nozaninning vazifasi nima?`, correct: `Nozik mehmonlarga ko'rinib turish`, wrongs: [`Bolalarni xursand qilish`, `Hovlini bezash`, `Mehmonlarni ovqatlantirish`] },
+    { q: `Bu jonivorlarning bariga kim qaraydi?`, correct: `Gena`, wrongs: [`Jo'ra`, `Shurik`, `Abdushukur`] },
+    { q: `Genaning asl ismi nima?`, correct: `G'ani, G'aniqul`, wrongs: [`Shokir, Shurik`, `G'ayrat, G'ayratbek`, `Jo'ra, Jo'rabek`] },
+    { q: `Gena tog'a necha yoshda edi?`, correct: `60+`, wrongs: [`40+`, `50+`, `70+`] },
+    { q: `Xoji boboga Gena tog'a kim bo'ladi?`, correct: `Amakivachcha`, wrongs: [`Tog'avachcha`, `Xolavachcha`, `Ammavachcha`] },
+    { q: `Xoji onamizga kim bo'ladilar?`, correct: `Ammavachcha`, wrongs: [`Amakivachcha`, `Tog'avachcha`, `Xolavachcha`] },
+    { q: `Xoji onaning ismi kim?`, correct: `Adolat poshsha`, wrongs: [`Marusa`, `Dilrabo`, `Xalima`] },
+    { q: `Adolat poshshani kim deb atash farz (urug'i)?`, correct: `Eshon xo'ja urug'idan bo'lgani uchun`, wrongs: [`Amir avlodidan bo'lgani uchun`, `Mulla oilasidan chiqqani uchun`, `Sayyid nasabidan bo'lgani uchun`] },
+    { q: `G'aniqul tog'a ham Xoji onani kim deb chaqiradi?`, correct: `Xo' Adal`, wrongs: [`Xo' Dilya`, `Xo' Marus`, `Xo' Xalim`] },
+    { q: `G'aniqul tog'a Xoji boboni kim deb chaqiradi?`, correct: `Xo' Samar`, wrongs: [`Xo' Iskan`, `Xo' G'ani`, `Xo' Jo'ra`] },
+    { q: `Jo'raning familiyasi nima?`, correct: `Georgiy`, wrongs: [`Petrov`, `Ivanov`, `Sergeyev`] },
+    { q: `Iskandar uni erkalab Jo'rani kim deb ataydi?`, correct: `Georgiy Gennadeyivich`, wrongs: [`Sergey Petrovich`, `Ivan Nikolayevich`, `Andrey Fyodorovich`] },
+    { q: `G'aniqul amaki qarindoshlarining uyida qancha maoshga dastyorlik va otboqarlik qilar edi?`, correct: `Tekinga`, wrongs: [`Yaxshi maoshga`, `Yarim maoshga`, `Ozgina haqqa`] },
+    { q: `G'aniqulning tul yolg'iz o'g'lining ismi kim?`, correct: `Jo'raboy`, wrongs: [`Shokirjon`, `G'ayratjon`, `Amirqulboy`] },
+    { q: `Harbiy xizmatdan so'ng, ota-onasiz G'aniqul qayerda qolib ketib uylangan, o'g'illi bo'lgan?`, correct: `Qayinzorda`, wrongs: [`Tog' etagida`, `Uzoq qishloqda`, `Shahar chekkasida`] },
+    { q: `G'aniqulning xotinining ismi kim?`, correct: `Marusa`, wrongs: [`Xalima`, `Adolat poshsha`, `Dilora`] },
+    { q: `Marusa chechamiz nimadan vafot etgan?`, correct: `Ichkilikka o'ch bo'lgan va jigari yorilib o'lgan`, wrongs: [`Uzoq davolanmagan kasallikdan vafot etgan`, `Yurak xastaligidan to'satdan o'lgan`, `Sovuq qotib, zotiljamdan o'lgan`] },
+    { q: `Xoji boboning qo'liga tushgan ota-bola sig'indilar qayerda istiqomat qilishadi?`, correct: `Otxonaning to'ridagi kiyikka yaqin bir hujra - sobiq "Qaptiyorka"da`, wrongs: [`Molxonaning old tarafidagi kichik xonachada`, `Bog'ning burchagidagi eski kulbada`, `Uyning orqasidagi omborxonada`] },
+    { q: `Qachon qaramang egnida dengizchilarning qorachipor "telnyashkasi", kulrang soch-soqoli o'sgan, labida arzondan arzon tamaki, tishlarini battar sarg'aytirib turgan odam kim?`, correct: `Gena amaki`, wrongs: [`Abdushukur aka`, `Jo'ra`, `G'ayrat aka`] },
+    { q: `Tanisa-tanimasa endi ko'rgan odamiga ham do'stona ko'z qisib qo'yish odati bor, izxori xurmati shu bo'lsa kerak. Kim?`, correct: `Gena amaki`, wrongs: [`Abdushukur aka`, `Jo'ra`, `G'ayrat aka`] },
+    { q: `Iskandar bir gal ota-bolaning bo'ydoqxonasiga bosh suqib qochib chiqay dedi, chor devorga ham singib ketgan narsa nima?`, correct: `Tamaki, kul hidi`, wrongs: [`Aroq, sharob hidi`, `Chirindi, namlik hidi`, `Yog', kuyik hidi`] },
+    { q: `Ko'zlari sal ko'kishligini aytmasa... otasining tus o'zi, bo'yi-basti ham, andak enkayib yurishi ham, ovozining bo'g'iq xirriligigacha kim?`, correct: `Jo'ra`, wrongs: [`Shurik`, `G'ayrat`, `Amirqulboy`] },
+    { q: `Gung-soqov desa ham bo'ladi: uring-so'king, g'iq degan ovoz chiqarmaydi, bir zaylda kulib turaveradi. Kim?`, correct: `Jo'ra`, wrongs: [`Shurik`, `G'ayrat`, `Amirqulboy`] },
+    { q: `Asarda kim "a'lochi" deb keltirilgan?`, correct: `Iskandar`, wrongs: [`Oyravshan`, `G'ayrat`, `Jo'ra`] },
+    { q: `A'lochi Iskandar bezabon Jo'rani ko'rganidayoq maktab darsligidagi qaysi hikoya esiga kelgan?`, correct: `"Biryuk"`, wrongs: [`"Muhabbat"`, `"Bezorilar"`, `"Yetim qiz"`] },
+    { q: `Ichkari-tashqari hovli doim gavjum, uy egalarining qayerlik qarindoshlari juda ham gavjum?`, correct: `Tog'lik`, wrongs: [`Shaharlik`, `Qishloqlik`, `Vodiylik`] },
+    { q: `Xoji bobomizning nechta qizi bor?`, correct: `4 ta`, wrongs: [`3 ta`, `5 ta`, `2 ta`] },
+    { q: `Ilk bora bu hovliga qadam qo'yganiga necha yillar bo'lib ketdi Iskandarning?`, correct: `10 yildan oshib ketdi`, wrongs: [`5 yildan oshib ketdi`, `15 yildan oshib ketdi`, `8 yildan oshib ketdi`] },
+    { q: `O'qishni bitirib kelgach necha yil prokurorga yordamchilik qildi Iskandar?`, correct: `1 yil`, wrongs: [`2 yil`, `6 oy`, `3 yil`] },
+    { q: `O'sha vaqtdagi prokurorning ismi kim?`, correct: `Rasul aka`, wrongs: [`Anvar aka`, `G'ayrat aka`, `Sodiq aka`] },
+    { q: `U paytlarXoji bobo qayerda ishlar edi?`, correct: `Komunal xo'jalik idorasiga rahbarlik qilar edi`, wrongs: [`Ta'lim boshqarmasiga rahbarlik qilar edi`, `Sog'liqni saqlash bo'limiga boshchilik qilar edi`, `Qishloq xo'jaligi idorasiga boshchilik qilar edi`] },
+    { q: `Lekin Xoji bobo Komunal xo'jalik idorasida o'z qorasini ko'rsatmay nima qilar edi?`, correct: `Voha miqyosidagi muhimdan-muhim tadbiru tantanalarda savlat to'kib yurish edi`, wrongs: [`Kunlik ishlarga jiddiy yondashib mehnat qilish edi`, `Kichik yig'ilishlarda ham faol qatnashish edi`, `Idora ishlarini puxta yuritish edi`] },
+    { q: `U paytlar Xoji boboni kim deb atashar edi?`, correct: `Oqsoqol`, wrongs: [`Rais`, `Boshliq`, `Hokim`] },
+    { q: `Xoji bobo yana kim bo'lib ishlagan?`, correct: `Viloyat oqsoqollariga boshliq`, wrongs: [`Tuman hokimiga muovin`, `Shahar kengashi raisi`, `Idora mudiri`] },
+    { q: `Prokuror aytishi bo'yicha "Qichishadigan joyini oldindan qashib qo'yishga usta" odam kim?`, correct: `Xoji bobo`, wrongs: [`Abdushukur aka`, `Gena amaki`, `Rasul aka`] },
+    { q: `Gapning koni, she'ru g'azal aralashtirib 3 tilda barobar sayrab o'tirdi. Bilmagan latifasi yo'q, olis Kremldagi dovdirab qolgan chollarni ham tap tortmay...`, correct: `Xoji bobo`, wrongs: [`Gena amaki`, `Rasul aka`, `Abdushukur aka`] },
+    { q: `Iskandarning yashaydigan tumani o'sha paytda qayer edi?`, correct: `Jiydali`, wrongs: [`Oqtuproq`, `Zarang`, `Qayinzor`] },
+    { q: `Xoji bobo Jiydalida kim bo'lib ishlagan?`, correct: `Sarkotib`, wrongs: [`Rais`, `Muovin`, `Boshliq`] },
+    { q: `Xoji bobo Jiydalida necha yil sarkotiblik qilgan?`, correct: `4 yil`, wrongs: [`2 yil`, `6 yil`, `3 yil`] },
+    { q: `"Kamarsiy"moni Iskandar ilk marotaba qayerda ko'rgan edi?`, correct: `Shahar poliklinikasiga yillik tibbiy ko'rikdan o'tishga borganda`, wrongs: [`Tuman poliklinikasida davolanish paytida`, `Viloyat kasalxonasida ko'rikdan o'tayotganda`, `Maktab tibbiy xonasida tekshiruvdan o'tayotganda`] },
+    { q: `Iskandar Dilyani endi uchrata boshlagan paytlari necha yoshda edi?`, correct: `14-15 yosh`, wrongs: [`12-13 yosh`, `16-17 yosh`, `10-11 yosh`] },
+    { q: `Qo'lini doimo orqaga qilib yuradigan sersavlat shaxs kim?`, correct: `Xoji bobo`, wrongs: [`Gena amaki`, `Rasul aka`, `Abdushukur aka`] },
+    { q: `Maktab direktori bo'lib ishlaydigan shirinso'z, baqaloq xotin kim?`, correct: `O'lmas xola`, wrongs: [`Kayvoni xola`, `Tarasha xola`, `Adolat poshsha`] },
+    { q: `Sho'ro bobo va O'lmas xolaning erkatoy arzandasi kim?`, correct: `Shurik`, wrongs: [`Jo'ra`, `Amirqulboy`, `Shokirjon`] },
+    { q: `Qop-qora, daroz, qoqichang xotin kim?`, correct: `Kayvoni xola`, wrongs: [`O'lmas xola`, `Adolat poshsha`, `Marusa`] },
+    { q: `Iskandarning so'zga chechan onasi Kayvoni xolaga kim deb laqab osgan?`, correct: `Tarasha xola`, wrongs: [`Kayvoni ona`, `Cho'p xola`, `Tayoq xola`] },
+    { q: `Iskandarning onasini ismi kim?`, correct: `Mayram`, wrongs: [`Xalima`, `Dilrabo`, `Adolat`] },
+    { q: `Tarasha xola onasini emas bolasini...`, correct: `Chimdib oladi`, wrongs: [`Silab qo'yadi`, `Boshidan siypaydi`, `Quchoqlab oladi`] },
+    { q: `Tevarak-ko'ydagi nechta xonadon Doniyorovning hovuzidan suv ichar edi?`, correct: `10-15 ta`, wrongs: [`5-10 ta`, `20-25 ta`, `2-3 ta`] },
+    { q: `Katta-matta yigitga 2 qo'lida satl ko'tarib tashimoq malol kelsada, o'sha kuni u xovuz bo'yida yotib qolishga ham rozi edi, nima uchun?`, correct: `Dilyani ko'rish uchun`, wrongs: [`Suv olib qaytish uchun`, `Do'stlari bilan gaplashish uchun`, `Vaqt o'tkazish uchun`] },
+    { q: `Sochi kaltagina qilib kesilgan boshini bir tomonga solintirgan, katta-katta ko'zlarida ma'sum bir xayrat... kim?`, correct: `Dilyaxon`, wrongs: [`Dilorahon`, `Xalimaxon`, `Marusaxon`] },
+    { q: `Iskandar xovuz bo'yidagi supa labida Dilyaga qarab turganda kim shang'illab yuboradi?`, correct: `Tarasha xola`, wrongs: [`Kayvoni xola`, `O'lmas xola`, `Mayram`] },
+    { q: `Tarasha xola kimni nazarda tutadi?`, correct: `Shurikjonning`, wrongs: [`Jo'rabekning`, `Amirqulboyning`, `G'ayratning`] },
+    { q: `Shurikning asl ismi kim?`, correct: `Shokir`, wrongs: [`Jo'ra`, `Amirqulboy`, `G'ayrat`] },
+    { q: `Shokir Iskandardan necha yosh katta?`, correct: `2 yosh`, wrongs: [`1 yosh`, `3 yosh`, `4 yosh`] },
+    { q: `Erka tantiligi 5 yashar boladan ham kim?`, correct: `Shokir`, wrongs: [`Jo'ra`, `G'ayrat`, `Amirqulboy`] },
+    { q: `Iskandarning ko'nglida shu kundan boshlab kimga nisbatan adovat paydo bo'ldi?`, correct: `Shokirga nisbatan`, wrongs: [`Jo'raga nisbatan`, `G'ayratga nisbatan`, `Oyravshanga nisbatan`] },
+    { q: `Shurik kim?`, correct: `Sho'ro bobomizning asrandi o'g'li`, wrongs: [`O'lmas xolaning jiyani`, `Qo'shnilarning farzandi`, `Uzoq qarindoshning bolasi`] },
+    { q: `Sho'ro bobo asrandi o'g'lini kimdan asrab olgan?`, correct: `Singlisining o'g'li`, wrongs: [`Akasining qizi`, `Ukasining o'g'li`, `Xolasining bolasi`] },
+    { q: `Kimni "dumbulboy" deyishadi?`, correct: `Shurikni`, wrongs: [`Jo'raboyni`, `Amirqulboyni`, `Shokirni`] },
+    { q: `Maktabdan so'ng Shurikni qayerga o'qishga joylashtirishdi?`, correct: `Viloyat pedagogika institutiga`, wrongs: [`Tibbiyot institutiga`, `Qishloq xo'jaligi institutiga`, `Politexnika institutiga`] },
+    { q: `Shurik o'ziga o'xshagan arzandalarga qo'shilib nima qilib qamalib ketdi?`, correct: `Dorishunoslik`, wrongs: [`O'g'irlik`, `Firibgarlik`, `Kontrabanda`] },
+    { q: `Uzun-yuluq xabarlarga ko'ra Dilya hozir qayerda o'qirkan?`, correct: `Samarqandda`, wrongs: [`Toshkentda`, `Buxoroda`, `Farg'onada`] },
+    { q: `Dilya Samarqandda qaysi sohada o'qirdi?`, correct: `Do'xtirlikka`, wrongs: [`Muallimlikka`, `Muhandislikka`, `Iqtisodchilikka`] },
+    { q: `Ko'zining oqidan boshqa hamma joyi qop-qora kimlar?`, correct: `Ko'mirchilar`, wrongs: [`Cho'ponlar`, `Baliqchilar`, `Dehqonlar`] },
+    { q: `Ko'mirchilar tekis yalang supalikda archa soyasida nimaxo'rlik qilishardi?`, correct: `Qovunxo'rlik`, wrongs: [`Tarvuzxo'rlik`, `Uzumxo'rlik`, `Olmaxo'rlik`] },
+    { q: `4-5 yoshlardagi bolakay tog'asining ismi kim?`, correct: `Amirqulboy`, wrongs: [`Jo'raboy`, `Shokirjon`, `G'ayratboy`] },
+    { q: `Iskandarning otasi kim edi?`, correct: `Ko'mirchi`, wrongs: [`Dehqon`, `Cho'pon`, `Baliqchi`] },
+    { q: `Iskandarning otasi qanday vafot etgan edi?`, correct: `Konda tosh bosib`, wrongs: [`Ishda jarohat olib`, `Yo'l halokatida`, `Uzoq kasallikdan`] },
+    { q: `Mayram beva 2 yetimchasini nima qilib boqqan?`, correct: `Chevarlik qilib`, wrongs: [`Dehqonchilik qilib`, `Chorvachilik qilib`, `Savdo qilib`] },
+    { q: `Chevarlik qilib nimalar tikar edi Mayram?`, correct: `Ko'rpa, qavar, do'ppi`, wrongs: [`Kiyim, poyabzal, ro'mol`, `Sarpo, yostiq, qanor`, `Palos, gilam, chodir`] },
+    { q: `Mayram bevaning kattasining ismi nima?`, correct: `Xalima`, wrongs: [`Mayram`, `Marusa`, `Adolat`] },
+    { q: `Xalima Mayram bevaga qanday yordam berar edi?`, correct: `Kalava, palava titishda`, wrongs: [`Ip yigirishda`, `Gilam to'qishda`, `Non yopishda`] },
+    { q: `Beva Mayram o'zi ham uxlab qolmaslik uchun farzandlariga qaysi yetim qiz haqida ertak aytib berar edi?`, correct: `Nekbibi`, wrongs: [`Zulxumor`, `Guloyim`, `Sultonoy`] },
+    { q: `Goho o'zini Iskandar qaysi sho'rtumshuq o'rnida ko'rar edi?`, correct: `Nekbibi`, wrongs: [`Zulxumor`, `Guloyim`, `Sultonoy`] },
+    { q: `"Alvido noshud qiz Nekbibi" - kimning gapi?`, correct: `Tarasha xola`, wrongs: [`Kayvoni xola`, `O'lmas xola`, `Mayram`] },
+    { q: `Yigit qachon adashganini his qildi?`, correct: `Nikoh tunidayoq`, wrongs: [`Birinchi haftadayoq`, `Bir oy o'tgach`, `Bir yil o'tgach`] },
+    { q: `Iskandar 6 yil umrini nima uchun o'tkazgani ma'lum bo'ldi?`, correct: `Ko'ngil uchun`, wrongs: [`Mol-dunyo uchun`, `Ota-ona xohishi uchun`, `Martaba uchun`] },
+    { q: `Dilrabo poshsha tibbiyotga tupurib, uyda o'tirib olganining sababi?`, correct: `Erining ketidan poyloqchi qo'ydi`, wrongs: [`Uni ishdan haydashdi`, `Uni tug'ruqxonaga yotqizishdi`, `Uni safarga yubormadilar`] },
+    { q: `Bu qiz bilan zerikmas ekan odam, kim bilan?`, correct: `Oyravshan`, wrongs: [`Dilya`, `Dilora`, `Marusa`] },
+    { q: `Odatdagi tortinish, iymanishlar yo'q, xuddi eski tanishlardek bemalol gap berib gap olib o'tiribdi. Kim haqida?`, correct: `Oyravshan`, wrongs: [`Dilya`, `Dilora`, `Marusa`] },
+    { q: `Televizorda sayrayverib burro bo'lib ketgan, poytaxt ekranlarini gullatib yurgan oyimtalarning o'zi kim?`, correct: `Oyravshan`, wrongs: [`Dilya`, `Dilora`, `Marusa`] },
+    { q: `She'r o'qiyotganida tamoman o'zgacha qiyofada o'zgacha maqomga kiradi...`, correct: `Oyravshan`, wrongs: [`Dilya`, `Dilora`, `Marusa`] },
+    { q: `Oyravshan qayerlik?`, correct: `Jiydali`, wrongs: [`Oqtuproq`, `Zarang`, `Qayinzor`] },
+    { q: `Oyravshan Jiydalini qaysi mahallasidan?`, correct: `Oqtuproq`, wrongs: [`Jiydali`, `Qumtepa`, `Guliston`] },
+    { q: `Oyravshanning boshi bog'liq, o'zlarining ko'chasidagi qaysi bola bilan ahdu paymoni bor edi?`, correct: `G'ayrat bilan`, wrongs: [`Jo'ra bilan`, `Shokir bilan`, `Iskandar bilan`] },
+    { q: `Iskandar bu hayotdagi yigitlik alamini qachon oldi?`, correct: `Oyravshandan bo'sa olganida`, wrongs: [`Dilyadan xat olganida`, `Diloraga uylanganida`, `G'ayrat bilan janjallashganida`] },
+    { q: `Hasan boboning olmoniyalik arzanda kuyovi kim edi?`, correct: `Xasan`, wrongs: [`Xans`, `Sergey`, `Andrey`] },
+    { q: `Xasanni yana qanaqa boja der edilar?`, correct: `Xans boja`, wrongs: [`Sergey boja`, `Andrey boja`, `Ivan boja`] },
+    { q: `Xasanboy bo'yniga osib olgan yapaski idishchadan dam-badam nima xo'plab qo'yadi?`, correct: `Shnaps`, wrongs: [`Aroq`, `Vino`, `Konyak`] },
+    { q: `Xans Bojaning daroz sherigi o'risning nimasiga boshqorong'i ekan?`, correct: `Arog'iga`, wrongs: [`Sharobiga`, `Piviga`, `Konyakka`] },
+    { q: `Xojiboboning ajralmas xalfalari kim?`, correct: `Abdushukur aka`, wrongs: [`Rasul aka`, `Gena amaki`, `Anvar aka`] },
+    { q: `"Maxsumsifat mardum" deb ta'riflangan kishi kim?`, correct: `Abdushukur aka`, wrongs: [`Gena amaki`, `Rasul aka`, `G'ayrat aka`] },
+    { q: `Ikki oshna qayerlarda birga ishlagan?`, correct: `Partiya-sovet tashkilotlarica`, wrongs: [`Prokuratura idoralarida`, `Ta'lim muassasalarida`, `Qishloq xo'jaligi tizimida`] },
+    { q: `Bir-birlariga qanday murojat qilishadi?`, correct: `Vich-vichlab`, wrongs: [`Bobolab`, `Akalab`, `Do'stim deb`] },
+    { q: `Ular ham oshna-og'ayni, ham kim?`, correct: `Pir-u murid`, wrongs: [`Ota-bola`, `Aka-uka`, `Do'st-birodar`] },
+    { q: `Muridimiz soqov hisoblanadi - bu kim haqida aytilgan?`, correct: `Abdushukur aka`, wrongs: [`Gena amaki`, `Rasul aka`, `G'ayrat aka`] },
+    { q: `Olmoniyalik kuyov qaysi qiziga kuyov?`, correct: `Dilora`, wrongs: [`Dilya`, `Marusa`, `Xalima`] },
+    { q: `U har gal davraga yaqinlasharkan, erining kaftidan quchib, kal boshidan muchchi olgan bo'ladi, kim?`, correct: `Dilora`, wrongs: [`Dilya`, `Marusa`, `Xalima`] },
+    { q: `Borgan yurtining nuksi urganmi... oldingi ko'rki yo'q, xuddi pati yulingan tovuq deysiz, kim?`, correct: `Dilora`, wrongs: [`Dilya`, `Marusa`, `Xalima`] },
+    { q: `Dilora kimni ko'riboq yosh qizaloq misoli chopqillab kelib uning bo'yniga osilib oldi?`, correct: `Iskandar pochchasini`, wrongs: [`Oyravshan akasini`, `G'ayrat pochchasini`, `Jo'ra pochchasini`] },
+    { q: `4 yil burun bu chegara shahriga davlatlar o'rtasidagi manfaatga ko'ra, olisda gullagan olmon o'lkasidan kattagina bir to'p...`, correct: `Uchuvchilar kelgan`, wrongs: [`Savdogarlar kelgan`, `Sayyohlar kelgan`, `Diplomatlar kelgan`] },
+    { q: `...kattagina bir to'p uchuvchi nimani haydab kelishgan?`, correct: `Samolyotlarini`, wrongs: [`Kemalarini`, `Poyezdlarini`, `Mashinalarini`] },
+    { q: `Ular uchuvchilar oqshomlari shaharda eng bo'ydor qaysi bino atrofida obod xiyobonda aylanib yurishardi?`, correct: `Biznes Markazi`, wrongs: [`Madaniyat saroyi`, `Viloyat hokimiyati`, `Savdo majmuasi`] },
+    { q: `Xans bilan Dilora qayerda tanishgan edi?`, correct: `Samolyotda`, wrongs: [`Poyezdda`, `Mehmonxonada`, `Ko'chada`] },
+    { q: `Xoji bobo eng suygan kuyovi kim edi?`, correct: `Xans`, wrongs: [`Sergey`, `Andrey`, `Georgiy`] },
+    { q: `Xans bilan yaqin bo'lgach unga kim deb ism qo'ydi?`, correct: `Xasan`, wrongs: [`Xans`, `Jo'ra`, `G'ayrat`] },
+    { q: `Xasan olmon, Xoji bobo u bilan qanday til topishdi?`, correct: `Rus tilida`, wrongs: [`Nemis tilida`, `Ingliz tilida`, `O'zbek tilida`] },
+    { q: `Qaynota-kuyov o'tirvolib biznes reja tuzishadi, asosan nima haqidagi?`, correct: `Mehmonxona`, wrongs: [`Savdo markazi`, `Fabrika`, `Zavod`] },
+    { q: `Ajnabiy kuyov ketmasdan oldin Xoji bobo uning sarmoyasidan foydalanib allaqanday o'qishxonaning yotoqxonasini sotib olgan, keyin nima deb atadilar?`, correct: `Dil-oro`, wrongs: [`Dil-oy`, `Yulduz`, `Baxt`] },
+    { q: `Dil-oro otelining nomi o'z-o'zidan nimaga aylanib ketdi?`, correct: `Oromga`, wrongs: [`Yulduzga`, `Baxtga`, `Saodatga`] },
+    { q: `Shaharning eng oldi mehmonxonalaridan qaysi biri?`, correct: `Orom`, wrongs: [`Yulduz`, `Saodat`, `Baxt`] },
+    { q: `Gena amaki aroqparast mehmon bilan sherik bo'lib kinodagi kim bo'lib berdi?`, correct: `Soqolov`, wrongs: [`Petrov`, `Ivanov`, `Semyonov`] },
+    { q: `"Gap bunday o'g'lim. Avvalo yigit kishi ko'chalik gap-so'zni ro'zg'orga yaqinlashtirmaydi, shu noma'qulchilikka borgan erkak uning izini yo'qotishni ham..." kim aytgan?`, correct: `Xoji bobo`, wrongs: [`Abdushukur aka`, `Rasul aka`, `Gena amaki`] },
+    { q: `Dilraboga bu xabarni kim yetkazgan edi?`, correct: `Oyravshanning o'zi`, wrongs: [`Tarasha xolaning o'zi`, `Kayvoni xolaning o'zi`, `G'ayratning o'zi`] },
+    { q: `Shahar qancha vaqtlik yo'l?`, correct: `Yarim soatlik`, wrongs: [`Bir soatlik`, `Ikki soatlik`, `O'n besh minutlik`] },
+
+ /* ===== 3-Bob.Oyravshan-1 oyna.html ===== */
+
+{ q: `Opaning maktubini oyravshan qayerda oldi`, correct: `Toshkentda`, wrongs: [`Samarqandda`, `Buxoroda`, `Farg'onada`] },
+    { q: `Maktubni oyravshanga kim berdi`, correct: `Muxbir bola`, wrongs: [`Avet`, `Mirg'iyos`, `Qori aka`] },
+    { q: `Muxbir bilan oyravshan qayerda ishlagan edilar`, correct: `Viloyat televideniyasida`, wrongs: [`Tuman radiosida`, `Shahar gazetasida`, `Markaziy telekanalda`] },
+    { q: `Oyravshan o'sha payti kimni kutayotgan edi`, correct: `Muharrirni`, wrongs: [`Bosh muharrir opani`, `Jamolzodani`, `Qori akani`] },
+    { q: `Muxbir bola oyravshan qayerda payti maktubni berdi`, correct: `Adabiy-dramatik ko'rsatuvlar tahririyati`, wrongs: [`Yoshlar dasturi tahririyatida`, `Musiqiy ko'rsatuvlar bo'limida`, `Axborot xizmati tahririyatida`] },
+    { q: `Muxbir yigit oyravshanga o'zgarib ketibsiz deydi oyravshan qansi tomonga deganda muxbir qiz qanday javob beradi`, correct: `Tanib bo'lmas darajada`, wrongs: [`Sal-pal o'zgargan`, `Ancha o'zgargan`, `Deyarli o'zgarmagan`] },
+    { q: `Toshkentga keliboq oyravshan nima qilgan edi`, correct: `Sochini kesdirgan`, wrongs: [`Sochini bo'yatgan`, `Sochini o'stirgan`, `Sochini turmaklagan`] },
+    { q: `Qoshu ko'z xam ilgarigidek qolmadi, engil boshni aytmasa xam bo'ladi: tarang shim, alomat guldor mayka busiz non topib bo'larmidi tosh shaxarda`, correct: `Oyravshan`, wrongs: [`Dilora`, `Xusnijamol`, `Muflixa`] },
+    { q: `Adresimni aytsam kechqurun kelarmidingiz dedi oyravshan uni kalaka qilib shunda muxbir bola nima kotarib boraman deydi`, correct: `Shampan va shokolod`, wrongs: [`Konyak va konfet`, `Vino va mevalar`, `Pivo va pista`] },
+    { q: `Shampanga uncha tobim yo'q nima ichaman deydi oyravshan`, correct: `Kanyak`, wrongs: [`Vino`, `Vodka`, `Pivo`] },
+    { q: `Muxbir xonadan chiqib ketgach oyravshandan tashqari xonada nechta kishi bor edi`, correct: `2 ayol`, wrongs: [`1 ayol`, `3 ayol`, `4 ayol`] },
+    { q: `Toshkentga otlanish arafasida u she'rlaridan saralab qaysi jurnalga yubrogan edi`, correct: `Zebo`, wrongs: [`Saodat`, `Guliston`, `Yoshlik`] },
+    { q: `Bosh muxarrir o'rinbosari ismi kim`, correct: `Jamolzoda`, wrongs: [`Qori aka`, `Mirg'iyos`, `Avet`] },
+    { q: `Oyravshanni erkaklarga xos suq bilan boshdan oyoq ko'zdan kechirdi kim`, correct: `Jamolzoda`, wrongs: [`Qori aka`, `Mirg'iyos`, `Avet`] },
+    { q: `Kulrang sochi jingalakka moyil, mo'ylovdor armansifat bir kishi qaysi jutnalning crosswordini ishlab o'tirar edi`, correct: `Огонёк`, wrongs: [`Правда`, `Известия`, `Крокодил`] },
+    { q: `Armansifatning ismi kim?`, correct: `Avet`, wrongs: [`Mirg'iyos`, `Qori aka`, `Jamolzoda`] },
+    { q: `To'laroq ko'ringani bilan u rosa chaqqon ekan, boz ustiga juda ham sho'x. Kim?`, correct: `Avet`, wrongs: [`Mirg'iyos`, `Qori aka`, `Jamolzoda`] },
+    { q: `Goh cho'nqayib Goh yonboshlab olib fotoapparatini chiqqilatarkan okey deya chap ko'zini qisib qo'yadi kim?`, correct: `Avet`, wrongs: [`Mirg'iyos`, `Qori aka`, `Jamolzoda`] },
+    { q: `Jamolzodaning ismi kim?`, correct: `Muntazamxon`, wrongs: [`Zamiraxon`, `Muflixaxon`, `Xusnijamol`] },
+    { q: `Oyravshanning otasining kasbi nima`, correct: `Adabiyot muallimi`, wrongs: [`Tarix muallimi`, `Matematika muallimi`, `Musiqa muallimi`] },
+    { q: `Zebo jurnalidagi opa Oyravshanga nechta savol berdi`, correct: `3`, wrongs: [`2`, `4`, `5`] },
+    { q: `1-savol nima`, correct: `Otangizning kasbi nima`, wrongs: [`Onangizning kasbi nima`, `Ukangiz bormi`, `Necha yoshdasiz`] },
+    { q: `2-savol nima`, correct: `Erga tegganmisiz`, wrongs: [`Farzandingiz bormi`, `Sevgan yigitingiz bormi`, `Unashtirilganmisiz`] },
+    { q: `3-savol nima`, correct: `Tappi yoyganmisiz`, wrongs: [`Non yopganmisiz`, `Osh damlaganmisiz`, `Kir yuvganmisiz`] },
+    { q: `Zebo jurnalidagi opaga Oyravshanning qaysi nomdagi 2 she'ri yoqdi`, correct: `Nomsiz`, wrongs: [`"Sog'inch"`, `"Armon"`, `"Kutish"`] },
+    { q: `Zebo jurnalidagi opa jimjimador kumush qo'ng'iroqchani silkitgan edi kim kirib keldi`, correct: `Muflixaxon`, wrongs: [`Zamiraxon`, `Xusnijamol`, `Muntazamxon`] },
+    { q: `Oyravshan qayerda ishga joylashmoqchi ekanini aytdi`, correct: `Televideniyaga`, wrongs: [`Radioga`, `Gazetaga`, `Nashriyotga`] },
+    { q: `Zebo jurnalidagi opa oyravshanni olib qoldi va kimga biriktirdi`, correct: `Zamiraxonga`, wrongs: [`Muflixaxonga`, `Jamolzodaga`, `Muntazamxonga`] },
+    { q: `Zebo jurnalidagi opa sumkasidan oq narsa tushib ketdi va shuni ishlatilmagan siz ishlating deb kimga sovg'a qildi`, correct: `Oyravshanga`, wrongs: [`Zamiraxonga`, `Muflixaxonga`, `Xusnijamolga`] },
+    { q: `Zebo jurnalidagi opa qaysi moshinaga o'tirdi`, correct: `Volga`, wrongs: [`Jiguli`, `Moskvich`, `Pobeda`] },
+    { q: `Bosh muxarrir odatda tahririyatga qancha vaqtda 1 kelib ketar edi`, correct: `Hafta-10 kunda bir`, wrongs: [`Har kuni`, `Oyda bir marta`, `Ikki-uch kunda bir`] },
+    { q: `Jurnalga tegishli jamiki tashvish va tadbirlar muovin kimning zimmasida edi`, correct: `Jamolzodaning`, wrongs: [`Avetning`, `Qori akaning`, `Muflixaning`] },
+    { q: `Bosh muharrir opa doim nimalar bilan band`, correct: `Ijod, Deputatlik ishi, Jamoat yumushlari bilan`, wrongs: [`Uy-ro'zg'or, farzandlar, mehmon kutish bilan`, `Sayohat, dam olish, davolanish bilan`, `Kitob yozish, o'qish, dars berish bilan`] },
+    { q: `Allaqanday fondu fondchalarning faxriy raisi, boz allaqaylarga xamrais, bulardan tashqari yana ko'plab qo'mita va komissiyalarga a'zo ta'rif kim haqida`, correct: `Bosh muharrir`, wrongs: [`Jamolzoda`, `Qori aka`, `Avet`] },
+    { q: `U nazmiyotidan tortib yurish-turishu kiyinishigacha kimga taqlid qiladi va unga o'xshashga zo'r beradi`, correct: `Zulfiyaxonimga`, wrongs: [`Oydin xonimga`, `Muqaddas xonimga`, `Gulchehra xonimga`] },
+    { q: `Bundan 30 yillarcha chamasi muqaddam opamiz pyesa yozib qo'ygan pyesa sarlavhasi nima`, correct: `Qizlarjon`, wrongs: [`O'g'lonlar`, `Kelinlar`, `Onajonlar`] },
+    { q: `Ko'p yillardan buyon bosh muharri opamiz... Nomli pyesa yozayotgan va hali beri tugay demasdi sarlavhasi nima`, correct: `Buvijonlar`, wrongs: [`Bobojonlar`, `Onajonlar`, `Kelinjonlar`] },
+    { q: `Tuya go'shti yegan asar sira bitmaydi qaysi asar`, correct: `Buvijonlar pyesasi`, wrongs: [`Qizlarjon pyesasi`, `Onajonlar pyesasi`, `Kelinlar pyesasi`] },
+    { q: `Muharrir opa bu borada qaysi darajada edi`, correct: `Doktorlik dissertatsiyasini ham yo'qlab ulgurgan`, wrongs: [`Nomzodlik ishini ham yozib qo'ygan`, `Ilmiy maqolalar ham chop ettirgan`, `Professorlik unvonini ham olib ulgurgan`] },
+    { q: `Umrida birorta ham she'ru hikoya yozmasdan adabiyot bo'limining mudiri bo'lib yurgan ochiqko'ngil kim?`, correct: `Opa Zamira`, wrongs: [`Muflixa`, `Muntazamxon`, `Jamolzoda`] },
+    { q: `Ko'zoynagi ustidan oyravshanga qattiq tikilgan basavlat odamni kim deb chaqirishardi`, correct: `Qori aka`, wrongs: [`Avet`, `Mirg'iyos`, `Jamolzoda`] },
+    { q: `Nima uchun qori akani qori aka deyishardi`, correct: `Familiyasi Qoriyev`, wrongs: [`Familiyasi Qoraboyev`, `Ismi Qori`, `Diniy ta'lim olgani uchun`] },
+    { q: `Bosh muharrir opaning oyravshan she'rlariga yozilgan so'zboshi maktubi mas'ul kotib kimni qo'lida edi`, correct: `Qori akaning`, wrongs: [`Jamolzodaning`, `Avetning`, `Muflixaning`] },
+    { q: `Opaning bir qo'ng'irog'i yu uning nomidan bitilgan bitta rasmiy xat bilan nima sodir boldi`, correct: `Shaharliklar ro'yhatidan jou oldi oyravshan`, wrongs: [`Oyravshanga uy ajratildi`, `Oyravshan ishga qabul qilindi`, `Oyravshanga stipendiya tayinlandi`] },
+    { q: `Oyravshanning taxallusi nima`, correct: `Oy ravshan`, wrongs: [`Ravshan Oy`, `Oydin Nur`, `Yorug' Oy`] },
+    { q: `Oyravshanninh she'rlari bosilgan jurnalning qo'shsahifasida oravshanning qaysi sur'ti chop etilgan edi`, correct: `Oyravshanning novda hidlab shoirona turgan uzunchoq sur'ati`, wrongs: [`Oyravshanning gul ushlab kulib turgan rasmi`, `Oyravshanning kitob o'qib o'tirgan sur'ati`, `Oyravshanning derazadan qarab turgan surati`] },
+    { q: `Oyravshanga yana qanday ism qo'ymoqchi bo'lgan onasi`, correct: `Oydin`, wrongs: [`Yorqin`, `Nurxon`, `Kunduz`] },
+    { q: `Oyravshan va Oydin ismidan oyravshan ismini tanlashdi oyravshan deb kim atagan edi`, correct: `Momosi`, wrongs: [`Otasi`, `Onasi`, `Amakisi`] },
+    { q: `Chaqaloqning eshini xovli adog'idagi serhosil qaysi meva daradti tagiga ko'mib qaytishadi`, correct: `Olma`, wrongs: [`Anor`, `Shaftoli`, `O'rik`] },
+    { q: `Jurnalda Oyravshanni taxalassi qanday yozilgan edi`, correct: `Oy rovshan`, wrongs: [`Oy ravshan`, `Oyrovshon`, `Ravshan Oy`] },
+    { q: `Doim shunday paytlarda g'amgin paytida kim esiga tushadi Oyravshanni`, correct: `G'ayrat`, wrongs: [`Mirg'iyos`, `Qori aka`, `Avet`] },
+    { q: `Qori akada qanday rusumdagi moshina bor edi`, correct: `Eski Moskvich`, wrongs: [`Eski Jiguli`, `Eski Volga`, `Eski Pobeda`] },
+    { q: `Oyravshanni Qori aka eski Moskvichida qayerga oborib qo'ydi`, correct: `Ijaradonasiga`, wrongs: [`Yotoqxonasiga`, `Ishxonasiga`, `Qarindoshinikiga`] },
+    { q: `Muharrir opa nima sabab dan katta ziyofat berdi`, correct: `Saylov`, wrongs: [`Yubiley`, `Bayram`, `Mukofot topshirish marosimi`] },
+    { q: `Bu to'y-u tantanadan birgina odam bebaxradek u darvoza tagiga stul qo'yib yakkayolg'iz o'tiribdi xavo iliq bo'lishiga qaramay egnida qalin guppi cho'pon, boshida qizag'i bir qarich keladigan andijom do'ppi. Kelgan ketganga qontalash kim`, correct: `Opaning eri`, wrongs: [`Qori aka`, `Muharrirning ukasi`, `Haydovchi`] },
+    { q: `Opaning nechta qizi bor`, correct: `2`, wrongs: [`1`, `3`, `4`] },
+    { q: `Oyravshan opaning bayramida opaning iltimosiga ko'ra qaysi she'rini o'qidi`, correct: `"Tanxolik-bayram menga"`, wrongs: [`"Nomsiz"`, `"Sog'inch"`, `"Armon"`] },
+    { q: `Oyravshan 1 ta mas nta she'r o'qidi`, correct: `4`, wrongs: [`2`, `3`, `5`] },
+    { q: `Opa Oyravshanni kiftiga qanday mato bilan ro'molsimon kepata qib o'rab qo'ydi`, correct: `Shox atlas`, wrongs: [`Adras`, `Duxoba`, `Shohi`] },
+    { q: `Bayramda Oyravshan kimni ko'rib bayram xarom bu olqishu siylovlar xarom, Bari bir pul chaqa bo'ldi`, correct: `Qori akani`, wrongs: [`Muharrir opani`, `Avetni`, `Jamolzodani`] },
+    { q: `Ziyofatdan Zamira opa va oyravshan kimning qizil jigulisi da qaytishdi`, correct: `Avetning`, wrongs: [`Qori akaning`, `Mirg'iyosning`, `Jamolzodaning`] },
+    { q: `Qori akaning yonida bo'ladigan baqaloq qori akadan nechi yosh kichik edi`, correct: `4`, wrongs: [`2`, `3`, `5`] },
+    { q: `Opaning televideniya rahbariga tayinlab qo'yishi bilan oyravshan qayerga ishga o'tadi`, correct: `Televideniyaga`, wrongs: [`Radioga`, `Gazetaga`, `Nashriyotga`] },
+    { q: `Kim kechagina bosh muharrirlikka ko'tarilgan edi`, correct: `Mirg'iyos`, wrongs: [`Avet`, `Qori aka`, `Jamolzoda`] },
+    { q: `Bir gal bir olim qanday ko'ylakda ko'rinib baloga qolgan edi`, correct: `Qizil`, wrongs: [`Ko'k`, `Sariq`, `Yashil`] },
+    { q: `Qizil oxorlik ko'ylak sabab qizilparastni ekranga chiqargan muharrirning ahvoli qanday kechdi`, correct: `Kursisini almashtirishga majbur bo'ldi`, wrongs: [`Ishdan bo'shatildi`, `Jarima to'ladi`, `Uzr so'rashga majbur bo'ldi`] },
+    { q: `"Yozgan matnimni bir ko'rib bersangiz, oyravshan," "Ko'rsatuvimga zo'r bie shoirona matn yozib bersangiz, iltimos ravshanoy, deya yalinib yurgan bola`, correct: `Mirg'iyos`, wrongs: [`Avet`, `Qori aka`, `Jamolzoda`] },
+    { q: `Mirg'iyos oyravshanga nima deb topshiriq bergan edi`, correct: `Opa bilan suhbat olish`, wrongs: [`Qori aka bilan uchrashish`, `Jamolzoda bilan yozishish`, `Avet bilan suratga tushish`] },
+    { q: `Nima uchun opadan suhbat olish kerak edi`, correct: `Orden yoki mukofot olgani`, wrongs: [`Yubileyi munosabati bilan`, `Nafaqaga chiqqani sababli`, `Yangi lavozimga tayinlangani uchun`] },
+    { q: `Opa bilan suhbat qurgani qaysi moshinada yo'lga otlandi oyravshan`, correct: `Damas`, wrongs: [`Nexiya`, `Jiguli`, `Moskvich`] },
+    { q: `Egnida po'rim ko'ylak, bo'ynidagi xamishagi zangori sharf ta'rif kim haqida`, correct: `Opa haqida`, wrongs: [`Jamolzoda haqida`, `Muflixa haqida`, `Qori aka haqida`] },
+    { q: `Oyravshan ko'z yosh to'kdi opa yana ro'molcha ushladi o'shanda ro'molcha haqida gap ketadi shunda opa unga nima deydi`, correct: `-Asrab qololmadingizda shuni qizgina`, wrongs: [`-Yo'qotib qo'ydingizmi shuni, qizgina`, `-Saqlay olmadingizmi buni, bolam`, `-E, sizga ham qiyin bo'lgan ekan-da`] },
+    { q: `Opaning davrida bir qo'shiq bo'lardi qorong'uda qo'rqmaslik uchun to'da to'da bo'lib aytishardi ro'molcha haqida qo'shiq sarlavhasini yozing`, correct: `Fabrikamning yo'lidan ro'molcha topib oldim`, wrongs: [`Ishchi qizning ro'molchasi`, `Kechqurun ro'molcha qo'shig'i`, `Yoshlik ro'molchasi`] },
+    { q: `Opa yoshlikda qayerda ishlagan`, correct: `Fabrikada`, wrongs: [`Zavodda`, `Kombinatda`, `Sexda`] },
+    { q: `Opa qanday fabrikada ishlagan`, correct: `Tekstilkombinatda`, wrongs: [`To'qimachilik zavodida`, `Ip yigiruv fabrikasida`, `Gazlama kombinatida`] },
+    { q: `Opa tekstilkombinat fabrikada nima ish qilgan`, correct: `To'quvchilik`, wrongs: [`Yigiruvchilik`, `Tikuvchilik`, `Bo'yoqchilik`] },
+    { q: `Oyravshan nechi yoshga kirgan edi`, correct: `28`, wrongs: [`25`, `30`, `32`] },
+    { q: `Opa oyravshanni kim deb chaqirar edi`, correct: `Ravshanoy`, wrongs: [`Oyjon`, `Ravshan qiz`, `Shoira qiz`] },
+    { q: `Opa qaysi nabirasini chaqirdi`, correct: `Xusnijamol`, wrongs: [`Muflixa`, `Zamira`, `Muntazamxon`] },
+    { q: `Xusnijamol nechi yoshda esi`, correct: `18-19`, wrongs: [`15-16`, `20-21`, `22-23`] },
+    { q: `Xusnijamol uyning nechinchi qavatidan qaradi`, correct: `2-qavatidan`, wrongs: [`1-qavatidan`, `3-qavatidan`, `Balkondan`] },
+    { q: `Xozir oyravshan nima chiqarayotganini aytdi`, correct: `Saylanma`, wrongs: [`To'plam`, `Devon`, `Kitob`] },
+    { q: `Saylanma kimning hisobidan chiqarilayotgan edi`, correct: `O'zining`, wrongs: [`Jurnalning`, `Nashriyotning`, `Davlatning`] },
+    { q: `Opa oyravshnni qanday niyyatda ishga oganda`, correct: `O'rniga qo'yib ketish uchun`, wrongs: [`Yordamchi bo'lsin deb`, `Tajriba orttirsin deb`, `Vaqtincha ishlasin deb`] },
+    { q: `Opa vafot etganida oyravshan qayerda edi`, correct: `Issiqko'lda`, wrongs: [`Qrimda`, `Chimyonda`, `Samarqandda`] },
+    { q: `Issiqko'lda oyravshan nima qilib yurgan edi`, correct: `Boboy bilan cho'milib yurgan edi`, wrongs: [`Bolalari bilan dam olayotgan edi`, `Do'stlari bilan sayr qilayotgan edi`, `Yolg'iz dam olayotgan edi`] },
+    { q: `Opa ishdan nima sanab ketadi`, correct: `Bir xodima mashmasha ko'taradi`, wrongs: [`Muharrir opa bilan janjallashadi`, `Ish haqi masalasida tortishuv chiqadi`, `Yig'ilishda janjal chiqadi`] },
+    { q: `Xodim Mashmasha ko'targandan keyin opa qanday ahvolga tushdi`, correct: `Uyda bir holda shumshayib o'tiradi`, wrongs: [`Kasalxonaga tushib qoladi`, `Ishdan bosh tortadi`, `Qishloqqa qaytib ketadi`] },
+    { q: `Hozir zeboning opaxoni kim edi`, correct: `Muflixa`, wrongs: [`Zamira`, `Xusnijamol`, `Muntazamxon`] },
+    { q: `Bujur basharasini obdon shibbalab, shochlarini kestirib xurpaytirib jingalak qilib olgan baribr yog'li allaqanday yopishqoq xamon qazg'oqlari bordek`, correct: `Muflixa`, wrongs: [`Zamira`, `Xusnijamol`, `Muntazamxon`] },
+    { q: `Jurnalning farroshi kim`, correct: `Muntazam Jamolzoda`, wrongs: [`Zamira opa`, `Muflixa`, `Qori aka`] },
+    { q: `Muntazam jamolzodaning ahvoli qanday bo'ldi`, correct: `Nafaqaga haydalgan`, wrongs: [`Boshqa ishga o'tkazilgan`, `Martaba pog'onasidan ko'tarilgan`, `Ta'til berilgan`] },
+    { q: `Uni jo'natish rossa qiyn bo'lganmish. Butun umrimni shu jurnalga berdim, qayoqqa ketaman!? Uyda yolg'iz o'tirib nima qilaman deya rosa g'ishavaga borgan kim`, correct: `Muntazam Jamolzoda`, wrongs: [`Zamira opa`, `Muflixa`, `Qori aka`] },
+    { q: `Mashmasha boshlagan mayda hodim kim?`, correct: `Muflixa`, wrongs: [`Zamira`, `Xusnijamol`, `Muntazamxon`] },
+    { q: `Muntazam Jamolzodaning nechta farzansi bor`, correct: `1 qizi`, wrongs: [`2 qizi`, `1 o'g'li`, `3 farzandi`] },
+    { q: `Muntazam Jamoldozoda toq va arzanda qizi ham erga tegib ketgan odamni rahmi keladi ammo Opaning пошла ты зачем mentga opaning sarqiti dey`, correct: `Muflixa`, wrongs: [`Zamira`, `Xusnijamol`, `Muntazamxon`] },
+    { q: `Zamira opaning ahvoli qanday kechdi`, correct: `Muflixa zam qib ogan`, wrongs: [`Yaxshi kayfiyatda edi`, `Ishga kirishib ketdi`, `Xursand bo'lib yurdi`] },
+    { q: `Opa bo'shagan zahoti kim ham arizasini yozibdi`, correct: `Qori aka`, wrongs: [`Avet`, `Mirg'iyos`, `Jamolzoda`] },
+    { q: `Opaning norasmiy eri kim`, correct: `Qori aka`, wrongs: [`Avet`, `Mirg'iyos`, `Jamolzoda`] },
+    { q: `Bir bug'altirdan chiqqan chala savod kim`, correct: `Qori aka`, wrongs: [`Avet`, `Mirg'iyos`, `Jamolzoda`] },
+    { q: `Opaning 2 ala qizi kimdan`, correct: `Qori akadan`, wrongs: [`Boshqa erdan`, `Birinchi eridan`, `Noma'lum kishidan`] },
+    { q: `Nega ikkala qizi ham qori akadan`, correct: `Eri bepusht`, wrongs: [`Eri uzoqda ishlagan`, `Eri kasal bo'lgan`, `Eri boshqa oilada bo'lgan`] },
+    { q: `Go'ngxo'r chug'urchiq kim`, correct: `Muflixa`, wrongs: [`Zamira`, `Xusnijamol`, `Muntazamxon`] },
+    { q: `Zebolarning zebosi`, correct: `Taqdir berdi menga bari barini, bir dardgina ezar yurak bag'rimni`, wrongs: [`Bilmadim netay men bu dunyoni, taqdirim aylantirdi qanoatni`, `Baxtim qayga ketding, izlab topolmayman`, `Yolg'iz qoldim g'am ichinda, kim bilar holimni`] },
+    { q: `Agar shuning gaplari rost chiqsa, uztozinga, buving qatori bir kampirga kundosh bo'laringa sal qolgan ekanda,... O'l hu kuningga o'l. Kim kundosh bo'lysisiga ozgina qolgan edi`, correct: `Oyravshan`, wrongs: [`Muflixa`, `Xusnijamol`, `Zamira`] },
+
+
+    /* =====  4-bob.G'ayrat-1 oyna.html ===== */
+
+    { q: `Toleyu a'moli ikki nimaning hukmida qolishini g'ayrat u kezlari bilmasdi`, correct: `Jumaning`, wrongs: [`G'ayratning`, `Oyravshanning`, `Otasining`] },
+    { q: `G'ayrat o'qishni bitirib kelgach qanday idoraga ishga joylashgan`, correct: `Elektr ulashuvchi idoraga`, wrongs: [`Suv ta'minoti idorasiga`, `Gaz xo'jaligi idorasiga`, `Qishloq xo'jaligi idorasiga`] },
+    { q: `Tumanda karrillab yuradigan vallamatlardan kim?`, correct: `Juma to'qsabo'`, wrongs: [`Jumaniyoz daroz`, `Baltavay`, `Toshtemir Chaqqon`] },
+    { q: `Tumanda karrillab yuradigan vallamatlardan Juma To'qsabo'ning qo'lida o'qigan injener bo'lib yurardi kim`, correct: `G'ayrat`, wrongs: [`Azamat`, `Toshtemir Chaqqon`, `Jumaniyoz`] },
+    { q: `G'ayrat qayerdan xat oldi`, correct: `Toshkentdan`, wrongs: [`Samarqanddan`, `Buxorodan`, `Farg'onadan`] },
+    { q: `Toshkentdan kelgan xat kimdan edi`, correct: `Jumaniyozdan`, wrongs: [`Juma To'qsabo'dan`, `Baltavaydan`, `Azamatdan`] },
+    { q: `Jumaniyoz qayerga boshqarmaga zam bo'lada`, correct: `Toshkentdagi`, wrongs: [`Samarqanddagi`, `Buxorodagi`, `Farg'onadagi`] },
+    { q: `Jumaniyoz nima deb chaqiradi G'ayratni`, correct: `Yaqinda nachalnik bo'laman o'zima zam qilib olaman`, wrongs: [`Endi katta lavozimga o'taman, seni ham olib ketaman deydi`, `Boshliq bo'lganimda albatta chaqiraman deydi`, `O'zim bilan ishga olaman, xavotir olma deydi`] },
+    { q: `Juma daroz qayerlik`, correct: `Toshovuzlik`, wrongs: [`Jiydalik`, `Qayinzorlik`, `Oqtuproqlik`] },
+    { q: `Bo'yi 2 metr, kaftlari ketmondek, afti zanjining o'zi, gapirganda nuqul iljayib, xuddi kishini ermaklayotgandek o'ynoqilik bilan gapiradi. Kim?`, correct: `Jumaniyoz daroz`, wrongs: [`Baltavay`, `Azamat`, `Toshtemir Chaqqon`] },
+    { q: `Elning musofir bolasi talaba xona yoki u yer bu yerda arzon garov ijara qilib kun ko'rsa, bu kishim amakisiningmi, tog'asiningmi o'rdasimon hovlisida yashaydi. Kim haqida gap ketmoqda?`, correct: `Jumaniyoz daroz`, wrongs: [`Baltavay`, `Azamat`, `Toshtemir Chaqqon`] },
+    { q: `Jumaniyoz darozning qarindoshi befarzand eng katta idorada nozik bir o'rinni ishg'il etib o'tiradi ismi kim`, correct: `Baltavay`, wrongs: [`Azamat`, `Toshtemir Chaqqon`, `Jumaniyoz`] },
+    { q: `Jumaniyoz Baltavay og'asini bahona qilib "Baltavay og'am unday dedi, bunday dedi" deb nima qilardi`, correct: `Pullardi`, wrongs: [`Maqtanardi`, `Qarz olardi`, `Ishga tavsiya qilardi`] },
+    { q: `G'ayrat Kafedrada ishda qolmoqchi bo'lib evini qilolmay yurganida ham kim unga ishinga yordam beraman deydi`, correct: `Jumaniyoz`, wrongs: [`Baltavay`, `Azamat`, `Toshtemir Chaqqon`] },
+    { q: `G'ayrat Jumaniyozning taklifini otasiga aytganida u qanday javob beradi`, correct: `Noma'qulginaning nonini yebsiz, ulim`, wrongs: [`Bu yo'l senga to'g'ri kelmaydi, o'g'lim`, `O'ylab ish qil, oshiqma, farzandim`, `Bu odamlarga ishonma, bolam`] },
+    { q: `Onang bu yoqda qonbosimdan biyron yil yo'l qaradik, yetar. Siz yana chamadon ko'tarsangiz el ulus nima deydi, deb kim aytadi`, correct: `Otasi`, wrongs: [`Onasi`, `Amakisi`, `Qaynotasi`] },
+    { q: `Toxir Zuxro, Farxod Shirin kimlar edi`, correct: `G'ayrat va Oyravshan`, wrongs: [`G'ayrat va Sanam`, `Azamat va Sanam`, `Jumaniyoz va Oyravshan`] },
+    { q: `G'ayrat ko'chaga chiqsa, ko'rgani ustidan ishshayib kulganday bo'laveradi va odamlar nimadir deganday bo'laveradi. Nima deganday bo'ladi?`, correct: `Qo'lingdagi emas qo'yningdagi qushni uchirib o'tiribsan-a, erkakmisan o'zi`, wrongs: [`Qo'lga kirgan boyliqni boy berding-a, ahmoq`, `O'zingga o'xshagan bola bo'lmaydi bunday ishda`, `Sen bu ishga yaramaysan, boshqasiga bergin`] },
+    { q: `Qitmir bir sinfdoshi aytganidek, G'ayrat qanday holda`, correct: `U endi sevgi maydonida qattiq nokautga uchragan banda`, wrongs: [`U endi hayotdan ko'ngli qolgan odam`, `U endi baxtidan judo bo'lgan yigit`, `U endi ishdan ham sovigan banda`] },
+    { q: `Oyravshan va G'ayratga qachon non sindirishgan`, correct: `3-kursni bitirib 4-kursga o'tganida`, wrongs: [`1-kursni bitirib 2-kursga o'tganida`, `2-kursni bitirib 3-kursga o'tganida`, `4-kursni bitirib 5-kursga o'tganida`] },
+    { q: `Qachondan boshlab voha yulduzi sifatida oyravshan viloyat televideniyasida borlay boshladi`, correct: `4 yillik taxsildan so'ng`, wrongs: [`3 yillik taxsildan so'ng`, `5 yillik taxsildan so'ng`, `2 yillik taxsildan so'ng`] },
+    { q: `G'ayrat esa yilni oxiri nimaga shong'ib ketgan edi`, correct: `Diplom ishiga`, wrongs: [`Ishga joylashishga`, `Uylanish tayyorgarligiga`, `Imtihonlarga`] },
+    { q: `Nima bo'lgan bo'lsa qachon bo'ldi`, correct: `4 yillik taxsildan so'ng`, wrongs: [`3 yillik taxsildan so'ng`, `5 yillik taxsildan so'ng`, `2 yillik taxsildan so'ng`] },
+    { q: `Elektr ulashuvchi idoraga g'ayrat qanday ishga kiradi`, correct: `Otasining salom-alik akajoni Juma To'qsabo' boshliq shu korxonaga ishga kirdi`, wrongs: [`O'zi mustaqil arizasi bilan qabul qilindi`, `Institut yo'llanmasi bilan yuborildi`, `Tanish orqali boshqa idoraga o'tkazildi`] },
+    { q: `Issiq yoz kunlari To'qsabo' idora yuzini ko'rmaydi desa bo'ladi, hovlidagi o'tovdek tagida o'tiradi. Nimaning tagida?`, correct: `Gujumning`, wrongs: [`Tolning`, `Terakning`, `Chinorning`] },
+    { q: `Qishin yozin boshidan nimani qo'ymaydi To'qsabo'`, correct: `Qo'ng'ir shlyapasini`, wrongs: [`Oq telpagini`, `Qora do'ppisini`, `Kulrang kepkasini`] },
+    { q: `Juma To'qsabo'ning bobosining ismi`, correct: `Mamar To'qsabo'`, wrongs: [`Azamat To'qsabo'`, `Baltavay To'qsabo'`, `Toshtemir To'qsabo'`] },
+    { q: `Sirtdan baqirchaqiru to'poriroq ko'rinadigan odam, qarzi boshidan oshib toshgan bo'lsa ham royishnamo biror arzgo'yni noumid qaytarmaydi. Kim haqida gap ketmoqda?`, correct: `To'qsabo'`, wrongs: [`Jumaniyoz`, `Baltavay`, `Azamat`] },
+    { q: `Mamar To'qsabo' "To'qsabo'" unvonini kimdan olgan`, correct: `Amirdan`, wrongs: [`Xondan`, `Podshohdan`, `Sardordan`] },
+    { q: `Har yili bobosining arvohlariga atab nima so'yadi to'qsabo'`, correct: `Qo'y`, wrongs: [`Ho'kiz`, `Echki`, `Tuya`] },
+    { q: `Bu idorada yagona o'qib kelgan injener kim`, correct: `G'ayrat`, wrongs: [`Azamat`, `Toshtemir Chaqqon`, `Baltavay`] },
+    { q: `Tumshuq osmonda, o'zi ham osmondan tushganday karrilab, qachon qaramang qo'li orqada, jiydalini o'zi tug'ib qo'ygan kabi shishinib yuradi. Bu kim?`, correct: `Juma To'qsabo'`, wrongs: [`Jumaniyoz daroz`, `Baltavay`, `Azamat`] },
+    { q: `Juma To'qsabo'ning uyiga chaqirig'iga borgan G'ayrat bozordan nima olib boradi`, correct: `Qovun`, wrongs: [`Tarvuz`, `Uzum`, `Anor`] },
+    { q: `Hovlisi jiydalining qoq markazida, eski istirohat bog'ining etagidan o'tadigan kattakonlar yashaydigan qator uylarga yondosh tor ko'chaning adog'ida kimning uyi`, correct: `Juma To'qsabo'ning`, wrongs: [`Baltavayning`, `Azamatning`, `Jumaniyozning`] },
+    { q: `Juma To'qsabo'ning 1-xotinidan bo'lgan o'g'li kim`, correct: `Azamat`, wrongs: [`Sanam`, `Sevar`, `G'ayrat`] },
+    { q: `Komsomolning-kamolotning kattasiman deb yuradigan odam kim?`, correct: `Azamat`, wrongs: [`Sanam`, `Sevar`, `G'ayrat`] },
+    { q: `Shunday farzand ko'rguncha devorning kavagiga to'kmaysanmi, ey bandai nodon! Shu xaromidan familiyamni qaytib olaman deb yuraman, xech iloji yo'q - kim haqida aytilgan?`, correct: `Azamat`, wrongs: [`Sanam`, `Sevar`, `G'ayrat`] },
+    { q: `To'qsabo' uyining eshigini kim ochadi`, correct: `Sanam`, wrongs: [`Sevar`, `Gulsara`, `Oyravshan`] },
+    { q: `Juma To'qsabo' nima sababdan G'ayratni chaqirgan edi`, correct: `G'ayrat injener bo'lganini aytish uchun`, wrongs: [`Uylantirmoqchi bo'lgani uchun`, `Ishga taklif qilmoqchi bo'lgani uchun`, `Sog'lig'ini so'rash uchun`] },
+    { q: `G'ayrat kelganda Juma To'qsabo' qaysi aroqni ochadi`, correct: `Oq laylak`, wrongs: [`Qora oltin`, `Zar quyosh`, `Erkin qanot`] },
+    { q: `Qayerning aroqi "Oq laylak"`, correct: `Moldavaniki`, wrongs: [`Ruminiyaniki`, `Ukrainaniki`, `Gruziyaniki`] },
+    { q: `Oq laylak arog'ini Moldavadan qachon olgan Juma To'qsabo'`, correct: `Sanam tug'ilganda`, wrongs: [`Sevar tug'ilganda`, `Azamat tug'ilganda`, `To'y kunida`] },
+    { q: `Sanam tug'ilganda Moldavadan oq laylak arog'idan 1 yashik oladi, har yili nechta ochadi`, correct: `1`, wrongs: [`2`, `3`, `5`] },
+    { q: `Oq laylak arog'idan har yili 1 dona ochadi, hozir g'ayrat bahonasida nechinchisi ochiladi`, correct: `20`, wrongs: [`15`, `18`, `25`] },
+    { q: `Oq laylakdan boshqa yana qanaqa aroq ichadi Juma To'qsabo'`, correct: `Ichmaydi`, wrongs: [`Faqat vinodan ichadi`, `Konyakdan ham ichadi`, `Har xil aroq ichadi`] },
+    { q: `Avvalgi bosh injener kim edi`, correct: `Toshtemir Chaqqon`, wrongs: [`Baltavay`, `Azamat`, `Jumaniyoz`] },
+    { q: `Mehnat qilishga qiyinsinib, haqqini ajratib olishga qarasa go'ra o'ta ochko'z kim?`, correct: `G'ayrat`, wrongs: [`Azamat`, `Baltavay`, `Toshtemir Chaqqon`] },
+    { q: `60-yillari Juma To'qsabo' MTSga qanday lavozimga tayinlanadi`, correct: `Direktor`, wrongs: [`Muovin`, `Kotib`, `Bosh injener`] },
+    { q: `Juma To'qsabo' direktor payti kim bilan qasdlashib qoladi`, correct: `Kolxoz raisi bilan`, wrongs: [`Tuman hokimi bilan`, `Idora boshlig'i bilan`, `Qo'shni direktor bilan`] },
+    { q: `Rais nomardligi ustiga dasti uzun, qayergadir kim ham ekan`, correct: `Deputat`, wrongs: [`Vakil`, `Sardor`, `Rahbar`] },
+    { q: `Kolxoz raisi-deputat To'qsabo'ni nechi yilga kesdiradi`, correct: `5`, wrongs: [`3`, `7`, `10`] },
+    { q: `Nimaning da'vosi yo'q`, correct: `Tuhmat-u-malomatning`, wrongs: [`Yolg'on-u-buhtonning`, `G'iybat-u-tuhmatning`, `Ig'vo-yu-fisqning`] },
+    { q: `Rais nechchi yillik kommunist edi`, correct: `30`, wrongs: [`20`, `25`, `40`] },
+    { q: `Rais bunga ham to'ymay nima qiladi`, correct: `To'qsabo'ning xushro'y xotiniga ishqibozlik qiladi`, wrongs: [`To'qsabo'ning mol-mulkiga ko'z olaytiradi`, `To'qsabo'ning yerini tortib oladi`, `To'qsabo'ning qizini so'raydi`] },
+    { q: `Juma To'qsabo'ning 1-xotini qanday edi`, correct: `Xushro'yligi ustiga suvni ko'rsa yotib oladigan tanbal tuya misoli yotoqiroq xilidan bo'lib chiqadi`, wrongs: [`Chiroyli bo'lsa-da, ishyoqmas va dangasa ekan`, `Go'zal bo'lgani bilan qo'li past, uddaburon emas ekan`, `Xushro'y bo'lsa-da, injiq va noshukr ekan`] },
+    { q: `To'qsabo' 5 yilga kesildi, yoza-yoz qilib nechi yilda chiqib keladi`, correct: `3 yil`, wrongs: [`2 yil`, `4 yil`, `1 yil`] },
+    { q: `Yil o'tar-o'tmas toleyi pastlab ketib xo'jaligidan bir olam kamomad chiqadiyu, murutini bolta kesmas qudratli partiyadan o'chirib qamaladi. Kim?`, correct: `Rais`, wrongs: [`To'qsabo'`, `Baltavay`, `Jumaniyoz`] },
+    { q: `Alamzada To'qsabo' shunda anoyisirab qarab tursinmi?! Molini sotib, jonini sotib, qamoqdagi g'animining sal o'tirib qolganini demasa, xali tafti ketmagan kimga qo'l uzatadi?`, correct: `Raisning singlisiga`, wrongs: [`Raisning xotiniga`, `Raisning qiziga`, `Raisning kelinigа`] },
+    { q: `Obdan shirasini so'rgach, tug'masligini bahona qilib, qachon uni talog'ini qo'liga tutqizadi`, correct: `Ayni rais qamoqdan chiqib kelgan kun`, wrongs: [`To'qsabo' o'lgan kuni`, `Sanam turmushga chiqqan kuni`, `Bayram kunlarida`] },
+    { q: `To'qsabo'ning nechta qizi bor edi`, correct: `2`, wrongs: [`1`, `3`, `4`] },
+    { q: `Kattasining ismi kim`, correct: `Sanam`, wrongs: [`Sevar`, `Gulsara`, `Oyravshan`] },
+    { q: `Kichigining ismi kim`, correct: `Sevar`, wrongs: [`Sanam`, `Gulsara`, `Oyravshan`] },
+    { q: `Sanam va Sevarning yosh orasidagi farq nechi yosh`, correct: `2`, wrongs: [`1`, `3`, `4`] },
+    { q: `Xudoylig'ini aytganda kim ko'zga yaqin ko'rindi`, correct: `Singlisi`, wrongs: [`Onasi`, `Xotini`, `Qaynonasi`] },
+    { q: `Nega Sevarni tanlashga o'ylandi`, correct: `Opasi uyda qolib ketishini o'yladi`, wrongs: [`Sevar kichkina bo'lgani uchun`, `Sanamning xarakteri yoqmagani uchun`, `Ota-onasi shunday maslahat bergani uchun`] },
+    { q: `To'qsabo'ning kotibining ismi kim edi`, correct: `Gulsara`, wrongs: [`Sanam`, `Sevar`, `Muflixa`] },
+    { q: `Tantana ayni avjiga chiqib, mahalliy dasta gup-gup yo'sinidagi zamonaviy xonishni boshlaganda To'qsabo' nag'ma ko'rsatib nimadan o'qishni istaydi`, correct: `Maqomdan`, wrongs: [`Lapardan`, `Qo'shiqdan`, `Yalladan`] },
+    { q: `O'limidan 2 yil oldinmidi, To'qsabo' bir kuni bosh injener G'ayratni xonasiga chaqirib, qistab qo'ymay nima qiladi?`, correct: `O'z o'rniga o'tqazadi`, wrongs: [`Nafaqaga chiqaradi`, `Boshqa ishga yuboradi`, `Ishdan bo'shatadi`] },
+    { q: `Juma To'qsabo' G'ayratni o'z o'rniga o'tkazar ekan, "yarashdi endi cholligimni qilaman" deydi va 1 shart qo'yadi. Shart nima?`, correct: `Jiydalida bir kunam, bir soat ham chiroq o'chmasligi`, wrongs: [`Har kuni idoraga o'zi kelib turishi`, `Hech qachon ishdan bosh tortmasligi`, `Har oy hisobot berib turishi`] },
+    { q: `G'ayrat qaynotasining o'rnida qancha vaqt ham o'tirmadi`, correct: `1 yil ham`, wrongs: [`2 yil ham`, `3 yil ham`, `Yarim yil ham`] },
+    { q: `Nega qaynotasining o'rnida 1 yil ham o'tirmadi`, correct: `Qadrdoni Jumaniyoz yana yo'qlab qoldi...`, wrongs: [`Yangi tashkilot uni chaqirib qoldi`, `Yuqori martaba taklif qilishdi`, `Sog'lig'i yo'l qo'ymadi`] },
+    { q: `G'ayrat biror nimadan Sanamdan ranjiganida achchiq qilib nima deydi`, correct: `O'shanda kallam ishlamagan ekan, Sevarni tanlasam bo'lar ekan, deb yuboradi`, wrongs: [`Sendan ko'ra Sevar yaxshiroq bo'lardi, deydi`, `Xato qildim, boshqasini tanlashim kerak edi, deydi`, `Sendan afzalrog'i bor edi, deb yuboradi`] },
+    { q: `Bu ta'na-pushaymonlikdan Sanamgina munglanib qoladi. Bunda Sanam nima his qiladi?`, correct: `Xo'rlanadi`, wrongs: [`Afsuslanadi`, `Uyaladi`, `Ranjiydi`] },
+
+
+
+
+   /* =====  5-Bob.Oyravshan-3 oyna.html ===== */
+
+{q: `Saylov nechi yilda bir bo'ladi asarda`, correct: `5`, wrongs: [`4`, `6`, `3`]},
+{q: `Oyravshandan xaligina kim qo'ng'iroq qilib hol-ahvol so'radi`, correct: `Madam Xosiyat`, wrongs: [`Tamara`, `Sanam`, `Sevar`]},
+{q: `Oyravshandan 3-4 yosh katta, "onaxotun-u opajon-opajon" deydi nuqul kim`, correct: `Tamara`, wrongs: [`Madam Xosiyat`, `Samiya`, `Sharofat`]},
+{q: `Dafatan qaragan odam uni erkak kishimikan deydi: yuzini tapoq bosgan, qop-qora, yonoqlari turtib chiqqan, otbashara kim`, correct: `Tamara`, wrongs: [`Samiya`, `Madam Xosiyat`, `Sharofat`]},
+{q: `Tamaraning nechta bolasi bor`, correct: `4`, wrongs: [`2`, `3`, `5`]},
+{q: `2 hafta burun qayerga o'tganida Tamaraga odmiroq bir shisha atir-u bolalariga qand-qurs sovg'a qilib kelgandan keyin yonidan nari ketmaydi`, correct: `Toshkent`, wrongs: [`Samarqand`, `Buxoro`, `Farg'ona`]},
+{q: `Oyravshanning nazarida kimning ismi Tamara bo'lishi kerak edi`, correct: `Xosiyat`, wrongs: [`Sanam`, `Sevar`, `Samiya`]},
+{q: `Tamaraning erining ismi kim`, correct: `Cho'riboy`, wrongs: [`Pardaboy`, `Mansur`, `Iskandar`]},
+{q: `Ulkan chorboqqa ham qorovul, ham har daraxtga qarab yuradigan bog'bon qatori kim`, correct: `Cho'riboy`, wrongs: [`Mansur`, `Pardaboy`, `Vasya`]},
+{q: `Cho'riboyning mittigina nimasiyam bor edi`, correct: `Traktori`, wrongs: [`Mashinasi`, `Velosipedi`, `Mototsikli`]},
+{q: `Oyravshan uning ovoz chiqarib so'z aytganini eshitmagan - kimning`, correct: `Cho'riboyning`, wrongs: [`Mansurning`, `Pardaboyning`, `Vasyaning`]},
+{q: `Gungurs, boshini ko'tarib odamning yuziga qarashni bilmaydi, uyalinqiragandek yerga tikilib turgani turgan kim`, correct: `Cho'riboy`, wrongs: [`Mansur`, `Pardaboy`, `Vasya`]},
+{q: `Tamara qishloqqa o'tib kelsammi deb ruxsat so'raydi, sabab nima edi`, correct: `Singlisining mazasi yo'q`, wrongs: [`Onasi kasal bo'lib qoldi`, `To'y bo'layotgan edi`, `Bolalarini olib ketmoqchi edi`]},
+{q: `Xosiyatxon qaysi moshinaga o'tirib ketdi`, correct: `Matiz`, wrongs: [`Neksiya`, `Damas`, `Lasetti`]},
+{q: `Maktabning peshqadami, bitiruvchi, komsomol tashkilotining kotibi kim`, correct: `G'ayrat`, wrongs: [`Azamat`, `Iskandar`, `To'lqin`]},
+{q: `Katta-kichik yig'ilishlarda "jonajon vatan", "baxtli bolalik", "qadrdon maktab" mavzusida she'r o'qib, ko'zga ko'rinib, olqish olib yurgan bu bola necha yoshda edi`, correct: `8`, wrongs: [`7`, `9`, `10`]},
+{q: `U mudom jiddiy, hech kimga burilib qaramas, o'zicha allaqayoqlarga shoshib yurardi. Kim?`, correct: `G'ayrat`, wrongs: [`Azamat`, `Iskandar`, `To'lqin`]},
+{q: `Kimlar unga barobar sevgi maktubi yozgan edi, G'ayratga?`, correct: `Opa-singil`, wrongs: [`Aka-uka`, `Ikki qo'shni qiz`, `Sinfdoshlari`]},
+{q: `Keyin G'ayrat ularni chaqirib, komsomol a'zosiga yarashmaydigan qilmishlari uchun nima qilgan edi`, correct: `Tanbeh bergan edi`, wrongs: [`Kechirim so'ragan edi`, `Jazolagan edi`, `E'tibor bermagan edi`]},
+{q: `Oyravshanlar yosh paytlarida saylov kelib qolgan, devorlarga rasmlar yopishtirilgan o'sha kishi qaysi harbiy okrugining allaqanday kattasi edi`, correct: `Turkiston`, wrongs: [`Toshkent`, `Farg'ona`, `Samarqand`]},
+{q: `O'sha payti saylovda nechta kishi nomzod edi`, correct: `1`, wrongs: [`2`, `3`, `4`]},
+{q: `Saylov haqida G'ayrat gapirgach, maktab partiya tashkilotchisi - otashinroq, tarixchi bo'lgan odam - G'ayratni komsomoldan qancha muddatga o'chirtirdi`, correct: `2-3 hafta`, wrongs: [`1-2 oy`, `1 hafta`, `1 oy`]},
+{q: `Bu orada kim "biz haydatdik, biz haydatdik, qamatamiz ham" deydi`, correct: `Xat yozgan opa-singillar`, wrongs: [`Maktab direktori`, `Tarixchi muallim`, `Sinfdoshlari`]},
+{q: `G'ayrat uzr so'rash o'rniga qanday qaysarlik qilib turib oladi`, correct: `Saylovda qanday qilib 1 ta kishini saylash mumkin, 2 yoki 3 ta emasmi, deb turib oladi`, wrongs: [`Men hech narsa qilmadim, deb turib oladi`, `Meni kim ham eshitadi, deb e'tiroz bildiradi`, `Komsomoldan chiqib ketaman, deb qaysarlik qiladi`]},
+{q: `Jiydali atalmish manzil qayerda joylashganini hatto bir marta kelib ko'rmagan, baribir yakdillik bilan unga ovoz bergan (ilk bor saylovda qatnashish huquqiga ega bo'lgan) kim edi`, correct: `Vakil`, wrongs: [`Deputat`, `Nomzod`, `Rais`]},
+{q: `Mo'ljaldagi oltin nishon o'rniga maktabni el qatori bitirgan G'ayrat, komsomoldan quvilgan bo'lsa-da, eson-omon qayerga o'qishga joylashdi`, correct: `Toshkent politexnika institutiga`, wrongs: [`Toshkent davlat universitetiga`, `Samarqand qishloq xo'jalik institutiga`, `Toshkent tibbiyot institutiga`]},
+{q: `Xosiyatlarning tog' tarafda qanday deb ataladigan uchastkasi bor edi`, correct: `Maydoncha`, wrongs: [`Bog'cha`, `Dala hovli`, `Uchastka`]},
+{q: `Oyravshan shanba kunlari kimning uyiga borib yuvinib kelar edi`, correct: `Madam Xosiyatnikiga`, wrongs: [`Tamaranikiga`, `Samiyanikiga`, `Sharofatnikiga`]},
+{q: `Operator kim?`, correct: `Davron`, wrongs: [`Vasya`, `Mansur`, `Iskandar`]},
+{q: `Shofyor kim?`, correct: `Vasya`, wrongs: [`Davron`, `Mansur`, `Iskandar`]},
+{q: `Vasya qanaqa mashina shofyori`, correct: `Damas`, wrongs: [`Matiz`, `Neksiya`, `Lasetti`]},
+{q: `Rejissyor qizning ismi kim?`, correct: `Ashura`, wrongs: [`Saidaxon`, `Dilbar`, `Samiya`]},
+{q: `Bu yerda mehmonxonada rejissyor, operator va haydovchi nechi kun turishgan edi`, correct: `3 kun`, wrongs: [`2 kun`, `4 kun`, `1 hafta`]},
+{q: `Mashhur Donjuan kim`, correct: `Botirali`, wrongs: [`Mansur`, `Iskandar`, `Davron`]},
+{q: `Botirali televideniya figuralari orasidan eng zo'r qizni kim deb aytgan`, correct: `Oyravshan`, wrongs: [`Saidaxon`, `Dilbar`, `Ashura`]},
+{q: `Televideniya qizlaridan dimog'dor kim`, correct: `Saidaxon`, wrongs: [`Dilbar`, `Ashura`, `Oyravshan`]},
+{q: `Televideniya qizlaridan yana bir qizning ismi keltirilgan - o'sha qiz kim`, correct: `Dilbar`, wrongs: [`Saidaxon`, `Ashura`, `Samiya`]},
+{q: `Oyravshan bu yerda turganiga qancha vaqtdan oshdi`, correct: `1 oy`, wrongs: [`2 oy`, `1 hafta`, `1 yil`]},
+{q: `Yo'lka bo'ylab ekilgan qator archalar qanday archa edi`, correct: `Tuya archa`, wrongs: [`Qora archa`, `Sharq archasi`, `Kavkaz archasi`]},
+{q: `Bu mehmonxona nimani eslatadi`, correct: `Kavkaz qurortini`, wrongs: [`Qrim sohilini`, `Turkiya kurortini`, `Farg'ona bog'ini`]},
+{q: `Archazordan keyin qanday bog' bor edi`, correct: `Quyuq o'rikzor`, wrongs: [`Uzumzor`, `Olmazor`, `Tokzor`]},
+{q: `Rais boboning ismi kim`, correct: `Mirishkor rais`, wrongs: [`Nurman Eshboltayev`, `To'lqin Boymirzayev`, `Farovon rais`]},
+{q: `O'rikzordan keyin yana qanday zor bor`, correct: `Tokzor`, wrongs: [`Olmazor`, `Bog'zor`, `Uzumzor`]},
+{q: `Tokzordan keyin qanday daraxtlar bor`, correct: `Qop-qora shudgor`, wrongs: [`Yashil archazor`, `Qizil olma bog'i`, `Sarg'ish o'rikzor`]},
+{q: `Tanasining bir yoni og'zi ochiq ajdarhoga o'xshab ko'ringan narsa nima`, correct: `Ko'hna tut`, wrongs: [`Ko'hna chinor`, `Ko'hna tol`, `Ko'hna terak`]},
+{q: `Bir mast odam Oyravshanga telefon qilib, ukasi qamoqda yotgani uchun yordam berishini so'raydi. Uka qayerda edi?`, correct: `Toshkent toshturmada`, wrongs: [`Samarqand qamoqxonasida`, `Jiydali militsiyasida`, `Zarang qamoqxonasida`]},
+{q: `Toshkent toshturmada yotgan yigit qanday qamalgan`, correct: `Odam o'ldirib`, wrongs: [`O'g'irlik qilib`, `Poraxo'rlik qilib`, `Firibgarlik qilib`]},
+{q: `Toshturmadagi yigit qanday qilib odam o'ldirgan`, correct: `Tuhmatga qolgan`, wrongs: [`Bilib turib o'ldirgan`, `Mast holda o'ldirgan`, `Qasddan o'ldirgan`]},
+{q: `Oyravshanning telefon raqamini qayerdan olgan telefon qilgan kishi`, correct: `Enasidan`, wrongs: [`Otasidan`, `Do'stidan`, `Qo'shnisidan`]},
+{q: `Sobiq shirxo'j rais nega ishdan bo'shatilgan`, correct: `Yer sotgani uchun`, wrongs: [`Pora olgani uchun`, `Ishga kelmagani uchun`, `Yoshi katta bo'lgani uchun`]},
+{q: `Cho'riboyga tomorqa qilib berilgan yer kimga tegishli edi`, correct: `Farovon hissadorlik jamiyatiga`, wrongs: [`Kolxozga`, `Tuman hokimiyatiga`, `Davlatga`]},
+{q: `Farovon hissadorlik jamiyatining ham, uning qoshidagi xususiy korxonaning boshlig'i ham kim edi`, correct: `Qizaloq`, wrongs: [`Mansur`, `Rais bobo`, `Nurman`]},
+{q: `Rais boboning quli-yugurdagi kim`, correct: `Mansur`, wrongs: [`Cho'riboy`, `Davron`, `Vasya`]},
+{q: `Mansur ota-onasiz yetim, uylanmagan, yoshi nechida`, correct: `30`, wrongs: [`25`, `35`, `28`]},
+{q: `Mashinani zo'r haydaydi, kasofat, temir-tersakka juda ishqiboz kim`, correct: `Mansur`, wrongs: [`Vasya`, `Davron`, `Cho'riboy`]},
+{q: `Yoz oxirlarimidi, shanba kuni bir o'zi studiyada qaysi ko'rsatuvni montaj qilib o'tirishgandi`, correct: `"O'lkam-O'lan to'shagim"`, wrongs: [`"Vatan tuyg'usi"`, `"Bahor kelmoqda"`, `"Ona yurtim"`]},
+{q: `Viloyatlik rais bobo montaj chog'ida telefon qilib, Oyravshanning Toshkentdaligi va qayerga borib kelishini so'raydi`, correct: `Hukumat kasalxonasiga`, wrongs: [`Vazirlar mahkamasiga`, `Prezident devoniga`, `Hokimiyatga`]},
+{q: `Raisni ko'rgani borish uchun gul-bulni qaysi bozordan xarid qiladi`, correct: `Sho'rtepa`, wrongs: [`Chorsu`, `Farhod`, `Oloy`]},
+{q: `Televideniyaning adabiyot tahririyatiga bazo'r ilinib, "keyingi oyoq" bo'lishdan zerikkan-charchagan Oyravshan bir siltanib, "O'lkam-O'lan to'shagim" degan yangi ko'rsatuvni boshlab qanday qiz sifatida tanildi`, correct: `Ko'zlarini yumib kuladigan chiroyli shoira qiz`, wrongs: [`Jiddiy va vazmin muxbir qiz`, `Qiziqchi va o'ynoqi ko'ngilochar qiz`, `Sokin va kamgap ijodkor qiz`]},
+{q: `Oyravshanning qiladigan ishi - ko'rsatuv yasaydi, qahramonlar orasiga kirib she'rlar o'qiydi, o'shalarga qo'shilib raqs tushadi, o'lan aytadi. Xullas, ko'rgan kishiga bu nimani eslatadi`, correct: `To'ylarda o'rtakashlik`, wrongs: [`Maktabdagi bayram tadbirini`, `Rasmiy davlat marosimini`, `Konsert dasturini`]},
+{q: `Oyravshan bu bilangina ko'zlagan maqsadlariga erishib bo'lmasligini tushunib, boshqa yo'llarni qo'llab qayerga o'tdi`, correct: `Ijtimoiy-siyosiy ko'rsatuvlar tahririyatiga`, wrongs: [`Sport tahririyatiga`, `Yoshlar tahririyatiga`, `Musiqa tahririyatiga`]},
+{q: `Yura-yura yana bir sakrab, qayerning muxbiri bo'lib oldi`, correct: `Parlament`, wrongs: [`Hokimiyat`, `Vazirlik`, `Sud`]},
+{q: `Endi bir oyog'i o'sha yerda - har qancha vaqtda o'tadigan sessiyalarda qatnashadi`, correct: `Har chorakda o'tadigan`, wrongs: [`Har oyda o'tadigan`, `Har yilda o'tadigan`, `Har haftada o'tadigan`]},
+{q: `Bahorgi sessiyaning 2-kuni, tushlik payti studiyadan telefonda bosh muharrir yo'qlab qoldi: "Tezgina hissadorlik jamiyatining raisini toping" - qaysi hissadorlik jamiyatining raisi haqida gap ketmoqda`, correct: `Farovon`, wrongs: [`Baraka`, `Ravnaq`, `Saodat`]},
+{q: `Novchadan-novcha, ko'rkam, cho'zinchoq yuzli, qoramag'iz kishi. Allanechuk xorg'in, boshqalarga o'xshab yuzingizga tikilib qaramoqni bilmaydi, sipo-vazmin kim`, correct: `Farovonlik hissadorlik jamiyatining raisi`, wrongs: [`Nurman Eshboltayev`, `To'lqin Boymirzayev`, `Mirishkor rais bobo`]},
+{q: `Farovonlik hissadorlik jamiyatining raisi qaysi sohadan chiqqan`, correct: `Tarixchi-muallimlikdan`, wrongs: [`Muhandislikdan`, `Shifokorlikdan`, `Iqtisodchilikdan`]},
+{q: `Gaplari lo'nda-lo'nda, mazmundor. Odatdagidek ortiqcha uzib-ulamoqqa hojat yo'q - ta'rif kim haqida`, correct: `Farovonlik hissadorlik jamiyatining raisi`, wrongs: [`Nurman Eshboltayev`, `To'lqin Boymirzayev`, `Musulmonov`]},
+{q: `Oyravshan raisni qanday formada taniy olmadi`, correct: `Sportchi formada`, wrongs: [`Harbiy formada`, `Milliy kiyimda`, `Rasmiy kostyumda`]},
+{q: `Boshida qizag'i bir qarich keladigan qanday do'ppi bor edi raisning`, correct: `Andijon do'ppi`, wrongs: [`Chust do'ppi`, `Samarqand do'ppi`, `Buxoro do'ppi`]},
+{q: `Qayerning bog'i xuddi Bog'i Eram, xorij chamanzorlaridek`, correct: `Hukumat kasalxonasining`, wrongs: [`Rais boboning`, `Farovon xo'jaligining`, `Madam Xosiyatning`]},
+{q: `Qayer xuddi jannat-restoran`, correct: `Hukumat kasalxonasi`, wrongs: [`Rais boboning uyi`, `Farovon xo'jaligi`, `Mehmonxona`]},
+{q: `Rais Oyravshanga nimani maslahat berdi`, correct: `Deputatlik`, wrongs: [`Muxbirlik`, `O'qituvchilik`, `Rahbarlik lavozimi`]},
+{q: `Rais qaysi tumandan edi`, correct: `Zarang`, wrongs: [`Jiydali`, `Sho'rtepa`, `Farovon`]},
+{q: `Nihoyatda xushmuomala, marhamatli kishi kim`, correct: `Partiya boshi`, wrongs: [`Rais bobo`, `Nurman`, `Musulmonov`]},
+{q: `Shaharga endi deputatlikka nomzodini qo'ygan kezlari, arzon garov ijarada turgan kezlari, oynadan uni chaqirishdi - semiz va ozg'in 2 kishi qanday mashinada kelgan`, correct: `Qizil Neksiya`, wrongs: [`Oq Matiz`, `Ko'k Damas`, `Kulrang Lasetti`]},
+{q: `2 kishi kimlar edi`, correct: `Hamshaharlari`, wrongs: [`Sinfdoshlari`, `Qarindoshlari`, `Hamkasblari`]},
+{q: `Biri maktabda til-adabiyotdan dars berib, ilk bor she'riyatga ilhomlantirgan duogo'y muallimi kim edi`, correct: `Sharipov`, wrongs: [`Musulmonov`, `Eshboltayev`, `Boymirzayev`]},
+{q: `Ustozi Sharipovning o'g'li kimning qo'lida ishlar edi`, correct: `To'lqin Boymirzayev`, wrongs: [`Nurman Eshboltayev`, `Musulmonov`, `Rais bobo`]},
+{q: `Jiydali tumanidan kim deputat bo'lmoqchi edi`, correct: `To'lqin Boymirzayev`, wrongs: [`Nurman Eshboltayev`, `Musulmonov`, `Shoyimardonov`]},
+{q: `Sharipov nima maqsadda kelgan edi`, correct: `Oyravshan o'z nomzodini olishi maqsadida`, wrongs: [`Oyravshanga xat topshirish uchun`, `Oyravshanga tabriklash uchun`, `Oyravshanni ish bilan ta'minlash uchun`]},
+{q: `Sharipov domla Oyravshanning dadasidan nima olib kelgan edi`, correct: `Xat`, wrongs: [`Sovg'a`, `Pul`, `Kitob`]},
+{q: `Oyravshanga pora qilib nima berib ketishgan edi`, correct: `2 quti narsa, 1-tasida tandir non, 2-sida meva-cheva`, wrongs: [`1 quti shirinlik va gul`, `Pul solingan konvert`, `Kiyim-kechak sovg'asi`]},
+{q: `Orqashi sersadaroq otaning achchiq so'zlari xatga yozilgan edi, nima deb yozilgan edi`, correct: `Juda ham shu deputat bo'lgingiz kelayotgan bo'lsa, boshqa joyni ko'ring, qizim`, wrongs: [`Bu ishga aralashma, uyga qayt, qizim`, `Meni sharmanda qilmagin, qizim`, `Bu yo'l senga to'g'ri kelmaydi, qizim`]},
+{q: `Oyravshan raisga dardini to'kib solganda, rais "baribir Boymirzayev o'tolmaydi, sizni nomzodingizni qayerdan qo'yamiz" deydi`, correct: `Zarang tumanidan`, wrongs: [`Jiydali tumanidan`, `Sho'rtepa tumanidan`, `Farovon tumanidan`]},
+{q: `Oyravshanning qaysi deputatlikka nomzodi qo'yildi`, correct: `Oliy majlis deputatligiga`, wrongs: [`Tuman kengashi deputatligiga`, `Viloyat kengashi deputatligiga`, `Shahar kengashi deputatligiga`]},
+{q: `Zarang tuman hokimi kim edi`, correct: `Nurman Eshboltayev`, wrongs: [`To'lqin Boymirzayev`, `Musulmonov`, `Rais bobo`]},
+{q: `Eski kinolardagi qo'rboshilarga o'xshab ketadigan, sochi tap-taqir qirilgan, beti oyboltadek, ko'zlari qisiqqa moyil shaxs kim?`, correct: `Nurman Eshboltayev`, wrongs: [`To'lqin Boymirzayev`, `Musulmonov`, `Rais bobo`]},
+{q: `"Saylov deganlari kimning maydoniday bir gap" deb aytiladi`, correct: `Alining`, wrongs: [`Nurmanning`, `Raisning`, `Musulmonovning`]},
+{q: `Oyravshanni kimning qavmidan ekan deydi hokim`, correct: `Oybarchin`, wrongs: [`Zulxumor`, `Gulnora`, `Shirin`]},
+{q: `Xotin-qizlar vakillari kimlar edi`, correct: `Xosiyatxon Boyevoy va Maorifdagi Alloyorova Sharofat`, wrongs: [`Tamara va Samiya`, `Saidaxon va Dilbar`, `Ashura va Zahro`]},
+{q: `Deputatlikka yana kimni nomzod qilib qo'yishdi yigitlardan`, correct: `Shoymardonov`, wrongs: [`Musulmonov`, `Boymirzayev`, `Eshboltayev`]},
+{q: `Shoyimardonov qaysi bo'limdan`, correct: `Ma'naviyat`, wrongs: [`Moliya`, `Ta'lim`, `Qishloq xo'jaligi`]},
+{q: `Tushunchali yigit, she'r ham yozib turadi - kim`, correct: `Shoyimardonov`, wrongs: [`Musulmonov`, `Mansur`, `Davron`]},
+{q: `Shoyimardonovning ismi kim?`, correct: `Shavkat`, wrongs: [`Shuhrat`, `Sharof`, `Shoxrux`]},
+{q: `Hokim nomzodlikka kimni taklif qiladi`, correct: `Musulmonov`, wrongs: [`Shoyimardonov`, `Boymirzayev`, `Rais bobo`]},
+{q: `Musulmonov qaysi bo'limdan`, correct: `Moliya`, wrongs: [`Ma'naviyat`, `Ta'lim`, `Qishloq xo'jaligi`]},
+{q: `Pishiq-puxta, ishonchli odam - kimga tegishli bu ta'rif`, correct: `Musulmonovga`, wrongs: [`Shoyimardonovga`, `Boymirzayevga`, `Eshboltayevga`]},
+{q: `Uning ishonchli odami 5-10 kun ular bilan yuradi-yu, pirovardida serpul nomzod tarafida - aniqrog'i hokimning ayg'oqchisi bo'lib chiqadi. Kim?`, correct: `Musulmonov`, wrongs: [`Shoyimardonov`, `Boymirzayev`, `Mansur`]},
+{q: `Tekisgina, to'kisgina sochlari bejirim turmaklangan, oq koftasining yoqalari belburma kostyumdan tashqarida. Bo'ynida jimir-jimir zanjircha. Xullas, risola bop kim`, correct: `Madam Xosiyatxon`, wrongs: [`Tamara`, `Samiya`, `Sharofat`]},
+{q: `Hokimning zami (yaqin odami) kim`, correct: `Madam Xosiyatxon`, wrongs: [`Musulmonov`, `Mansur`, `Samiya`]},
+{q: `Deputatlikka asli kim ham talabgor ekan`, correct: `Hokim`, wrongs: [`Rais bobo`, `Musulmonov`, `Sharipov`]},
+{q: `Hokim ham deputatlikka talabgor edi, ammo nimaga nomzod qo'ya olmadi`, correct: `Viloyat rahbariyati ruxsat bermagan`, wrongs: [`Yoshi to'g'ri kelmagan`, `O'zi voz kechgan`, `Sog'lig'i yo'l qo'ymagan`]},
+{q: `Oyravshan kimning uyida yashay boshladi`, correct: `Madam Xosiyatning`, wrongs: [`Tamaraning`, `Samiyaning`, `Rais boboning`]},
+{q: `Xosiyatning nechta o'g'li bor edi`, correct: `2`, wrongs: [`1`, `3`, `4`]},
+{q: `Xosiyatxonning uyida o'zidan tashqari nechta kishi yashar edi`, correct: `2 o'g'li va oyisi`, wrongs: [`Faqat eri`, `Eri va bir o'g'li`, `Oyisi va singlisi`]},
+{q: `Keng-mo'l hovli Xosiyatxonga kimdan meros bo'lib qolgan edi`, correct: `Otasidan`, wrongs: [`Erining otasidan`, `Onasidan`, `Akasidan`]},
+{q: `Oyravshan Xosiyatxonlarning qaysi xonasida yashay boshladi`, correct: `Mehmonxonasida`, wrongs: [`Yotoqxonasida`, `Oshxonasida`, `Ayvonida`]},
+{q: `Xosiyatning erining ismi kim`, correct: `Pardaboy`, wrongs: [`Cho'riboy`, `Mansur`, `Iskandar`]},
+{q: `Pardaboy nimaga juda ham ishqiboz edi`, correct: `Futbolga`, wrongs: [`Ovga`, `Baliq tutishga`, `Otchilikka`]},
+{q: `Xosiyatxon Toshkentdagi qaysi institutni bitirgan`, correct: `Chet tillar`, wrongs: [`Pedagogika`, `Iqtisodiyot`, `Politexnika`]},
+{q: `Xosiyatxon Toshkentdagi chet tillar institutida qaysi tilni bitirgan edi`, correct: `Fransuz`, wrongs: [`Ingliz`, `Nemis`, `Ispan`]},
+{q: `Nechi yil maktabda o'qituvchilik qilgan Xosiyatxon`, correct: `2-3 yil`, wrongs: [`5-6 yil`, `1 yil`, `4-5 yil`]},
+{q: `Kim Xosiyatxonni hokimlikka ishga olgan edi`, correct: `Shuhrat akasi`, wrongs: [`Rais bobo`, `Nurman`, `Musulmonov`]},
+{q: `Shuhrat akasi kim edi`, correct: `Sobiq hokim`, wrongs: [`Sobiq rais`, `Sobiq muallim`, `Sobiq deputat`]},
+{q: `Har sohada bilimdon, o'zi ham kelishgan kim`, correct: `Shuhrat, sobiq hokim`, wrongs: [`Nurman Eshboltayev`, `Rais bobo`, `Musulmonov`]},
+{q: `Shuhrat aka ishdan qanday ketdi`, correct: `O'zini osib o'ldirdi`, wrongs: [`Pensiyaga chiqdi`, `Boshqa ishga o'tdi`, `Kasal bo'lib vafot etdi`]},
+{q: `Shuhrat sobiq hokimning qanday kasali bor edi`, correct: `Tutqanog'i`, wrongs: [`Yurak kasalligi`, `Qandli diabet`, `Bosh og'rig'i`]},
+{q: `Xosiyatxonning ustozi kim edi, hamma narsani undan o'rgangan`, correct: `Shuhrat sobiq hokim`, wrongs: [`Rais bobo`, `Sharipov domla`, `Nurman`]},
+{q: `Shuhrat aka viloyat tadbirkor ayollarini rag'batlantirish maqsadida qayerga yuborilgan`, correct: `Parij`, wrongs: [`Moskva`, `London`, `Berlin`]},
+{q: `Shuhrat aka viloyat tadbirkor ayollarini Parijga sayohatga yuborganda, kimni ularga bosh qilib yuborishadi`, correct: `Xosiyatxonni`, wrongs: [`Samiyani`, `Tamarani`, `Sharofatni`]},
+{q: `Nima uchun Xosiyatxonni "Madam Xosiyat" deyishadi`, correct: `Parijda ularga yo'lboshchilik qilgan yigit shunday deyavergan, shu-shu bo'yi "Madam Xosiyat" bo'lib qolgan`, wrongs: [`Fransuz tilini yaxshi bilgani uchun`, `Kiyinishi fransuzchasiga o'xshagani uchun`, `O'zi shunday atalishni xohlagani uchun`]},
+{q: `"Shahar ko'rgan echki", hokimlikning g'unajini - ta'rif kim haqida`, correct: `Xosiyatxon`, wrongs: [`Samiya`, `Tamara`, `Sharofat`]},
+{q: `Pardaboy Xosiyatxondan nechi yosh kichik`, correct: `3-4 yosh`, wrongs: [`1-2 yosh`, `5-6 yosh`, `7-8 yosh`]},
+{q: `Pardaboy Xosiyatxonning qayeridan kelar edi (qarindoshligi)`, correct: `Ko'kragidan`, wrongs: [`Onasi tarafidan`, `Otasi tarafidan`, `Erining tarafidan`]},
+{q: `Xosiyatxonning eri Pardaboy Xosiyatxonga nima deb chaqiradi`, correct: `Opa`, wrongs: [`Xotinjon`, `Xosiyat`, `Jonim`]},
+{q: `Oyravshan nega Xosiyatxonlarning uyida turmaydigan bo'ldi`, correct: `Yuvinayotganida Pardaboy mo'ralagani uchun`, wrongs: [`Uyi tor bo'lgani uchun`, `Xosiyatxon bilan janjallashgani uchun`, `Ishi ko'chib ketgani uchun`]},
+{q: `Jiydaliga yaqin tutash tuman qaysi`, correct: `Zarang`, wrongs: [`Sho'rtepa`, `Farovon`, `Maydoncha`]},
+{q: `Jiydali va Zarangning o'rtasida nima bor`, correct: `Tog' tizmasi`, wrongs: [`Daryo`, `Cho'l`, `O'rmon`]},
+{q: `Shimolda tog'lar qurshovida joylashgan qayer`, correct: `Jiydali`, wrongs: [`Zarang`, `Sho'rtepa`, `Farovon`]},
+{q: `Etakda yassi adirliklar-u poyonsiz ekinzorlar bag'rida qayer`, correct: `Zarang`, wrongs: [`Jiydali`, `Sho'rtepa`, `Farovon`]},
+{q: `Ham bog'dor, ham chorvador, boz ustiga o'lgudek hunarmand - qayerliklar`, correct: `Jiydalilar`, wrongs: [`Zarangliklar`, `Sho'rtepaliklar`, `Farovonliklar`]},
+{q: `Ziroatga mehr qo'ygan, paxtakor qayerliklar`, correct: `Zarangliklar`, wrongs: [`Jiydalilar`, `Sho'rtepaliklar`, `Farovonliklar`]},
+{q: `Tog'li joyda iqlimi past, paxta o'smaydi, ekin maydoni ham yo'q, shu bois eli kam daromad, kam xarj yashaydigan qayer`, correct: `Jiydali`, wrongs: [`Zarang`, `Sho'rtepa`, `Farovon`]},
+{q: `Qo'shni tuman to'q-farovon, Jiydali ta'biricha "ukkag'ar boyvachchalar" - kimlar`, correct: `Zarangliklar`, wrongs: [`Jiydalilar`, `Sho'rtepaliklar`, `Farovonliklar`]},
+{q: `Qachongacha zarangliklarga paxta terib beramiz deb, Jiydalilar nima qiladi`, correct: `Yer ijaraga olib oq oltin ekadi-yu, sobiq ittifoqda birinchi bo'lib paxta planini bajarib chiqadi`, wrongs: [`Zarangliklarga qarshi shikoyat yozadi`, `O'z tumanini boshqa nomga o'zgartiradi`, `Boshqa viloyatga ko'chib ketadi`]},
+{q: `Zarangliklar Jiydalilarni nima deb ustidan kuladi`, correct: `Bergan 4 eshak paxtasi bilan kerilishini qarang deb`, wrongs: [`Tog'da yashab nima bilasan deb`, `Bir tup daraxti yo'q deb`, `Hech narsaga arzimaydi deb`]},
+{q: `Birikkanda bir bo'lmagan, ajralganda ayri - kimlar`, correct: `Jiydali va Zarangliklar`, wrongs: [`Rais va hokim`, `Musulmonov va Shoyimardonov`, `Nurman va Boymirzayev`]},
+{q: `Aybi mo'lroq tuman qaysi biri`, correct: `Jiydali`, wrongs: [`Zarang`, `Sho'rtepa`, `Farovon`]},
+{q: `Nega aybi mo'lroq Jiydalining`, correct: `Boshqa tuman yoki viloyatda yotib qolsa, ishi bitgan zahoti qaytadi va "o'zimning Jiydalimdan yaxshi joy bormi" deydi`, wrongs: [`Boshqa tumanlar bilan doim janjallashadi`, `O'z aholisiga yomon munosabatda bo'ladi`, `Boshqa tumanlarni kamsitib gapiradi`]},
+{q: `"Soya-salqinligi, to'g'ri tog'-u toshi, ko'rkam odamlari, archazorlarimizning bo'yu tarovati" - ana hamma gap shunda, bu yer qayer`, correct: `Jiydali`, wrongs: [`Zarang`, `Sho'rtepa`, `Farovon`]},
+{q: `Xosiyatning qanday rusumli moshinasi bor`, correct: `Matiz`, wrongs: [`Neksiya`, `Damas`, `Lasetti`]},
+{q: `Deputatlikka nomzod asosan nechta kishi edi`, correct: `3`, wrongs: [`2`, `4`, `5`]},
+{q: `Yana bir kishi bor ekan, qayerdagi katta idorada mas'ul lavozimda ishlar, hali beri qorasini ko'rsatmagan, kelmog'i ham dargumon - bundan hamma xursand`, correct: `Toshkentdagi`, wrongs: [`Samarqanddagi`, `Buxorodagi`, `Farg'onadagi`]},
+{q: `Maydonga tushganlardan biri - mahalliy poliklinikaning bosh shifokori kim edi`, correct: `Raxmon`, wrongs: [`Musulmonov`, `Shoyimardonov`, `Nurman`]},
+{q: `Tuman gazetasida muxbirlik qiladigan, ishonchli vakili yozib bergan matnni takrorlab charchamaydi, doim xotin-qizlarning reproduktiv salomatligi haqida gapiradi - laqabidagi son`, correct: `50`, wrongs: [`30`, `40`, `100`]},
+{q: `Laqabi "50 o'rinli tug'ruqxona" kim`, correct: `Raxmon`, wrongs: [`Musulmonov`, `Shoyimardonov`, `Rais bobo`]},
+{q: `"Yo sovuqmas bir bez, yo sodda-mug'ombir" - kim`, correct: `Raxmon`, wrongs: [`Musulmonov`, `Shoyimardonov`, `Nurman`]},
+{q: `2-nomzodimiz kim`, correct: `Viloyat miqyosidagi bir serpul korxonaning xo'jayini`, wrongs: [`Tuman gazetasi muxbiri`, `Poliklinika bosh shifokori`, `Maorif bo'limi boshlig'i`]},
+{q: `Bamisoli gung, gapni bilmaydi, gapga emas pul topishga usta bu odam so'z berilganda o'ynibgina, istar-istamas minbarga chiqadi - kim haqida`, correct: `Deputatlikka 2-nomzod, viloyat miqyosidagi bir serpul korxonaning xo'jayini`, wrongs: [`Raxmon haqida`, `Musulmonov haqida`, `Shoyimardonov haqida`]},
+{q: `2-nomzod o'rniga, bir zamonlar shu tumanda partiya sarkotibi bo'lib ishlagan, o'ta qadrdoni - kommunist kim gapirar edi`, correct: `Amakisi`, wrongs: [`Otasi`, `Ustozi`, `Do'sti`]},
+{q: `Amakisi (nomzod) u yoqda qolib, doim kimni gapirar edi`, correct: `Otasini`, wrongs: [`O'zini`, `Bobosini`, `Ustozini`]},
+{q: `Shu nomzodning kamgap-kamsuqumligi, o'zini og'ir-vazmin tutishi Oyravshanga xush yoqdi - tumandagi 4-5 maktab tomini yangilatib bergan, tuman hokimini ham qo'lga olgan kim`, correct: `Deputatlikka 2-nomzod, viloyat miqyosidagi bir serpul korxonaning xo'jayini`, wrongs: [`Raxmon`, `Musulmonov`, `Shoyimardonov`]},
+{q: `Qaysi nomzodning nomi yuqoridan bekor qilindi`, correct: `Deputatlikka 2-nomzod, viloyat miqyosidagi bir serpul korxonaning xo'jayini`, wrongs: [`Raxmonning`, `Musulmonovning`, `Shoyimardonovning`]},
+{q: `Chindan ham bidir-bidir gapdon ekan, ammo aytgan biror so'zi esda qolmaydi - kimning`, correct: `Sharofatning`, wrongs: [`Xosiyatxonning`, `Samiyaning`, `Tamaraning`]},
+{q: `Boshqa nomzodlar bekitiqcha u yer-bu yerga borib kelayotgan emish. "Yuring, biz ham uchastkasiga borib kelaylik" deydi kim`, correct: `Xosiyatxon`, wrongs: [`Sharofat`, `Samiya`, `Tamara`]},
+{q: `Xosiyatxonning shogirdi kim edi`, correct: `Samiya`, wrongs: [`Sharofat`, `Tamara`, `Ashura`]},
+{q: `Fermer xo'jaligining raisi, siyosati erkaklardan qolishmaydi - kimning`, correct: `Samiyaning`, wrongs: [`Xosiyatxonning`, `Sharofatning`, `Tamaraning`]},
+{q: `Samiya qanaqa mashina haydar edi`, correct: `Matiz`, wrongs: [`Neksiya`, `Damas`, `Lasetti`]},
+{q: `U hamma ishda ustoziga taqlid qilishi ko'rinib turardi, go'yoki Madam Xosiyatning nusxasi, lekin xiraroq-pachoqroq nusxa. Viloyat pedinstitutini bitirgan - kim`, correct: `Samiya`, wrongs: [`Sharofat`, `Tamara`, `Ashura`]},
+{q: `Samiya burchakdagi seyfsimon temir qutidan nima oldi`, correct: `Aroq`, wrongs: [`Pul`, `Hujjatlar`, `Qurol`]},
+{q: `Bu joy kamtarona yo'sinda "Farovon" xo'jaligining chorbog'i, shiypon deb atalgan bilan, aslida nima hisoblanadi`, correct: `Tuman hokimligining norasmiy dachasi`, wrongs: [`Viloyat hokimligining rasmiy dachasi`, `Rais boboning shaxsiy uyi`, `Hukumat kasalxonasining filiali`]},
+{q: `Uzun ayvonda ziyofat qizg'in, yurt so'rab turgan kazo-kazolarning bari jam edi, birgina uy egasi kim yo'q edi`, correct: `Rais bobomiz`, wrongs: [`Nurman Eshboltayev`, `Musulmonov`, `Hokim`]},
+{q: `Qadahbozlik avjida to'rdan nechi kishi joy olgan edi`, correct: `3`, wrongs: [`2`, `4`, `5`]},
+{q: `To'rdan joy olgan 3 kishi kimlar edi`, correct: `Viloyat hokimi, tuman hokimi Nurman Eshboltayev, 30-35 yoshlardagi yigit-nomzod`, wrongs: [`Rais bobo, Musulmonov, Shoyimardonov`, `Viloyat hokimi, rais bobo, Raxmon`, `Nurman, Musulmonov, Sharipov domla`]},
+{q: `Kechagina bu davraning erkatoyi Oyravshan edi, bugun hammaning nigohi kimda`, correct: `Shishako'zda`, wrongs: [`Musulmonovda`, `Samiyada`, `Xosiyatxonda`]},
+{q: `Hokimlikning majlislar zalida kechqurun yangi kelgan nomzod bilan nima bo'lib o'tadi`, correct: `Uchrashuv`, wrongs: [`Majlis`, `Bahs-munozara`, `Saylov`]},
+{q: `Musichai beozordek ko'rinib, girdida girgitton bo'lib yurgan pismiq kim`, correct: `Madam Xosiyatxon`, wrongs: [`Samiya`, `Sharofat`, `Tamara`]},
+{q: `Tishlarining orasi sarg'ayib yotadi, yap-yangi qimmatbaho tuflilarining ichiga ham qarab bo'lmaydi - kimning`, correct: `Madam Xosiyatxonning`, wrongs: [`Samiyaning`, `Sharofatning`, `Tamaraning`]},
+{q: `Mashinasi chinor tagida turgan, Oyravshanning shofyori kim edi`, correct: `Mansur`, wrongs: [`Vasya`, `Davron`, `Cho'riboy`]},
+{q: `Oyravshanning yolg'iz ukasi qayerda, dom-daraksiz`, correct: `Rossiyada`, wrongs: [`Qozog'istonda`, `Toshkentda`, `Turkiyada`]},
+{q: `Oyravshanning onasi qayerda`, correct: `Burnog'i yili, to'satdan qazo qilgan`, wrongs: [`Qishlog'ida yashaydi`, `Kasalxonada davolanmoqda`, `Ukasi yonida Rossiyada`]},
+{q: `Jiydaliga bilet olib, aeroportda qaysi go'rso'xtani (tanishini) uchratadi`, correct: `Iskandarni`, wrongs: [`Mansurni`, `Davronni`, `Vasyani`]},
+{q: `Oyravshan saylovda qanday natijaga erishdi`, correct: `O'tolmadi`, wrongs: [`G'olib chiqdi`, `Ikkinchi o'rinni oldi`, `Nomzodligini olib qo'ydi`]},
+{q: `Rais bobo Oyravshandan uzr so'radi - "shunday qudratli odam saylovdan o'tolmadi, so'zida turmadi, qo'rqoqlik qildi" - kim haqida gap ketmoqda`, correct: `Nurman`, wrongs: [`Musulmonov`, `Hokim`, `Sharipov`]},
+{q: `Saranjom-sarishtalikni yaxshi ko'radi, bu uyda yolg'iz qolganiga, keksaligiga qaramay bir zum tinmaydi - kim`, correct: `Oyravshanning dadasi`, wrongs: [`Oyravshanning akasi`, `Oyravshanning amakisi`, `Rais bobo`]},
+{q: `Kelinning ismi kim`, correct: `Zahro`, wrongs: [`Sanam`, `Sevar`, `Ashura`]},
+{q: `Oyravshanning nechta jiyani bor`, correct: `2`, wrongs: [`1`, `3`, `4`]},
+{q: `Oyravshanning dadasi "seni ... bo'lsin deb tug'magan edim, qizim" deydi - kim bo'lsin deb tug'magan edi`, correct: `Shoir yoki deputat`, wrongs: [`Muxbir yoki artist`, `Boy yoki mashhur`, `O'qituvchi yoki shifokor`]},
+{q: `Ro'parasiga cho'nqaygan bu odam nogahon Oyravshanning ko'ziga otasidek, amakisidek, yo'q yanada yaqin, aziz ko'rinib ketdi - kim`, correct: `Rais bobo`, wrongs: [`Nurman`, `Musulmonov`, `Sharipov domla`]},
+
+
+   /* =====  6-bob.Oyravshan 3-oyna.html ===== */
+
+{q: `Oyravshan to'yxona qidirib yirganida qo'lida "Tomsuvoq" qa ish o'rganib yurgan... Ismli bola yo'q joydan uning joniga ora kirdi ismi kim`, correct: `Shoikrom`, wrongs: [`Mansur`, `Valera`, `Botirali`]},
+{q: `Shoikrom qanday qilib Oyravshanning joniga ora kirdi`, correct: `Tog'asiningmi ammasiningmi to'yxonasi bor edi`, wrongs: [`O'zi boy edi`, `Mashinasi bor edi`, `Hokim bilan tanish edi`]},
+{q: `To'yxona shahxarning chekkasida ayni muddao nomi nima edi`, correct: `Dongdor`, wrongs: [`Farovon`, `Zarang`, `Navoiy`]},
+{q: `To'yxonaning 1-qavatidan chkg'row nechchi kishilik joyni tanladi`, correct: `50-60`, wrongs: [`30-40`, `80-100`, `20-30`]},
+{q: `Oyravshan doimgiday To'yda el qatori qilmadi el qatori qilishni iloji ham yo'q edi boshqqlardan farqli ravishda nima tarqmadi va yasatmadi ham`, correct: `Taklifnoma`, wrongs: [`Gul`, `Sovg'a`, `Poezd biletlari`]},
+{q: `Hamaga tel qib shunchaki o'tirish deb qo'ydi ammo so'rayverishgach nima deb javob berdi`, correct: `Qizmaylis`, wrongs: [`To'y qilyapman`, `Kelishingiz shart`, `Bilmayman`]},
+{q: `To'yyga kelinning o'zi hammadan oldin keldi qanaqa moshinada`, correct: `Matiz`, wrongs: [`Neksiya`, `Damas`, `Jip`]},
+{q: `Xafta 10 kun tig' ko'rmaydigan soqollarini qirtishlatib sochlarini ham yuvib tarab olgan kim?`, correct: `Mansurboy`, wrongs: [`Shoikrom`, `Pardaboy`, `Rais bobo`]},
+{q: `Boshqqlarah qayerdan topding desa qanday izoh berishadi`, correct: `O'lgan xolamning o'g'li, yoshlikda bitishganmiz onamning vasiyati`, wrongs: [`Ko'chadan topdim`, `Do'stim edi`, `Hokimiyatdan berishdi`]},
+{q: `Oyravshanning o'zi o'shakuni shaxarda o'tgan behisob tantanalardagi kelinposhshalarning hech biri oldiga tusholmaydigan naqd qayer malikasi miso`, correct: `Parij`, wrongs: [`London`, `Kavkaz`, `Toshkent`]},
+{q: `Bunda har maqomda bir chimdim topsa bo'lardi:negadir kaltaroq nikoh ko'ylagi ustidan tizzaga tushadigan yengsiz belburma Adras mursak, alomat t u, ko'rgan odam ko'z uzolmay qolardi. Mayli kim nima desa der. Bitta yarimtasi kuyib o'lsa bas ta'rif kim haqida`, correct: `Oyravshan`, wrongs: [`Xosiyatxon`, `Samiya`, `Dilbar`]},
+{q: `Mehmonlardan darak yo'q to'yxona oldida ularni kim kutib oldi`, correct: `Shoikrom va tog'asi`, wrongs: [`Mansur`, `Rais bobo`, `Xosiyatxon`]},
+{q: `O'dha oqsham zalda bir varakayiga nechta to'y ekan`, correct: `3`, wrongs: [`2`, `4`, `1`]},
+{q: `Taka bo'lsin-sut bersin`, correct: `Maqol`, wrongs: [`Hikoya`, `She'r`, `Qo'shiq`]},
+{q: `Birinchi qatori paydo bo'lgan xizmatdoshi-Fotograf... ni chetgda tortib quloqqoqdi qildi oyravshan kimni`, correct: `Valerani`, wrongs: [`Mansurni`, `Shoikromni`, `Davronni`]},
+{q: `Fotografga mehmonlarni kam kam o'zini ko'proq rasmga olishni va kimni rasmga olmaslikni aytdi`, correct: `Kuyov Mansurni`, wrongs: [`Rais boboni`, `Xosiyatxonni`, `Shoikromni`]},
+{q: `Aytilganlardan deyarli hammasi keldi ammo eng zarur kutilgan odamdan darak yo'q edi kimdan`, correct: `Dilbardan`, wrongs: [`Saidaxondan`, `Xosiyatxondan`, `Muflixadan`]},
+{q: `Dilbar kelmagach kimni qandu asal masu vadasida turardi ikkalasi bir birini ko'rib yeyishmasin debman men axmoq... Chaqirsam bo'larkan afsus kimni aytgan`, correct: `Saidaxon`, wrongs: [`Xosiyatxon`, `Samiya`, `Ashura`]},
+{q: `Davrada doim bo'ladigan ish bo'lmadi va oziir oyravshan o'zi qildi nima ish`, correct: `Ochib berish`, wrongs: [`Raqsga tushish`, `She'r o'qish`, `Ovqatlanish`]},
+{q: `Oyravshan aytishicha Mansur Xolasining qizi Bula yoshligida nima qilingan ular`, correct: `Beshikkertti`, wrongs: [`Uylantirilgan`, `Do'stlashgan`, `Maktabdosh bo'lgan`]},
+{q: `To'yda mikrofonni olib kim birinchi so'z boshladi`, correct: `Muflixa`, wrongs: [`Xosiyatxon`, `Samiya`, `Dilbar`]},
+{q: `Zebo jurnalining yangi sarkori kim`, correct: `Muflixa`, wrongs: [`Oyravshan`, `Xosiyatxon`, `Samiya`]},
+{q: `Muflixa to'yyonaga ham ulgurib nimadir qilgan edi nima`, correct: `Jurnalda Oyravshanning ajoyib shoiramizning go'zal bir turkumi e'lon qilinayotgan edi`, wrongs: [`To'yga sovg'a olib keldi`, `She'r o'qidi`, `Raqs tushdi`]},
+{q: `Deputatlik mashmashalaridan keyin rais bobo vazirliklarga, kompaniya va kontserinlarga keladi, shartnoma tuzgani yoki turli tuman seminar va simpo`, correct: `1`, wrongs: [`2`, `3`, `4`]},
+{q: `Yana yilda nechi marta hukumat kasalxonasida yotishi ham bor`, correct: `2`, wrongs: [`1`, `3`, `4`]},
+{q: `Kasalxonada yotganida Rais bono kim bilan uchrashmay ketmaydi`, correct: `Oyravshan bilan`, wrongs: [`Mansur bilan`, `Xosiyatxon bilan`, `Shoikrom bilan`]},
+{q: `Rais boni ko'pincha o'rganib qolgan manzili qayerga tushadi`, correct: `Eski hayvonot bog'idagi so'lim bir go'shada joylashgan hukumat mehmonxonasiga tushadi`, wrongs: [`Mehmonxonaga`, `Uyga`, `Dachaga`]},
+{q: `Raisimizco'ta serhimmat qanaqasiga`, correct: `Hech qachon quruq qo'l bilan kelmaydi ul bul beradi tandir kabon anor-panor shisha-pisha deganday`, wrongs: [`Pul beradi`, `Sovg'a beradi`, `Mashina beradi`]},
+{q: `Bot bot kelaverib Oyravshan bu dargohning kunora navbat turadigan ma'murasi aksariyat o'rischa gapiradigan shiringina... Bilan dugona bo'lib oldi kimQoramag'iz juvon bilan`, correct: `Qoramag'iz juvon bilan`, wrongs: [`Sariq sochlilar bilan`, `O'rislar bilan`, `Hech kim bilan`]},
+{q: `Rais ko'pincha Mansur bilan kattakon qaysi moshinasida keladi`, correct: `Jip`, wrongs: [`Matiz`, `Neksiya`, `Damas`]},
+{q: `Rais har safar xovlini emas qayernu tanlaydi`, correct: `daraxtzorga qaragan soya tarafdan-ikkinchi qavat oxiridagi qo'sh bo'lmali lyuksni tanlaydi`, wrongs: [`1-qavat`, `Bog'ni`, `Oshxonani`]},
+{q: `Yetmagan Narsani Ota bola rais va Mansur qaysi bozordan olishadi`, correct: `Oloy bozordan`, wrongs: [`Sho'rtepa bozordan`, `Markaziy bozordan`, `Shahar bozoridan`]},
+{q: `Jio mashina odatda doim qayerda turadi`, correct: `Deraza tagida`, wrongs: [`Darvoza oldida`, `Garajda`, `Ko'chada`]},
+{q: `O'lsa suyagidan arzimas`, correct: `Maqol`, wrongs: [`Hikoya`, `She'r`, `Qo'shiq`]},
+{q: `Ko'ngil ko'ngilni topsa bas. To'sh to'shga tekkanda bari unutiladi`, correct: `Hikmatli so'z`, wrongs: [`Qo'shiq`, `She'r`, `Maqol`]},
+{q: `Odamzodning umri ham, Ko'p qiliq qilmishlari xam qaltis notanish bir pillapoya qoshidagi taraddudnoq holatni eslatmaydimi? Dastlab qo'rqa pisa ikk xech gap emas ekan-ku, olg'a keyin navbatdagisiga undsn keyin yana yana...Bir vaqt qarabsizkikechagina vahimali tuyulgan pillapoya o'zingizniki, pastdan yuqoriga, yuqoridan pastga bemalol irg'ishlab sakrab yuribsiz. Bundan Gunoh yasab sizni sanchadigan kimsalar allaqachon charchab ulgurgan, siz ham allaqachon ko'nikib ketgansiz`, correct: `Matn`, wrongs: [`She'r`, `Qo'shiq`, `Qoida`]},
+{q: `Rais bobo Oyravshanga ijarada turganini bilgach qayerdan uy olib beradi`, correct: `Qorasuvdagi daxadan 3 qavatda joylashgan 2 bo'lmali xonadon`, wrongs: [`Markazdan`, `Tog' etagidan`, `Yangi qurilgan uydan`]},
+{q: `Oyravshanning ro'parasidagi qo'shnisi kim edi`, correct: `Tyotya Valya`, wrongs: [`Xosiyatxon`, `Samiya`, `Dilbar`]},
+{q: `Bobo Oyravshanga qandau moshina sovg'a qiladi`, correct: `Matiz`, wrongs: [`Neksiya`, `Jip`, `Damas`]},
+{q: `Oyravshanni tanasida 2 oy o'tgach o'zgarishlar yuz berdi sabab nima edi`, correct: `Xomilador`, wrongs: [`Kasallik`, `Charchoq`, `Depressiya`]},
+{q: `Boboning nechta farzandi bor`, correct: `2`, wrongs: [`1`, `3`, `4`]},
+{q: `Qizini ahvoli qanday kechgan`, correct: `Bola ko'rishda qiynalih nobud bo'gan`, wrongs: [`Sog'lom edi`, `Yaxshi edi`, `Xorijga ketgan`]},
+{q: `Vunderkind chiqib qolgan o'g'li Parijdami Britaniyada o'qir edi kim bo'lib`, correct: `Diplomat`, wrongs: [`Shifokor`, `Muallim`, `Tadbirkor`]},
+{q: `Rais hozir nechi yoshda nari beri`, correct: `60`, wrongs: [`50`, `70`, `40`]},
+{q: `To'ydan chiqishda Oyravshan kimga duch keladi`, correct: `Xosiyatxonga`, wrongs: [`Mansurga`, `Shoikromga`, `Rais boboga`]},
+{q: `Xosiyatxon kim bilan don olishib xilvatxonadan chiqayotganda Oyravshan ko'rib qoladi`, correct: `Shishako'z Deputat bilan`, wrongs: [`Mansur bilan`, `Shoikrom bilan`, `Rais bobo bilan`]},
+{q: `Kim viloyat xotin qizlariga opa bo'lib olgan edi Deputat orqasidan`, correct: `Madam Xosiyatxon`, wrongs: [`Samiya`, `Muflixa`, `Dilbar`]},
+{q: `O'g'rini Qaroqchi urdi`, correct: `Maqol`, wrongs: [`Hikoya`, `She'r`, `Qo'shiq`]},
+{q: `Kimni urib yuborishiga sal qoldi Ouravshab va qizigan qamchisi sabab sezib qoldi`, correct: `Komandirni`, wrongs: [`Mansurni`, `Shoikromni`, `Rais boboni`]},
+{q: `Oyravshan nechchi yoshda edi`, correct: `30 ga yetar yetmas`, wrongs: [`20 ga yetar yetmas`, `40 ga yetar yetmas`, `50 ga yetar yetmas`]},
+{q: `Kayf ustida bir erkaklik qildi deb qaraymiz ichidagi hech narsa o'zgarmasin faqat savolarni almashtir bita nuqta ham qob ketmasin o'zgarmasin ham`, correct: `Buyruq`, wrongs: [`Iltimos`, `Maslahat`, `Savol`]},
+
+
+/* =====   7-Bob.G'ayrat-2 oyna.html ===== */
+
+{q: `...ning yaxshi odati-kalavani chuvalatib o'tirmaydi, masalani ko'ndalang qo'yib, aytar gapini shartta-shartta aytadi-da, а далшефилософия deya yakun yasaydi qo'yadi kim`, correct: `Jumaniyoz`, wrongs: [`G'ayrat`, `Burxon Aliyorov`, `Vorisxon`]},
+{q: `Gapga no'noqligi-yu o'tirishturishida palapartishtoroq ko'rinishi aldamchi xolat xar qanday masalada muammoning jon joyini bir qarashda bexato aniqlaydi. Tegishli chora tadb`, correct: `Jumaniyoz`, wrongs: [`G'ayrat`, `Abdukarim`, `Shoyimboyev`]},
+{q: `Yaqinsan beri hay'at yig'ilishlarini birinchi o'rinbosar sifatida boshqarayotir birinchi o'rinbosar kim`, correct: `Jumaniyoz Matyoqubov`, wrongs: [`Burxon Aliyorov`, `Abdukarim`, `Vorisxon`]},
+{q: `Ustidan jinoiy ish ochilib, allaqayerda tergov berib yurganmish kim`, correct: `Katta xo'jayin`, wrongs: [`G'ayrat`, `Jumaniyoz`, `Faxriddin`]},
+{q: `Majlis Payti G'ayratga nechi marta telefon bo'lgan edi`, correct: `7-8`, wrongs: [`3-4`, `10-12`, `5-6`]},
+{q: `2 ta telefon kimdan kelgan edi`, correct: `Uydan`, wrongs: [`Do'stidan`, `Hamkasbidan`, `O'qituvchisidan`]},
+{q: `yana 2 ta telefon kimdan kelgan edi`, correct: `No'malum raqam`, wrongs: [`Akasidan`, `Ukadan`, `Yordamchidan`]},
+{q: `6 tasi kimdan kelgan edi telefon`, correct: `Yordamchisidan`, wrongs: [`Muovinidan`, `Hokimdan`, `Otasidan`]},
+{q: `G'ayratning yordamchisining ismi kim`, correct: `Faxriddin`, wrongs: [`Abdukarim`, `Jumaniyoz`, `Burxon`]},
+{q: `G'ayratning Muovini kim`, correct: `Abdukarim`, wrongs: [`Faxriddin`, `Jumaniyoz`, `Burxon`]},
+{q: `Muovin Abdukarimni kim olib ketdi`, correct: `Akalar`, wrongs: [`Politsiya`, `Do'stlari`, `Hokimiyat`]},
+{q: `Akalar yana kimni tiqib qo'ygan`, correct: `Boshbuxniyam`, wrongs: [`Kotibani`, `Yordamchini`, `Muovinni`]},
+{q: `Xushmuomala xatto uncha muncha hazilkash kim`, correct: `Vorisxon`, wrongs: [`Burxon Aliyorov`, `Abdukarim`, `Jumaniyoz`]},
+{q: `Akalar G'ayratning kabinetini nima qilgan`, correct: `Tambalab surg'uchlab`, wrongs: [`Bo'shatib qo'ygan`, `Ochib qo'ygan`, `Ta'mirlagan`]},
+{q: `Faxriddin unga nima demoqchi G'ayratga`, correct: `Kemaganingiz ma'qul siz bosh nishonda`, wrongs: [`Ishga boring`, `Qoching`, `Barchasi yaxshi`]},
+{q: `G'ayratni qidirib uyiga kirib hojatxonagagacha nechi marta kelib ketishdi`, correct: `2`, wrongs: [`1`, `3`, `4`]},
+{q: `Kadrlar bo'yicha G'ayratning muovini kim`, correct: `Burxon Aliyorov`, wrongs: [`Abdukarim`, `Jumaniyoz`, `Faxriddin`]},
+{q: `Burxon Aliyorov nechi yildan beri chiroqchilik nonini yeb kelar edi`, correct: `20`, wrongs: [`10`, `5`, `15`]},
+{q: `Kimni nozik idora bilan aloqasi bor deyishadi`, correct: `Burxon Aliyorovni`, wrongs: [`Abdukarimni`, `Jumaniyozni`, `Vorisxonni`]},
+{q: `G'ayrat viloyat boshqarmasiga boshliq bo'lib ishlashiga nechi yildan oshdi hu narsalarni sezmagan`, correct: `4`, wrongs: [`2`, `6`, `8`]},
+{q: ` Juda ba'mani og'ir vazmin beozor odam. Nimani so'ramang jo'yali maslahat beradi Kim`, correct: `Burxon Aliyorov`, wrongs: [`Abdukarim`, `Jumaniyoz`, `Vorisxon`]},
+{q: ` Abdukarimning familiyasi kim`, correct: `Mavlonov`, wrongs: [`Aliyorov`, `Matyoqubov`, `Voxidov`]},
+{q: `Tavba, bironnimadan qattiq siqilgan yoki xozirgidek yolg'iz, parishonxon damlarida nechundir kimni eslab qolasi G'ayrat`, correct: `Oyravshanni`, wrongs: [`Jumaniyozni`, `Vorisxonni`, `Burxonni`]},
+{q: `G'ayrat unashtirilganlaridan keyin Oyravshanni qayerga tomoshaga olib borgan edi`, correct: `Toshkentga`, wrongs: [`Samarqandga`, `Buxoroga`, `Xivaga`]},
+{q: `G'ayrat Oyravshanni qayerdagi ijaraxonasiga olib borgan edi`, correct: `Beshog'ochdagi`, wrongs: [`Yunusobod`, `Chorsu`, `Eski shahar`]},
+{q: `Ijaraxonada Oyravshan va G'ayrat nechi kun birga qolishadi`, correct: `1 kecha`, wrongs: [`2 kun`, `3 kun`, `1 hafta`]},
+{q: `Uy egalaridan hayo etibmi, allamaxalgacha nima qib o'tirdilar`, correct: `Pichir pichir qib o'tirdilar bo'lak bo'lak yotdilar taomilga amal qilish uchun o'taketgan to'g'ri bola edi da`, wrongs: [`She'r yodladilar`, `Ovqatlandilar`, `Gaplashib o'tirdilar`]},
+{q: `Uy egasi xonimning ismi kim edi kelinoyining`, correct: `Aslida`, wrongs: [`Zamira`, `Emine`, `Munira`]},
+{q: ` 2 oylar bo'ldi saratonning oxirida bir kuni allakim qo'ng'iroq qilib tuzuk salom aliksiz... Aka sizni ko'rmoqchilar deb qoldi kim ko'rmoqchi edi`, correct: `Vorisxon`, wrongs: [`Jumaniyoz`, `Burxon`, `Abdukarim`]},
+{q: `G'ayratning familiyasi nima`, correct: `Voxidov`, wrongs: [`Aliyorov`, `Mavlonov`, `Matyoqubov`]},
+{q: `Baland Panjara bilan o'ralgan 3 qavatli qora oyanavand bino. Qurilganiga ko'p bo'lgani yo'q. Eski shahardagi eski istirohat bog'ining etakrog'ida bie vaq`, correct: `Vorisxonning`, wrongs: [`Jumaniyozning`, `Burxonning`, `G'ayratning`]},
+{q: `Vorisxonning xonadagi diqqatni tortadigan yagona ashyo nima`, correct: `Burchakdagi yuksalgan baxaybat seyf`, wrongs: [`Kitoblar`, `Shkaflar`, `Rasmlar`]},
+{q: `Keyingi 4-5 yil ichi vohani larzaga keltirib, zilzila yasab yurgan afsonaviy vallamat kim edi`, correct: `Vorisxon`, wrongs: [`G'ayrat`, `Jumaniyoz`, `Burxon`]},
+{q: `Vorisxon kim edi`, correct: `Podpolkovnik`, wrongs: [`Mayor`, `Polkovnik`, `Leytenant`]},
+{q: `Aytishlaricha hozir Toshkentga yuksalib ketgan akaxoni bir vaqtlar shu yerda kim bo'lib ishlagan`, correct: `Boshqarma xo'jayini`, wrongs: [`Hokim`, `Muovin`, `Podpolkovnik`]},
+{q: `Vorisxon akaxoni Boshqarma xo'jayini bo'lgan payti kim sifatida qo'shni dablatlardan keladigan ba'zi qorakarvonlarga ikkovlon birgalikda sarbonlik qila`, correct: `Yosh mayor uning o'ng qo'li bo'lgan`, wrongs: [`Muovin`, `Kotib`, `Yordamchi`]},
+{q: `Qaysi obyektlar Vorisxonga tegishli bo'lib G'ayrat ulanri chiroqdan uzgan`, correct: `Orzu Karvon Samad ota Birlashgab Uchrashuv`, wrongs: [`Maktablar`, `Bog'chalar`, `Sanoat obyektlari`]},
+{q: `G'ayratning Quratori kim edi`, correct: `Shoyimboyev Diyor`, wrongs: [`Burxon Aliyorov`, `Abdukarim`, `Jumaniyoz`]},
+{q: ` Shoyimboyev Diyor kim bo'lib ishlaydi`, correct: `Xokim muovini`, wrongs: [`Hokim`, `Boshliq`, `Muovin`]},
+{q: `Diyor Shoyimboyev qaysi soha bo'yicha hokim muovini edi`, correct: `Qurilish va Sanoat`, wrongs: [`Ta'lim`, `Sog'liqni saqlash`, `Qishloq xo'jaligi`]},
+{q: `G'ayratning vazifasi Shoyimbiyevning oldiga kiradi yu salom alikdan so'ng cho'ntagidan... Gazetasiga o'rog'lik qalin taxlamni olib turli papka sapka qal`, correct: `Xalq so'zi`, wrongs: [`Yangi O'zbekiston`, `Pravda Vostoka`, `Mahalla`]},
+{q: `Vazifa jarayonida G'ayratning nimasi Shoyimboyev tarafga qaratilgan bo'lishi kerak`, correct: `Serbezak soati`, wrongs: [`Ko'zlari`, `Qo'llari`, `Papka`]},
+{q: `O'ta kamgao og'irkarvon, ammo og'iz ochgudek bo'lsa, albatta nishonga urgudek qilib xazil aralash so'zlaydi. Undabundagi gap ziyofatlarda necha bor birga o'tirishgan, ko'zi to'q odam. O'zi tug'ulib o'sgan zarang tumanida uninh ozroq ekinbop yeri bor, 2 azamat o'g'li o`, correct: `Diyor Shoyimboyev haqida`, wrongs: [`G'ayrat haqida`, `Jumaniyoz haqida`, `Vorisxon haqida`]},
+{q: `G'ayratning kotibasi kim?`, correct: `Zamira`, wrongs: [`Aslida`, `Emine`, `Munira`]},
+{q: `Zamira aytishicha uni kim qidirayotgan edi Toshkentga majlisga birga borishlari kk edi`, correct: `Shoyimboyev Diyor`, wrongs: [`Jumaniyoz`, `Burxon`, `Vorisxon`]},
+{q: `Bu nechi kun oldingi galplar`, correct: `4`, wrongs: [`2`, `3`, `5`]},
+{q: `Xokimiyatdan qaytishda xilvatroq burchakda oq qanday moshinada 2 yigit uni so'roq qildi`, correct: `Neksiya`, wrongs: [`Matiz`, `Damas`, `Jip`]},
+{q: `Vorisxon kim edi`, correct: `Jobir otarchi`, wrongs: [`G'ayrat`, `Jumaniyoz`, `Abdukarim`]},
+{q: `O'qishga kechroq kirgan, sirtqi yurfakda o'qirdi, lekin imtihon pimtihon topshirganini birov ko'rmagan otardan tushgan yakanlari bilan hisobkitobini to'g'irlab yurardi. Yuzi yaltillab orqaga taralgan sermavj sochlari moydan yaltirab turardi. Xovli biqinidagi xonada buvisi bilan yashardi ta'rif kim ha`, correct: `Vorisxon Jobir Otarchi`, wrongs: [`G'ayrat`, `Abdukarim`, `Burxon`]},
+{q: `Badjahl kampirning qayerga tushib ketgan to'ng'ich qizining o'g'li edi Jobir otarchi.?`, correct: `Bo'stonliqqa`, wrongs: [`Toshkentga`, `Buxoroga`, `Xorazmga`]},
+{q: `Kelganida torini ting'illatib, nuqul qaysi qo'shini aytib yurar edi`, correct: `Men sevaman sen sevasanmu`, wrongs: [`O'zbekiston`, `Bahor`, `Daryolar`]},
+{q: `Jobir Otarchining qanday qasetasi ham chiqqan edi`, correct: `Qopqog'iga tor ko'tarib turgan bashang sur'qti tushirilgan audio qasetasi`, wrongs: [`She'rlar to'plami`, `Qo'shiqlar`, `Intervyu`]},
+{q: `Xush ovoz yosh sozanda kim edi`, correct: `Jobir Salim`, wrongs: [`G'ayrat`, `Jumaniyoz`, `Abdukarim`]},
+{q: `Jobir kimni olib chiqib ketgan`, correct: `Aslidani`, wrongs: [`Zamirani`, `Emineni`, `Munirani`]},
+{q: `Aslida kelinoyi kimning xotini edi`, correct: `Ilhom tog'aning`, wrongs: [`G'ayratning`, `Jumaniyozning`, `Burxonning`]},
+{q: `Kaftdekkina bu xovlida Faqat kimning qaqqillab kulishlari yangrab turadi. O'zi oq sariqdan kelgan bir qis va bir o'g'ilning onasi bo'lsada haliyam oqi oq`, correct: `Aslida kelinoyi`, wrongs: [`Zamira`, `Emine`, `Munira`]},
+{q: `U qayerdadir shofyorlik qiladi, jussasi dum-damaloq, piyoladekpiyoladek ko'zlari go'yoki ichidagi musallasidan rang olgan qontalash ta'rif kim haqida`, correct: `Ilhom aka`, wrongs: [`G'ayrat`, `Jumaniyoz`, `Burxon`]},
+{q: `Ko'ylak tugmalari yechilib ketgan, kajavasimon qorni selkillaydi. Sochlari han har yon to'zg'ib, tepakali ochilib qolgan kim`, correct: `Ilhom aka`, wrongs: [`G'ayrat`, `Jumaniyoz`, `Burxon`]},
+{q: `Qariyb ikki yildirki shu hovlida yashab, cho'zinchoq yuzli, odam zoriga doim o'qrayib qaraydigan ushoqqina kim`, correct: `Badjahl kampir`, wrongs: [`Aslida`, `Zamira`, `Emine`]},
+{q: `Ilhon ekang o'sha yuzqarolikdan keyin battar ichib olgan bolam. Allaqayerlarda daydib yuradi. Kam keladi buyoqqa. Bo'mshlikka o'tgan sababi Aslida q`, correct: `Jobr Otarchi bilan`, wrongs: [`G'ayrat bilan`, `Jumaniyoz bilan`, `Burxon bilan`]},
+{q: `Toshkentga kelsa G'ayrat Qayerlarni ko'rishni qumsaydi`, correct: `Ilhom akalarining xovlisini`, wrongs: [`O'z uyini`, `Jumaniyozning uyini`, `Hokimiyatni`]},
+{q: `G'ayrat kimga oyi deydi`, correct: `Badjahl kampirga`, wrongs: [`Aslidaga`, `Zamira`, `Emine`]},
+{q: `Qayerning Bo'zsuv bo'yidagi ko'rkam o'z davrida hashamatli sanalgan hovliga G'ayrat ko'pkelgan`, correct: `Yunusobod`, wrongs: [`Chorsu`, `Eski shahar`, `Markaz`]},
+{q: `Yunusobod Bo'zsuv bo'yidagi ko'rkam o'z davrida hashmatli sanalgan hovli etagidagi alohida xonada kim turar edi`, correct: `Jumaniyoz jiyan`, wrongs: [`G'ayrat`, `Burxon`, `Abdukarim`]},
+{q: `Martabador uy egasini kamdan-kam ko'rgan. Ondasonda uchrashib qolganlarida xam negadir doim qovolari shishinqirab yuradigan... yelkasida beso'naqay to'n, ularga xafsalasizgina qarab "xa yigitlar o'qis`, correct: `Boltavoy doyi`, wrongs: [`Jumaniyoz`, `Burxon`, `Abdukarim`]},
+{q: `Martabador uy egasi Boltavoy doyi qo'qqisdan vafot etgach bu hovli-xaram kimga qoldi`, correct: `Arzanda jiyan Jumaniyozboyga`, wrongs: [`G'ayratga`, `Burxonga`, `Abdukarimga`]},
+{q: `Jumaniyozboyning chaqqon xotini kim?`, correct: `Emine xonim`, wrongs: [`Zamira`, `Aslida`, `Munira`]},
+{q: `Uy ro'zg'or bilan ishi yo'q ko'pincha mamlakat bo'ylab xizmat safarlarida yuradi ta'rif kim haqida`, correct: `Jumaniyoz`, wrongs: [`G'ayrat`, `Burxon`, `Abdukarim`]},
+{q: `Emine xonim qayerlik edi`, correct: `Qrim`, wrongs: [`Toshkent`, `Buxoro`, `Xorazm`]},
+{q: `Emine G'ayrat bilan Jumadan 2-3 kurs quyi qaysi bo'limda o'qigan`, correct: `Iqtisod`, wrongs: [`Huquq`, `Tarix`, `Adabiyot`]},
+{q: `Emine o'qishni tugatishga tugatdi-yu 1 kun ham sohasi bo'yicha ishlamadi, allaqayda sirtdan ta'lim olib binoyidek...bo'lib ishladi kim bo'lib`, correct: `Teatrshunos`, wrongs: [`O'qituvchi`, `Shifokor`, `Tadbirkor`]},
+{q: `Bugun uncha muncha san'at tomoshasining bosh qozisi shu kishim kim?`, correct: `Emine xonim`, wrongs: [`Zamira`, `Aslida`, `Munira`]},
+{q: `Jumaniyozning nechta farzandi bor edi`, correct: `2 aka-uka`, wrongs: [`1 o'g'il`, `2 qiz`, `3 bola`]},
+{q: `Jumaniyozning 2 aka ukasi nima o'ynayotgan edi`, correct: `Tennis`, wrongs: [`Futbol`, `Voleybol`, `Basketbol`]},
+{q: `G'ayrat nur ulashgani qo'shni yurtga borib kelib orttirgan jamg'armasiga nima olgan edi`, correct: `Moshina`, wrongs: [`Uy`, `Tilla`, `Seyf`]},
+{q: `G'ayrat qanaqa rusumli moshina olgan edi`, correct: `Volga`, wrongs: [`Neksiya`, `Matiz`, `Jip`]},
+{q: `G'ayratni volga moshinasi biram minilmagan o'rab qayerda qo'yilgandi`, correct: `Jiyanini uyida`, wrongs: [`Garajda`, `Ko'chada`, `Mehmonxonada`]},
+{q: `Jumaniyoz Qanday maslahat beradi G'ayratga`, correct: `Qochish`, wrongs: [`Ishga borish`, `Hokimiga borish`, `Vorisxon bilan gaplashish`]},
+{q: `Jumaniyoz G'ayratga qayerga qochishni maslahat beradi`, correct: `Tyumenga`, wrongs: [`Toshkentga`, `Rossiyaga`, `Chet elga`]},
+{q: `Nega Jumaniyoz Tyumenni maslahat beradi`, correct: `Rossiya bilan shartnoma bo'lganligi uchun`, wrongs: [`Yaqinligi uchun`, `Ish ko'pligi uchun`, `Xavfsizligi uchun`]},
+{q: `G'ayrat Vorisxonning diydorini bir xam ko'rmasdan qorong'u yerto'lasida nechi oyga yaqin yotib chiqdi`, correct: `4 oy`, wrongs: [`2 oy`, `6 oy`, `1 oy`]},
+{q: `G'ayratga qo'yilgan 1-ayblov nima`, correct: `Shoyimboyevga Pora bergani`, wrongs: [`Elektr uzgani`, `Vorisxon bilan gaplashgani`, `Ishdan qochgani`]},
+{q: `G'ayratga qo'yilgan 2-ayblov nima`, correct: `Qarzdor tashkilot korxonalarning ayrimlaridan elektrni uzib, ayrimlaridan uzmagani`, wrongs: [`Pora olgani`, `Hokimni haqorat qilgani`, `Ishga kelmagani`]},
+{q: `Kimni qo'l oyog'idan ko'tarib yerga uraverib ichini to'kib tashlagandek aftoda bir axvolda ekan. yerdan bosh ko'tarmaydi kim`, correct: `Shoyimbayev`, wrongs: [`Jumaniyoz`, `Burxon`, `Vorisxon`]},
+{q: `Vorisxon boshqa viloyatga ko'tarilib ketdi. Endi ulрующих qonini ichadi. Vorisxon boshqa viloyatga ketganida u bilan birga nima xam ko'rinmaydi`, correct: `Tuya seyf`, wrongs: [`Moshinasi`, `Kotibi`, `Hujjatlari`]},
+{q: `Jumaniyoz G'ayratga qanday maslahat beradi va samara beradi`, correct: `Qaytib ishga tiklash va Tovon puli`, wrongs: [`Qochish`, `Vorisxon bilan gaplashish`, `Hokimga borish`]},
+{q: `Jumaniyoz aytishi bo'yicha G'ayrat shoir bo'lsa taxallusi kim bo'lar edi`, correct: `G'ayrat Lanji`, wrongs: [`G'ayrat Shoir`, `G'ayrat Qalamkash`, `G'ayrat Dono`]},
+{q: `G'ayrat o'sha gaplardan keyin uni ko'rdingmi?`, correct: `Xech shuniyam shunday qib ber`, wrongs: [`Ha`, `Yo'q`, `Bilmayman`]},
+
+
+
+/* =====  8-bob.Oyravshan-4 oyna.html ===== */
+
+{"q": "Orada bir oy-yarim oy tanaffus bilan o'sha yili Rais bobo nechchi marta kasalxonada yotib chiqdi?", "correct": "3", "wrongs": ["2", "6", "4"]},
+{"q": "Ilgarigidan ham tundroq, kamgap, allanechuk ma'yus tortib qolgan kim edi?", "correct": "Rais bobo", "wrongs": ["Faxriddin", "Ramziddin Po'latovich", "Jobir Otarchi"]},
+{"q": "Rais boboning qonida nimaning miqdori pasayib ketganida o'ziga kelib zaranga jo'nar edi?", "correct": "Qand miqdori", "wrongs": ["Fantom og'riq", "Qon bosimi", "Yurak xastaligi"]},
+{"q": "Qondagi qand miqdorini nima bilan davolasa bo'lar edi?", "correct": "Dori-yu parxez", "wrongs": ["Faqat dori", "Massaj-u davolash", "Faqat parxez"]},
+{"q": "Rais boboning qayeridagi ochiq yara hech bitay demay, muttasil og'riq berardi?", "correct": "Chap oyoq bosh barmog'idagi", "wrongs": ["O'ng oyoq tovonidagi", "O'ng qo'l bilagidagi", "Chap qo'l kaftidagi"]},
+{"q": "Rais boboning operatsiyasi yaxshi o'tgani haqida kim Oyravshanga xabar beradi?", "correct": "Yanvar aka", "wrongs": ["Iskandar", "Emine xonim", "Boltavoy doyi"]},
+{"q": "Kimning bir oyog'ini kesib tashlashadi?", "correct": "Rais boboning", "wrongs": ["Jumaniyozning", "Vorisxonning", "Olim Orifjonovning"]},
+{"q": "Rais boboning oyog'i kesib tashlangan kuni Oyravshan kimga yig'lab dardini doston qiladi?", "correct": "O'g'liga", "wrongs": ["Amakisiga", "Ukasiga", "Kundoshiga"]},
+{"q": "U payt Oyravshanning o'g'li necha yoshda edi?", "correct": "4", "wrongs": ["9", "10", "12"]},
+{"q": "Rais boboning oyog'i qayeridan kesiladigan bo'ldi?", "correct": "Tizzasidan", "wrongs": ["Sonidan", "Belidan", "Bo'ynidan"]},
+{"q": "Rais bobo qayerdagi maxsus bo'limga ko'chirildi?", "correct": "ToshMI", "wrongs": ["Chorsu", "Bo'stonliq", "Barchinoy saroyi"]},
+{"q": "Rais bobo ToshMIda nechchinchi qavatda davolanib yotardi?", "correct": "5", "wrongs": ["6", "2", "10"]},
+{"q": "Rais bobo qanday karavatda yotardi?", "correct": "Beshiksimon", "wrongs": ["Chodirsimon", "Qayiqsimon", "Kemasimon"]},
+{"q": "Yo'q, kesib tashlangan oyoq og'riydi — bu og'riq nima deyiladi?", "correct": "Fantom og'riq", "wrongs": ["Qon bosimi", "Bel og'rig'i", "Bosh aylanishi"]},
+{"q": "Nima sababdan Oyravshan Rais boboni ko'rgani shuncha kundan beri kirmayotgan edi?", "correct": "Qo'rqqanidan", "wrongs": ["Vaqti yo'qligidan", "Uyalganidan", "Charchaganidan"]},
+{"q": "Rais bobo va Oyravshanning o'g'lining ismi nima?", "correct": "Baqirbek", "wrongs": ["Baxtiyor", "Sardor", "Jasur"]},
+{"q": "Oyravshan keyingi bor Rais boboni ko'rishga kelganda nimaga hayron qolgan edi?", "correct": "Kitob o'qib o'tirganiga", "wrongs": ["Aytmaganiga", "Ko'rinmaganiga", "Kelmaganiga"]},
+{"q": "Rais bobo qanday kitob o'qib yotgan edi?", "correct": "Qur'oni Karim", "wrongs": ["Hadis to'plami", "Tarix kitobi", "She'riy devon"]},
+{"q": "Yarimta bo'lib qolgan Rais bobo Toshkentga bemalol kelib keta olmas, oyda necha marta Oyravshanga telefon qilib \"biror narsadan zoriqmayapsanmi\" deb so'rardi?", "correct": "2 marta", "wrongs": ["1 marta", "5 marta", "4 marta"]},
+{"q": "Necha oyda bir marta moshinasini har xil narsalarga to'ldirib Mansur kelar edi?", "correct": "2 oyda bir", "wrongs": ["3 oyda bir", "1 oyda bir", "4 oyda bir"]},
+{"q": "Oyravshan umrida ko'rmagan odamiga fotixa tortib qo'ydi, kimga?", "correct": "Kundoshiga", "wrongs": ["Singlisiga", "O'g'liga", "Kelinoyisiga"]},
+{"q": "Rais boboning kampiri necha yil to'shakka mixlanib yotdi?", "correct": "10 yil", "wrongs": ["20 yil", "5 yil", "15 yil"]},
+{"q": "Rais boboga kim qarayotgan edi?", "correct": "Mansurning xotini", "wrongs": ["Oyravshanning ukasi", "Vorisxonning amakisi", "Jumaniyozning ukasi"]},
+{"q": "Mansurni Rais bobo qachon uylantirgan edi?", "correct": "Oyog'i kesilib yotib qolgach", "wrongs": ["Uylanmoqchi bo'lgach", "Kasal bo'lib qolgach", "Ishdan bo'shagach"]},
+{"q": "Oyravshanning kimi Toshkentga keladi?", "correct": "Dadasi", "wrongs": ["Akasi", "Ukasi", "Xolasi"]},
+{"q": "Dadasi nima sababdan Toshkentga kelgan edi?", "correct": "So'nggi paytlari mazasi qochib, katta doktorlarga ko'rinish uchun", "wrongs": ["Uzoq safar sabab, qishga qoldirildi", "Sog'lig'i tuzalmaganidan keyin, kuzga qoldirildi", "Marhumaning yillik marosimidan keyin, bahorga qoldirildi"]},
+{"q": "Oyravshan dadasini hayratga solganicha mashinaga o'tqazib qaysi bo'limga olib boradi?", "correct": "Urologiya markaziga", "wrongs": ["4-orolga", "3-orolga", "Poliklinikaga"]},
+{"q": "Tibbiyot masalalari bilan shug'ullanadigan muxbir qizni o'rtaga qo'yib topdirilgan nomdor doktor, dadasini necha kunga olib qoladi?", "correct": "2 kunga", "wrongs": ["3 kunga", "4 kunga", "5 kunga"]},
+{"q": "Otasiga qanday tashxis qo'yilgan edi?", "correct": "Erkaklarda uchraydigan qarilik dardi o'tkazib yuborilgan, endi operatsiyaga dosh berishlari qiyin", "wrongs": ["Yoshlarda uchraydigan yurak nuqsoni og'irlashgan, operatsiya shart", "Ayollarda uchraydigan asab kasalligi zo'rayib ketgan, davolanish uzoq davom etadi", "Bolalarda uchraydigan nafas kasalligi asoratlangan, tezkor yordam kerak"]},
+{"q": "Oyravshan nima sababdan ikki o't orasida qoladi?", "correct": "Bolasi sabab", "wrongs": ["Vaqti sabab", "Ishi sabab", "Sog'lig'i sabab"]},
+{"q": "Oyravshan bolasini kimga qoldiradi?", "correct": "Tyotya Valyaga", "wrongs": ["Asalkaga", "G'ayratga", "Iskandarga"]},
+{"q": "Oyravshan shu paytgacha 2 marta qishloqqa borib kelgan bo'lsa, o'g'lini kimga tashlab ketgan edi?", "correct": "Tyotya Valyaga", "wrongs": ["G'ayratga", "Vorisxonga", "Zamiraga"]},
+{"q": "Oyravshanning bolasining ismi nima edi?", "correct": "Abubakr", "wrongs": ["Sardor", "Baqirbek", "Otabek"]},
+{"q": "Oyravshanning dadasi Oyravshanga nima deb tayinladi?", "correct": "\"Qishloqqa obor buni\"", "wrongs": ["\"Otamiz o'tib qoldi\"", "\"Ehtiyot bo'l, o'zingga qara\"", "\"Bugun bormayman\""]},
+{"q": "Qaysi faslda Rais boboning ikkinchi oyog'i ham kesiladigan bo'ldi?", "correct": "Qishga borib", "wrongs": ["Bahorga borib", "Yozga borib", "Kuzga borib"]},
+{"q": "Rais bobo \"endi bu seniki\" deb Oyravshanga nimani beradi?", "correct": "Qur'oni Karimni", "wrongs": ["Tarix kitobini", "Hadis to'plamini", "She'riy devonni"]},
+{"q": "Kimning qo'shig'iga klipga Oyravshanni taklif qilib kelishadi?", "correct": "Olim Orifjonovning", "wrongs": ["G'ayratning", "Iskandarning", "Rais boboning"]},
+{"q": "Unga aktrisalikni taklif qilib kelgan kishining qiyofasi qanday edi?", "correct": "Lo'lisifat", "wrongs": ["Baland bo'yli", "Kelishgan", "Xushbichim"]},
+{"q": "Oyravshan plastik masalasida qaysi bankka qo'ng'iroq qiladi?", "correct": "Zo'rbank", "wrongs": ["Xalqbank", "Milliybank", "Ipakyo'lbank"]},
+{"q": "Zo'rbankning boshlig'i, xo'jayini kim edi?", "correct": "Lazizbek Ikromovich", "wrongs": ["Yanvar aka", "Abdukarim", "Iskandar"]},
+{"q": "Oyravshan qanday ko'rsatuv loyihasini boshlab yuboradi?", "correct": "\"Qani siz nima deysiz\"", "wrongs": ["\"Yulduzlar sayri\"", "\"Kelinglar tanishaylik\"", "\"Bugungi mehmon\""]},
+{"q": "\"Qani siz nima deysiz\" ko'rsatuviga Zo'rbank departament boshlig'i sifatida kim boradigan bo'ldi?", "correct": "Muzaffarxo'ja Muhammadxo'jayev", "wrongs": ["Emine xonim", "Xoji bobo", "Vorisxon"]},
+{"q": "Oyravshan kimni ko'rgach maftun bo'lib qoldi?", "correct": "Muzaffarxo'ja Muhammadxo'jayevni", "wrongs": ["Jumaniyozni", "G'ayratni", "Mansurni"]},
+{"q": "Uzun bo'yli, xipchadan kelgan, qorin-porini yo'q, kiyimlari yarashiq, bug'doyrang, qirra burun, ko'kishtob ko'zli, 30-35 yoshlardagi sipo va nazokatli muomalali kim haqida gap ketmoqda?", "correct": "Muzaffarxo'ja Muhammadxo'jayev haqida", "wrongs": ["Mansur haqida", "Lazizbek Ikromovich haqida", "Iskandar haqida"]},
+{"q": "Oyravshanning bir odati bor — dastlab tanishgan odamiga nima qiladi?", "correct": "Laqab qo'yib oladi", "wrongs": ["Sovg'a beradi", "Ovqat pishiradi", "Xat yozadi"]},
+{"q": "Oyravshan Muzaffarxo'ja Muhammadxo'jayevni qanday laqab bilan atadi?", "correct": "Benuqson", "wrongs": ["Chittigul", "Chaqqon", "Dilorom"]},
+{"q": "Benuqsonning qanday mashinasi bor edi?", "correct": "Neksiya", "wrongs": ["Volga", "Kobalt", "Jip"]},
+{"q": "Benuqsonning Neksiyasiga o'tirib qaysi tarafdagi shinamgina qahvaxonaga bordilar?", "correct": "Mirobod", "wrongs": ["Chorsu", "Eski Jo'va", "Beshog'och"]},
+{"q": "Benuqson uylangan, nechta bolasi bor edi?", "correct": "2", "wrongs": ["10", "3", "4"]},
+{"q": "Benuqson qayerda, qanday domda yashovchi fan nomzodi edi?", "correct": "Sergilida", "wrongs": ["Tumanda", "Chorsuda", "Mirobodda"]},
+{"q": "Oyravshanning o'g'ilchasi hozir qayerda edi?", "correct": "Qishloqda, bobosinikida", "wrongs": ["Vodiyda, bog' etagida", "Do'nglikning tepasida", "Yassi tepalikda, yakka gujum ostida"]},
+{"q": "Lazizbek Ikromovichning koshonasi necha derazali edi?", "correct": "8", "wrongs": ["10", "6", "12"]},
+{"q": "Lazizbek Ikromovichning koshonasi qayerda joylashgan edi?", "correct": "Do'nglikning tepasida", "wrongs": ["Yassi tepalikda, yakka gujum ostida", "Ko'l bo'yida, chinor tagida", "Tog' etagida, buloq boshida"]},
+{"q": "Lazizbek Ikromovichning qanday mashinasi bor edi?", "correct": "Jip", "wrongs": ["Kobalt", "Volga", "Neksiya"]},
+{"q": "Kalta po'stin kiygan, kaltaroq, baroqqosh, oq yuzli, iyagida pichoq bilan kesilgandek kemtikchasi bor, tepakal, yon tomonidagi qo'ng'ir soch tolalari mahorat bilan oldinga taralgan — bu kim haqida?", "correct": "Lazizbek Ikromovich haqida", "wrongs": ["Asalka haqida", "Jumaniyoz haqida", "Iskandar haqida"]},
+{"q": "Lazizbek Ikromovich necha yoshda edi?", "correct": "50", "wrongs": ["7", "9", "45"]},
+{"q": "Erkaklar qanday shampan ichadigan bo'lishdi?", "correct": "Oq", "wrongs": ["Qizil", "Ko'k", "Yashil"]},
+{"q": "Qizlar qanday shampan ichadigan bo'lishdi?", "correct": "Qizil", "wrongs": ["Yashil", "Oq", "Ko'k"]},
+{"q": "Erkaklarga oqidan, qizlarga qizilidan degan taklifdan so'ng, duragayligi ko'rinib turgan ko'kish ko'zli durkun qiz nima deydi?", "correct": "\"A gde ravnopravie, mojet naoborot a?\"", "wrongs": ["\"Qishloqqa obor buni\"", "\"Shuni bilib qo'y, ey qiz, agar dunyoga yana kelganimda seni uchratmaguncha qarib-chirib ketsam ham, uylanmas, ayol zotiga burilib qaramas edim...\"", "\"Otamiz o'tib qoldi\""]},
+{"q": "Lazizbek Ikromovich birinchi so'zni kimga berdi?", "correct": "Oyravshanga", "wrongs": ["Jumaniyozga", "Zamiraga", "Mansurga"]},
+{"q": "Lazizbek Ikromovich Oyravshandan xafsalasi pir bo'lib, kimga \"davay o'zing bir ko'rsatib qo'y\" deydi?", "correct": "Asalkaga", "wrongs": ["Iskandarga", "Vorisxonga", "Zamiraga"]},
+{"q": "Sochlari burkanib o'tirgan, munchoq ko'zli qiz kim haqida gap?", "correct": "Asalka haqida", "wrongs": ["Mansur haqida", "G'ayrat haqida", "Lazizbek Ikromovich haqida"]},
+{"q": "Nima sababdan Oyravshan hayoti o'zgargan deb o'ylardi?", "correct": "G'ayratning momosining vafoti sabab", "wrongs": ["Vorisxonning safari sabab", "Mansurning to'yi sabab", "Jumaniyozning kasalligi sabab"]},
+{"q": "Oyravshan va G'ayratning to'yi qaysi oy oxirida bo'lishi kerak edi?", "correct": "Avgustning oxirida", "wrongs": ["Oktyabrning oxirida", "Sentyabrning oxirida", "Iyulning oxirida"]},
+{"q": "Nima sababdan to'y ko'chdi?", "correct": "Marhumaning yillik marosimidan keyin, bahorga qoldirildi", "wrongs": ["Ishlar ko'payib ketganidan keyin, keyingi yilga qoldirildi", "Sog'lig'i tuzalmaganidan keyin, kuzga qoldirildi", "Uzoq safar sabab, qishga qoldirildi"]},
+{"q": "Oyravshan nechchinchi kursni bitirar-bitirmas, pedinstitutdagi dong'i sabab viloyat televideniyasiga ishga taklif etiladi?", "correct": "3-kursni", "wrongs": ["2-kursni", "1-kursni", "4-kursni"]},
+{"q": "Bu savdolarning hal qiluvchi nuqtasi bo'lgan, yangi bino etilgan muxtasham saroy qanday nomlangan edi?", "correct": "Barchinoy saroyi", "wrongs": ["Yunusobod", "Xorazm", "Beshog'och"]},
+{"q": "Barchinoy saroyida qaysi tanlov o'tkazilgan edi?", "correct": "Go'zallar tanlovi", "wrongs": ["Hosil bayrami", "Sport bayrami", "Navro'z bayrami"]},
+{"q": "Go'zallar tanlovida Oyravshan yutib chiqdi — kimning aralashishi sababli degan shivir-shivirlar bo'ldi?", "correct": "Iskandar", "wrongs": ["Madam Xosiyatxon", "Lazizbek Ikromovich", "Xoji bobo"]},
+{"q": "Iskandar Oyravshandan necha yosh katta edi?", "correct": "7-8 yosh", "wrongs": ["3-4 yosh", "5-6 yosh", "9-10 yosh"]},
+{"q": "Iskandarning familiyasi nima edi?", "correct": "Oripov", "wrongs": ["Matyoqubov", "Aliyorov", "Mavlonov"]},
+{"q": "Kechagi kuzakda viloyat markazidagi yangi qurilgan ulkan stadionda o'tkazilgan yillik hosil bayramida qatnashgan mashhur ashula-raqs jamoalarining nomlarini ayting?", "correct": "\"Bulbul\" va \"Chag'oniyon\"", "wrongs": ["\"Sadoqat\" va \"Bahor\"", "\"Yalla\" va \"Ashula\"", "\"Navro'z\" va \"Guliston\""]},
+{"q": "Ko'rkam tortib, to'lishib, arbonlarga xos bir tus olib qolgan kim edi?", "correct": "Iskandar aka", "wrongs": ["Madam Xosiyatxon", "Ilhom aka", "Zamira opa"]},
+{"q": "Kim Oyravshanga \"Iskandar akangizga telefon qilib qo'yarkansiz\" dedi?", "correct": "Televideniya rahbari", "wrongs": ["Muxbir", "Bo'lim boshlig'i", "Shifokor"]},
+{"q": "Iskandar Oyravshanni qaysi mashinasiga mindirdi?", "correct": "Lasettisiga", "wrongs": ["Volgasiga", "Damasga", "Matizga"]},
+{"q": "Iskandar Oyravshanni Lasettisiga mindirib qayerga olib bordi?", "correct": "3-orolga", "wrongs": ["Urologiya markaziga", "Kasalxonaga", "Sanatoriyga"]},
+{"q": "Shahar televideniyasidan Toshkentga \"bo'shat\" deb kim uni jo'natgan edi?", "correct": "Xoji bobo", "wrongs": ["Ramziddin Po'latovich", "Burxon Aliyorov", "Mansur"]},
+{"q": "Oradan qancha vaqt o'tgach, kim qaynotasining yordami bilan Toshkentga ketibdi (bo'lmasa qamalar ekan)?", "correct": "Iskandar", "wrongs": ["Boltavoy doyi", "Vorisxon", "G'ayrat"]},
+{"q": "Iskandar Oyravshanga qarmoq tashlab yurdi, ammo nimani bilgach darak-tovushi o'chdi?", "correct": "Rais boboni", "wrongs": ["Vorisxonni", "Mansurni", "Muzaffarxo'ja Muhammadxo'jayevni"]},
+{"q": "Ishga puxta, tayoqdek to'g'ri, suvni ham puflab ichadigan, xalol-pokiza kim edi?", "correct": "G'ayrat", "wrongs": ["Mansur", "Lazizbek Ikromovich", "Iskandar"]},
+{"q": "Eng xushvaqt, eng beg'am kunlari Oyravshanning kimning qanoti ostida kechgan edi?", "correct": "Rais boboning", "wrongs": ["Vorisxonning", "G'ayratning", "Mansurning"]},
+{"q": "Ayniqsa qaysi safar Oyravshanning esidan chiqmaydi?", "correct": "Issiqko'l safari", "wrongs": ["Buxoro safari", "Samarqand safari", "Farg'ona safari"]},
+{"q": "Issiqko'l nima deb atalardi?", "correct": "Dilorom", "wrongs": ["Chaqqon", "Abakir", "Bulbulcha"]},
+{"q": "Issiqko'ldagi \"Dilorom\" deb atalmish bu jannatda Oyravshan qancha vaqt beg'am, bolalikdagi erkatoy qizaloqqa aylandi?", "correct": "2 hafta", "wrongs": ["1 hafta", "4 hafta", "3 hafta"]},
+{"q": "Oyravshan shuncha joydan poyi-piyoda, xorib-xarsillab, qaysi joyning shoh bekatiga kelib, Toshkentga ketadigan oxirgi avtobusga ilinadi?", "correct": "G'azalkent", "wrongs": ["Bo'stonliq", "Xorazm", "ToshMI"]},
+{"q": "Ertasi, yakshanba kuni Oyravshan turib qaysi bozorga sarpo olishga tushdi?", "correct": "Eski Jo'va", "wrongs": ["Mirobod", "Chorsu", "ToshMI"]},
+{"q": "3 kunmi o'tib, rais boboning qaltis ishlar bo'yicha o'rinbosari huzuriga Oyravshan chaqirildi — bu kishining ismi kim edi?", "correct": "Ramziddin Po'latovich", "wrongs": ["Iskandar aka", "Vorisxon", "Emine xonim"]},
+{"q": "Oyravshan hozir qayerda ishlab yurgan edi?", "correct": "Parlament muxbiri bo'lib", "wrongs": ["Muallima bo'lib", "Shifokor bo'lib", "Muxbir bo'lib"]},
+{"q": "Ertasi kuni ishga kelganidayoq Oyravshanning nimasi olib qo'yildi?", "correct": "Ruxsatnomasi", "wrongs": ["Soati", "Sumkasi", "Pasporti"]},
+{"q": "Muflixa Oyravshanga \"opajon, opajon\" derdi, bu safar Oyravshan Muflixani nima deb atadi — bu ularning yoshini tenglashtirib qo'yganday edi?", "correct": "Kursi", "wrongs": ["Dilorom", "Chittigul", "Chaqqon"]},
+{"q": "Bo'yi bir qarich-u, kursiga o'rnashgach, odam qatori bo'lib qoladigan kim edi?", "correct": "Muflixaxon", "wrongs": ["Abdukarim", "Vorisxon", "Mastura chaqqon"]},
+{"q": "Zebo jurnalidagi ishxonada kim pensiyaga chiqib ketib, o'rni bo'sh bo'lsa-da, Muflixa \"uni ishga ololmaymiz\" deydi?", "correct": "Zamira opa", "wrongs": ["Lazizbek Ikromovich", "Muflixaxon", "G'ayrat"]},
+{"q": "Muflixaning sochi doim qanday bo'lib yurardi?", "correct": "Qazg'anoq", "wrongs": ["Bigudili", "Yoyilib tushgan", "Kalta kesilgan"]},
+{"q": "Oyravshan Muflixaga qazg'anoqdan qutulish uchun nimaning qaynatmasini maslahat beradi?", "correct": "Sarimsoq-piyoz qaynatmasi", "wrongs": ["Yalpiz qaynatmasi", "Rayhon qaynatmasi", "Zira qaynatmasi"]},
+{"q": "Zahro kelin Oyravshanga telefon qilib qanday xabar beradi?", "correct": "\"Otamiz o'tib qoldi\"", "wrongs": ["\"Meni kechir\"", "\"A gde ravnopravie, mojet naoborot a?\"", "\"Xayr, ishing o'ngidan kelsin\""]},
+{"q": "Rossiyadan mayib-majruh bo'lib qaytgan, osmonga qaragancha voy-voylab yotibdi, beli ko'tarilmaydi, joyidan turolmaydi — bu kim edi?", "correct": "Oyravshanning ukasi", "wrongs": ["Mansurning xotini", "Vorisxonning amakisi", "G'ayratning singlisi"]},
+{"q": "Oyravshanning ukasi yangi qurilayotgan bino zinapoyasidan og'ir allanimani ko'tarib chiqayotganida orqaga qalqib ketib, qayeri zax yegan edi?", "correct": "Umurtqasi", "wrongs": ["Beli", "Bilagi", "Bo'yni"]},
+{"q": "Bir kuni o'tirganlarni sarosimaga solib, o'zgacha bir ko'rk-salobat bilan kim kirib keldi?", "correct": "Madam Xosiyatxon", "wrongs": ["Ramziddin Po'latovich", "Abdukarim", "Muzaffarxo'ja Muhammadxo'jayev"]},
+{"q": "Viloyat xotin-qizlarining sardori, hokim o'rinbosari kim edi?", "correct": "Madam Xosiyatxon", "wrongs": ["Iskandar aka", "Jobir Otarchi", "Faxriddin"]},
+{"q": "Xosiyatxon bilan birga Jiydalik tumani bo'yicha noibi, shogird-chaliqi kim ham kelgan edi?", "correct": "Mastura chaqqon", "wrongs": ["Xoji bobo", "Faxriddin", "Yanvar aka"]},
+{"q": "Xarir sharf, sochlarini boshiga sipo, silliq turmaklab, yarashiqli plashlar kiyib, rostakam arbobona qiyofaga kirgan kim edi?", "correct": "Madam Xosiyatxon", "wrongs": ["Yanvar aka", "Abdukarim", "Iskandar aka"]},
+{"q": "Mehmon Xosiyatxon qora rangdagi qanday mashinada keladi?", "correct": "Opel", "wrongs": ["Jip", "Kobalt", "Damas"]},
+{"q": "Xosiyatxon Oyravshanga \"deputatlikka sizni tanlasak bo'larkan, saylaganlar chaqirib oldi\" dedi — Oyravshanni saylovdan va deputatlikdan nima sababdan olib tashlashadi?", "correct": "Katta idoradan ishdan ketgani sababli", "wrongs": ["Vaqti yo'qligi sababli", "Sog'lig'i yomonlashgani sababli", "Ishga kelmagani sababli"]},
+{"q": "Marhumning 40 kuni peshindan keyin Zahro kelin Oyravshanga kimdir chaqirayotganini aytadi, Oyravshan uni ko'rgach sevinadi — u kim edi?", "correct": "Mansur", "wrongs": ["Iskandar", "Burxon Aliyorov", "Rais bobo"]},
+{"q": "Abubakrni Mansur doim nima deb atardi?", "correct": "Abakir", "wrongs": ["Sho'x", "Benuqson", "Chaqqon"]},
+{"q": "Abubakr hozir nechinchi sinfda edi?", "correct": "2-sinfda", "wrongs": ["1-sinfda", "4-sinfda", "3-sinfda"]},
+{"q": "Qishloqqa ko'chib kelib, Oyravshan kim bo'lib ishlamoqchi ekanini aytdi?", "correct": "Maktab muallimasi", "wrongs": ["Muxbir", "Bo'lim boshlig'i", "Hokim yordamchisi"]},
+{"q": "Rais bobo doim qaysi iborasini ishlatishni yaxshi ko'rar edi?", "correct": "\"Durust-durust\"", "wrongs": ["\"Ehtiyot bo'l, o'zingga qara\"", "\"Meni kechir\"", "\"Otamiz o'tib qoldi\""]},
+{"q": "Rais bobo hayrlashgach, Oyravshanga so'nggi gapi va ilk dil izhori sifatida nima dedi?", "correct": "\"Shuni bilib qo'y, ey qiz, agar dunyoga yana kelganimda seni uchratmaguncha qarib-chirib ketsam ham, uylanmas, ayol zotiga burilib qaramas edim...\"", "wrongs": ["\"A gde ravnopravie, mojet naoborot a?\"", "\"Durust-durust\"", "\"Meni kechir\""]},
+{"q": "Oyravshan Rais bobo bilan oxirgi marta qayerda ko'rishadi?", "correct": "Yassi tepalikda, yakka gujum ostida", "wrongs": ["Qishloqda, bobosinikida", "Do'nglikning tepasida", "Tog' etagida, buloq boshida"]},
+{"q": "Abubakr \"o'lgan bobomdan ham yaxshi menga ko'p pul berdi\" deb kimni nazarda tutadi?", "correct": "Rais boboning dadasini", "wrongs": ["G'ayratning otasini", "Jumaniyozning akasini", "Vorisxonning ukasini"]},
+{"q": "Abubakr bu pullarga nima olaman deydi?", "correct": "Velosiped", "wrongs": ["Telefon", "Kompyuter", "Konstruktor"]},
+{"q": "Oyravshan hozir necha yoshda edi?", "correct": "40 yoshda", "wrongs": ["35 yoshda", "45 yoshda", "50 yoshda"]},
+
+/* =====  9-Bob.Iskandar-2 oyna.html ===== */
+
+{"q": "Iskandarning hayoti 1 haftada o'zgarib ketdi, unga nechta xabar kelgan edi?", "correct": "3", "wrongs": ["2", "4", "5"]},
+{"q": "Internet orqali kelgan xabarda xalqaro qimorda yutib chiqqan nimani qo'lga kiritgani haqida xabar keladi?", "correct": "Green card", "wrongs": ["Avtomobil", "Uy-joy", "Pul mukofoti"]},
+{"q": "Yana bir xabarda poytaxt markazidagi mehmonxona buziladigan bo'lib, o'rniga nima qurilishi mo'ljallangan edi?", "correct": "Biznes markazi", "wrongs": ["Savdo majmuasi", "Turar-joy binosi", "Bog'-park"]},
+{"q": "Poytaxt markazidagi yerni kimning himmati bilan Iskandar sotib olgan edi?", "correct": "Lazizbekning", "wrongs": ["Xoji boboning", "Dilraboning", "Xansning"]},
+{"q": "Xoji bobo bu paytlar qayerga ketadi?", "correct": "Xans bilan Germaniyaga", "wrongs": ["Yolg'iz Amerikaga", "Oilasi bilan Turkiyaga", "Rossiyaga ishga"]},
+{"q": "Otelni Hoji bobo ketishdan oldin kimning nomiga xatlatib ketgan edi?", "correct": "Dilraboning", "wrongs": ["Iskandarning", "Lazizbekning", "Xansning"]},
+{"q": "Davlat xizmatidagi mas'ul shaxs qanday faoliyat bilan shug'ullanishi taqiqlanadi?", "correct": "Tadbirkorlik", "wrongs": ["O'qituvchilik", "Jamoat ishlari", "Ilmiy faoliyat"]},
+{"q": "Iskandarga uchoroldagi 4-qavatdagi mashmasha va davlat xizmatchisining axloqiy buzuqligi haqida gap ketishini aytishganda, u qayerga qochadi?", "correct": "Poytaxtning Qochgan-quvganlar mahallasiga", "wrongs": ["Qishloqdagi qarindoshlarinikiga", "Chet elga", "Xoji boboning oldiga"]},
+{"q": "Iskandarning bo'lajak qudasi, jonajon ulfati kim?", "correct": "Lazizbek Qodirov", "wrongs": ["Xo'ja Xo'jayevich", "Xans", "Vorisxon"]},
+{"q": "Iskandar kimning bir og'iz dalolati bilan mashhur qo'shma korxonaga maslahatchi bo'lib joylashib, non tashvishidan qutuldi?", "correct": "Lazizbek Qodirovning", "wrongs": ["Xoji boboning", "Dilraboning", "Xo'ja Xo'jayevichning"]},
+{"q": "Zo'rbank qayerda joylashgan?", "correct": "Chilonzorda", "wrongs": ["Yunusobodda", "Mirzo Ulug'bekda", "Shayxontohurda"]},
+{"q": "Iskandar Zo'rbankka nima sababdan borgan edi?", "correct": "Kredit olgani", "wrongs": ["Ish topgani", "Pul qo'ygani", "Hisob ochgani"]},
+{"q": "Zo'rbank boshlig'i Iskandarga qanday shart bilan kredit beradi?", "correct": "1 gina sham xonasi", "wrongs": ["Ikki kafil", "Garov mulki", "Yuqori foiz"]},
+{"q": "\"Mard, chapani, do'lvor tabiat, bir issig'i bor, yonidan ketgingiz kelmaydi, yoqimtoy, xojatbaror, yor-do'stining ko'pligi ne-ne kazo-kazolar bilan bordi-keldi qadrdon\" - ta'rif kim haqida?", "correct": "Zo'rbankning boshlig'i", "wrongs": ["Xoji bobo", "Xo'ja Xo'jayevich", "Iskandar"]},
+{"q": "Zo'rbank boshlig'ining ismi kim?", "correct": "Lazizbek Qodirov", "wrongs": ["Xo'ja Xo'jayevich", "Vorisxon", "G'ayrat"]},
+{"q": "Lazizbek Iskandarni qaysi bayram munosabati bilan restoranga taklif qiladi?", "correct": "8 mart", "wrongs": ["Navro'z", "Yangi yil", "Mustaqillik kuni"]},
+{"q": "Lazizbekning restoranida kim dastyorlik qilar edi?", "correct": "Xo'ja Xo'jayevich", "wrongs": ["Vorisxon", "Xans", "G'ayrat"]},
+{"q": "\"Xushsurat, sertavoze bir yigit, dallol, qo'shmachi\" - ta'rif kim haqida?", "correct": "Xo'ja Xo'jayevich", "wrongs": ["Lazizbek Qodirov", "Xoji bobo", "Iskandar"]},
+{"q": "Lazizbekning xilvatini Iskandar nima deb atadi?", "correct": "Lazizbekning Xarami", "wrongs": ["Lazizbekning saroyi", "Lazizbekning uyasi", "Lazizbekning bog'i"]},
+{"q": "Lazizbekning Oqtoshdagi dachasining nomi nima?", "correct": "Panorama", "wrongs": ["Bahor", "Jannat", "Marvarid"]},
+{"q": "Iskandarning xotin nimaligini bilmaydigan naynov o'g'liga Lazizbek qaysi qizini olib berdi?", "correct": "O'tirib qolgan, yoshi kattaroq baqalog'iga", "wrongs": ["Eng kenja qizini", "Chet elda o'qigan qizini", "Yagona qizini"]},
+{"q": "Dilrabo hamon norozi bo'lib, laqma kuyovning o'zi saxiy-serpul qaynota sovg'a qilgan qaysi mashinaga quvonib yurganini aytadi?", "correct": "Toyota", "wrongs": ["Nexia", "Malibu", "Lacetti"]},
+{"q": "Saxiy-serpul qaynota kuyovga qaysi kvartirani sovg'a qilgan edi?", "correct": "Gabus", "wrongs": ["Mirzo Ulug'bek", "Sergeli", "Chilonzor"]},
+{"q": "Bu orada yosh kelin-kuyov nima yutib olib, \"Hello Amerika\" deb jo'nab qolishdi?", "correct": "Green-card", "wrongs": ["Sayohat cheki", "Loyiha granti", "Sport avtomobili"]},
+{"q": "Iskandarga yana bir xat kelgan edi, u qayerdan edi va Iskandarning yuragi hapriqib ketgan edi?", "correct": "Prokuraturadan", "wrongs": ["Bankdan", "Sudan", "Militsiyadan"]},
+{"q": "Iskandarni kim sifatida prokuraturaga chaqirishgan edi?", "correct": "Guvoh sifatida", "wrongs": ["Ayblanuvchi sifatida", "Jabrlanuvchi sifatida", "Ekspert sifatida"]},
+{"q": "Lazizbek Qodirov chet elga qochib ketganiga necha kun bo'ldi?", "correct": "3 kun", "wrongs": ["5 kun", "7 kun", "10 kun"]},
+{"q": "Lazizbek Qodirov chet elga nima sababdan qochib ketgan edi?", "correct": "Bankning barcha sarmoyasini jo'natib qo'yib qochgan edi", "wrongs": ["Soliq to'lamagani uchun", "Jinoyat ustidan qo'lga tushmaslik uchun oddiy sayohatga chiqqan", "Oilaviy mojaro sababli"]},
+{"q": "Quda Lazizbek Qodirov qo'l yetmas qaysi tarafga qochdi?", "correct": "Qibris", "wrongs": ["Turkiya", "Dubay", "Malayziya"]},
+{"q": "Lazizbekning xotini - xolasining dardmand qizi nechta o'g'li bilan qolib ketdi?", "correct": "2", "wrongs": ["1", "3", "4"]},
+{"q": "Lazizbek Qodirov kim bilan qochgan edi?", "correct": "Vatanparvar shoira bilan", "wrongs": ["Xo'ja Xo'jayevich bilan", "Matbuot kotibi bilan", "Xotini bilan"]},
+{"q": "Vatanparvar shoiraning ismi kim edi?", "correct": "Nozlixon", "wrongs": ["Dilrabo", "Vorisxon", "Gulnora"]},
+{"q": "\"Uning yuzini kamdan-kam holda ko'rish mumkin edi, qari maqomida kuzalgan sochi mudom bir betini to'sib yashirib turar edi\" - ta'rif kim haqida?", "correct": "Nozlixon", "wrongs": ["Dilrabo", "Xo'ja Xo'jayevich", "Vorisxon"]},
+{"q": "Nozlixon doim nima deb sayrar edi?", "correct": "Vatanimni sevaman, yurtimni sevaman, xalqimni sevaman, odamlarni sevaman", "wrongs": ["Pulni sevaman, mansabni sevaman", "Shon-shuhratni sevaman", "Chet elni sevaman"]},
+{"q": "Nozli shoira emas, kim edi?", "correct": "Matbuot kotibi", "wrongs": ["Bank xodimi", "O'qituvchi", "Advokat"]},
+
+/* =====  10-Bob.Ta'ziya (muqaddimaning oxiri) oyna.html ===== */
+
+{"q": "Bugun ta'ziyaning nechanchi kuni edi?", "correct": "3", "wrongs": ["2", "5", "7"]},
+{"q": "\"3 kundirki, shu yerda azaxonada har kuni 2-3 soat o'tirib ketadi\" - bu kim haqida?", "correct": "G'ayrat", "wrongs": ["Xans", "Xoji bobo", "Vorisxon"]},
+{"q": "\"U ham qaynotasi bilan deyarli bir xil libosda, egnida novchadan-novcha, qomatiga kaltalik qilib turgan och kulrang yaktak, boshida sal kattaroqmi...\" - ta'rif kim haqida?", "correct": "Xans", "wrongs": ["G'ayrat", "Vorisxon", "Iskandar"]},
+{"q": "Xoji bobo Zarangdan keyin qayerga ketdi?", "correct": "Moskvaga, oliy partiya maktabiga", "wrongs": ["Toshkentga, institutga", "Peterburgga, o'qishga", "Qozog'istonga, ishga"]},
+{"q": "Xoji bobo Zarangda qayerda kotib edi?", "correct": "Dashtobodda", "wrongs": ["Yakkabog'da", "Bo'zsuvda", "Zangiotada"]},
+{"q": "Xoji bobo oliy partiya maktabidan keyin qayerga borib tushgan?", "correct": "Toshkentga, Markazqo'mga", "wrongs": ["Samarqandga, viloyat qo'mitasiga", "Farg'onaga, ishga", "Qishlog'iga, dam olishga"]},
+{"q": "Xoji bobo necha yil poytaxt nonini yeb, keyin yurtiga qaytadi?", "correct": "2 yil", "wrongs": ["1 yil", "3 yil", "5 yil"]},
+{"q": "Ta'ziya kimniki edi?", "correct": "Iskandarning", "wrongs": ["Xoji boboning", "Lazizbekning", "G'ayratning"]},
+{"q": "Iskandarning uylari kimga qolgan edi?", "correct": "Jiyaniga", "wrongs": ["Xotiniga", "O'g'liga", "Ukasiga"]},
+{"q": "Iskandarning janozasida hamma uchun oddiy holday, bayramday, faqat qarindoshlaridan kim uchungina a'za edi?", "correct": "Iskandarning opasiga", "wrongs": ["Iskandarning xotiniga", "Iskandarning ukasiga", "Iskandarning jiyaniga"]},
+{"q": "G'ayrat qancha kun Jiydalida turib, Toshkentga qaytdi?", "correct": "2 kun", "wrongs": ["3 kun", "5 kun", "7 kun"]}
+];
+
+const ayats = [
+    { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
+    { text: "Albatta bir qiyinchilik bilan osonchilik bordir.", meta: "Sharh 94:5" },
+    { text: "Yaratgan Robbing nomi bilan o'qi!", meta: "Alaq 96:1" },
+    { text: "O'qi, Robbing karamlilar karamlisidir.", meta: "Alaq 96:3" },
+    { text: "Va tezda Robbing senga ato qilur va sen rozi bo'lursan.", meta: "Zuho 93:5" },
+    { text: "Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.", meta: "Layl 92:5-7" },
+    { text: "Albatta hidoyatga boshlash Bizning zimmamizdadir.", meta: "Layl 92:12" },
+    { text: "Va albatta tezda rozi bo'ladir.", meta: "Layl 92:21" },
+    { text: "Seni oson yo'lga muyassar etamiz.", meta: "A'lo 87:8" },
+    { text: "Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.", meta: "Naba 78:39" },
+    { text: "Albatta Biz senga ochiq g'alaba berdik.", meta: "Fath 48:1" }
+];
+
+
+
+
+let activeQuiz = [];
+let currentQ = 0, score = 0, answered = 0;
+const RANDOM_PRESETS = [10, 15, 25, 33, 50, 100];
+const USED_KEY = 'quizUsedIndices_2bob';
+
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function getUsedIndices() {
+    try {
+        return JSON.parse(localStorage.getItem(USED_KEY) || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveUsedIndices(arr) {
+    localStorage.setItem(USED_KEY, JSON.stringify(arr));
+}
+
+function buildStars() {
+    const container = document.getElementById('stars');
+    container.innerHTML = '';
+    const count = 130;
+    for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        const isGlow = Math.random() > 0.8;
+        s.className = 'star' + (isGlow ? ' glow' : '');
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        const size = (isGlow ? (Math.random() * 1.5 + 2) : (Math.random() * 2 + 1)).toFixed(1);
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.animationDelay = (Math.random() * 2.5).toFixed(2) + 's';
+        s.style.animationDuration = (1.5 + Math.random() * 2).toFixed(2) + 's';
+        container.appendChild(s);
+    }
+}
+
+let rangeStart = null;
+let numButtons = [];
+
+window.onload = function() {
+    const grid = document.getElementById('numberGrid');
+    for (let i = 1; i <= quizData.length; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn';
+        btn.innerText = i;
+        btn.onclick = () => pickNumber(i, btn);
+        grid.appendChild(btn);
+        numButtons.push(btn);
+    }
+    buildStars();
+
+    // Random preset tugmalarini yaratish
+    const randGrid = document.getElementById('randomOptionsGrid');
+    RANDOM_PRESETS.forEach(n => {
+        const btn = document.createElement('button');
+        btn.className = 'random-num-btn';
+        btn.innerText = n;
+        btn.onclick = () => pickRandomCount(n);
+        randGrid.appendChild(btn);
+    });
+
+    // Oldin ishlatilgan savollarni sariq rangda belgilab qo'yish
+    markUsedButtons();
+
+    const randomIdx = Math.floor(Math.random() * ayats.length);
+    const selectedAyat = ayats[randomIdx];
+    document.getElementById('random-ayat').innerHTML = `
+        <div class="quran-box">
+            <span class="quran-ayat-text">"${selectedAyat.text}"</span>
+            <span class="quran-meta">${selectedAyat.meta}</span>
+        </div>
+    `;
+};
+
+function markUsedButtons() {
+    const used = getUsedIndices();
+    used.forEach(idx => {
+        if (numButtons[idx]) numButtons[idx].classList.add('picked');
+    });
+}
+
+function toggleRandomGrid() {
+    const grid = document.getElementById('randomOptionsGrid');
+    grid.style.display = (grid.style.display === 'grid') ? 'none' : 'grid';
+}
+
+function pickRandomCount(n) {
+    let used = getUsedIndices();
+    const allIndices = quizData.map((_, i) => i);
+    let unused = allIndices.filter(i => !used.includes(i));
+
+    // Agar ishlatilmagan savollar yetarli bo'lmasa, tarixni yangilaymiz (yangi aylanish boshlanadi)
+    if (unused.length < n) {
+        used = [];
+        unused = allIndices;
+    }
+
+    const shuffledUnused = shuffle([...unused]);
+    const selected = shuffledUnused.slice(0, n);
+
+    // Tanlanganlarni "ishlatilgan" deb belgilaymiz va saqlaymiz
+    used = [...used, ...selected];
+    saveUsedIndices(used);
+
+    // Savollarni asl tartibda joylaymiz
+    const orderedSelected = [...selected].sort((a, b) => a - b);
+    activeQuiz = orderedSelected.map(i => quizData[i]);
+
+    // Tanlangan raqam tugmalarini sariq rangga bo'yash
+    selected.forEach(i => {
+        if (numButtons[i]) numButtons[i].classList.add('picked');
+    });
+
+    document.getElementById('range-info').innerText = `Tasodifiy tanlandi: ${n} ta savol`;
+
+    setTimeout(() => {
+        document.getElementById('select-screen').style.display = 'none';
+        document.getElementById('mode-screen').style.display = 'flex';
+    }, 500);
+}
+
+function clearUsedHistory() {
+    localStorage.removeItem(USED_KEY);
+    numButtons.forEach(btn => btn.classList.remove('picked'));
+    document.getElementById('range-info').innerText = "Tarix tozalandi. Boshlang'ich raqamni tanlang";
+}
+
+function pickNumber(num, btnEl) {
+    const info = document.getElementById('range-info');
+
+    if (rangeStart === null) {
+        rangeStart = num;
+        btnEl.classList.add('picked');
+        info.innerText = `Boshlang'ich: ${num}. Endi oxirgi raqamni tanlang`;
+    } else {
+        let start = rangeStart;
+        let end = num;
+        if (end < start) { const t = start; start = end; end = t; }
+        btnEl.classList.add('picked');
+        info.innerText = `Tanlandi: ${start} - ${end}`;
+        setTimeout(() => startWithRange(start, end), 400);
+    }
+}
+
+function startWithRange(start, end) {
+    activeQuiz = quizData.slice(start - 1, end);
+    document.getElementById('select-screen').style.display = 'none';
+    document.getElementById('mode-screen').style.display = 'flex';
+}
+
+let quizMode = 'quiz';
+
+function chooseMode(mode) {
+    quizMode = mode;
+    if (mode === 'quiz-aralash' || mode === 'yopiq-aralash') {
+        activeQuiz = shuffle([...activeQuiz]);
+    }
+    document.getElementById('mode-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'flex';
+    document.getElementById('intro-screen').style.opacity = '1';
+    startTimer();
+}
+
+function startTimer() {
+    let count = 3;
+    let disp = document.getElementById("countdown");
+    disp.innerText = count;
+    let timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+            disp.innerText = count;
+        } else if (count === 0) {
+            disp.innerText = "Boshladik!";
+        } else {
+            clearInterval(timer);
+            document.getElementById("intro-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("intro-screen").style.display = "none";
+                document.getElementById("quiz").style.display = "block";
+                loadQ();
+            }, 800);
+        }
+    }, 1000);
+}
+
+function getOptionsFor(qData) {
+    return shuffle([qData.correct, ...qData.wrongs]);
+}
+
+function loadQ() {
+    const qData = activeQuiz[currentQ];
+    document.getElementById('question').innerText = `${currentQ + 1}/${activeQuiz.length}. ${qData.q}`;
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+
+    if (quizMode === 'yopiq' || quizMode === 'yopiq-aralash') {
+        loadClosedQ(qData, optDiv);
+    } else {
+        loadMultipleChoiceQ(qData, optDiv);
+    }
+}
+
+function loadMultipleChoiceQ(qData, optDiv) {
+    let shuffledOptions = getOptionsFor(qData);
+
+    shuffledOptions.forEach((opt) => {
+        const btn = document.createElement('div');
+        btn.className = 'option';
+        btn.innerText = opt;
+        btn.onclick = () => check(opt, btn, qData.correct);
+        optDiv.appendChild(btn);
+    });
+}
+
+function loadClosedQ(qData, optDiv) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'closed-input';
+    input.id = 'closed-answer';
+    input.placeholder = 'Javob yozing...';
+    input.onkeypress = (e) => { if (e.key === 'Enter') checkClosed(qData); };
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'btn-check';
+    checkBtn.innerText = 'Tekshirish';
+    checkBtn.onclick = () => checkClosed(qData);
+
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'closed-result';
+
+    optDiv.appendChild(input);
+    optDiv.appendChild(checkBtn);
+    optDiv.appendChild(resultDiv);
+
+    input.focus();
+}
+
+function checkClosed(qData) {
+    const inputEl = document.getElementById('closed-answer');
+    const resultDiv = document.getElementById('closed-result');
+    const user = inputEl.value.toLowerCase().trim();
+    const correct = qData.correct.toLowerCase().trim();
+
+    answered++;
+    inputEl.disabled = true;
+    document.querySelector('.btn-check').disabled = true;
+
+    if (user === correct) {
+        resultDiv.innerHTML = '<b style="color:#00ff99;">✅ To\'g\'ri</b>';
+        score++;
+    } else {
+        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ' + qData.correct;
+    }
+
+    setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, 2000);
+}
+
+function check(selected, element, correct) {
+    const options = element.parentElement.querySelectorAll('.option');
+    options.forEach(opt => opt.style.pointerEvents = 'none');
+    answered++;
+
+    if (selected === correct) {
+        element.classList.add('correct');
+        score++;
+    } else {
+        element.classList.add('wrong');
+        options.forEach(opt => {
+            if (opt.innerText === correct) opt.classList.add('correct');
+        });
+    }
+    setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, 1000);
+}
+
+function finishQuiz() {
+    let wrong = answered - score;
+    document.getElementById('quiz').innerHTML = `
+        <h2>Natijalar</h2>
+        <div style="line-height: 2.2; font-size: 19px;">
+            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
+            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+        </div>
+        <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>
+    `;
+}
+</script>
+</body>
+</html>
