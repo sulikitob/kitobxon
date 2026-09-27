@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>25 talik test</title>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
@@ -264,13 +267,14 @@
 
 <div id="stars"></div>
 
-<!-- ===== 0-QADAM: Ism kiritish (bir martalik nazorat va reyting uchun) ===== -->
+<!-- ===== 0-QADAM: Google akkaunt orqali kirish (bir martalik nazorat va reyting uchun) ===== -->
 <div id="name-screen">
     <div class="gold-badge">🙋</div>
-    <h1>Ismingizni kiriting</h1>
-    <p>Natijangiz shu ism bilan saqlanadi. Har bir ism faqat bir marta testdan o'ta oladi.</p>
-    <input type="text" id="user-name-input" placeholder="Ism Familiya" maxlength="60">
-    <button class="start-25-btn" id="name-continue-btn" onclick="onSubmitName()">Davom etish</button>
+    <h1>Google akkaunt orqali kiring</h1>
+    <p>Natijangiz Google akkauntingizga bog'lab saqlanadi. Har bir akkaunt faqat bir marta testdan o'ta oladi.</p>
+    <div id="google-signin-button" style="display:flex; justify-content:center; min-height:44px;">
+        <button class="start-25-btn" onclick="signInWithGoogle()">🔐 Google orqali kirish</button>
+    </div>
     <div id="name-status" style="color:#999; font-size:13px;"></div>
     <button class="secondary-link" onclick="showLeaderboard()">🏆 Reytingni ko'rish</button>
 </div>
@@ -318,32 +322,36 @@
 
 <script>
 /* ============================================================
-   BACKEND SOZLAMALARI
-   O'z serveringiz/baza manzilingizni shu yerga yozing.
-   Quyidagi 3 ta endpoint kerak bo'ladi (o'zingiz backendda yarating):
-
-   1) GET  {API_BASE}/check?name=ISM
-      Javob (JSON): { "exists": true/false, "result": { "score": 0, "total": 50, "stage": 1, "timeSeconds": 0 } }
-      - "exists": bu ism bilan avval natija saqlanganmi
-      - "result": agar exists=true bo'lsa, oldingi natija (bo'lmasa null bo'lishi mumkin)
-
-   2) POST {API_BASE}/submit
-      Body (JSON): { "name": "Ism Familiya", "score": 42, "total": 50, "stage": 2, "timeSeconds": 734 }
-      Javob (JSON): { "ok": true }
-      - Bu odam ismi bilan bog'langan yakuniy natijani serverga (bazaga) yozadi
-
-   3) GET  {API_BASE}/leaderboard
-      Javob (JSON): [ { "name": "...", "score": 42, "total": 50, "stage": 2, "timeSeconds": 734 }, ... ]
-      - Barcha ishtirokchilar natijasi. Tartiblanmagan bo'lsa ham bo'ladi,
-        chunki bu sahifa o'zi score bo'yicha (ko'pdan kamga), teng bo'lsa vaqt bo'yicha (tezdan sekinga) saralaydi.
+   GOOGLE SHEETS (Apps Script) MANZILI
+   Google Sheets + Apps Script'ni sozlab, "Web App" deploy qilgandan keyin
+   sizga beriladigan link shu yerga qo'yiladi (odatda .../exec bilan tugaydi).
+   Sozlash bosqichlari suhbatdagi javobda ko'rsatilgan.
    ============================================================ */
-const API_BASE = "https://SIZNING-SERVERINGIZ.example.com/api"; // <-- shu yerni o'zgartiring
+/* ============================================================
+   FIREBASE SOZLAMALARI
+   console.firebase.google.com -> loyiha yarating -> "Web app"
+   qo'shing -> sizga shu obyekt (firebaseConfig) beriladi, uni
+   to'liq shu yerga qo'ying. Batafsil qadamlar chatda yozilgan.
+   ============================================================ */
+const firebaseConfig = {
+    apiKey: "AIzaSyDpPcnPR7eIUszgEKcbTxGmx6EpAqaa1kU",
+    authDomain: "yosh-kitobxon-996ea.firebaseapp.com",
+    projectId: "yosh-kitobxon-996ea",
+    storageBucket: "yosh-kitobxon-996ea.firebasestorage.app",
+    messagingSenderId: "53160446209",
+    appId: "1:53160446209:web:bd66a7ece7be8325d3f300"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const RESULTS_COLLECTION = "natijalar"; // Firestore'dagi jamlanma (collection) nomi
 
 /* ============================================================
    QUIZ DATASI — o'zingizning savollaringizni shu yerga joylang
    Format: { q: "Savol matni", correct: "To'g'ri javob", wrongs: ["Noto'g'ri1","Noto'g'ri2","Noto'g'ri3"] }
    ============================================================ */
 const quizData = [
+    
     // { q: "Savol matni?", correct: "To'g'ri javob", wrongs: ["Noto'g'ri1","Noto'g'ri2","Noto'g'ri3"] },
 ];
 
@@ -366,6 +374,7 @@ const ayats = [
 
 /* ===== Holat (state) ===== */
 let currentUserName = '';
+let currentUserEmail = '';
 let activeQuiz = [];
 let excludeIndices = [];         // shu urinish davomida ishlatilgan savollar (1- va 2-bosqich takrorlanmasin)
 let currentQ = 0, score = 0, answered = 0;
@@ -423,39 +432,38 @@ window.onload = function() {
     buildStars();
     showRandomAyat();
     show('name-screen');
-    const savedName = sessionStorage.getItem('quizUserName');
-    if (savedName) document.getElementById('user-name-input').value = savedName;
 };
 
-/* ===== 0-QADAM: Ism tekshirish ===== */
-async function onSubmitName() {
-    const nameInput = document.getElementById('user-name-input');
-    const name = nameInput.value.trim();
+/* ===== Google orqali kirish (Firebase Auth) ===== */
+async function signInWithGoogle() {
     const statusEl = document.getElementById('name-status');
-    const btn = document.getElementById('name-continue-btn');
-
-    if (!name) {
-        statusEl.textContent = "Iltimos, ismingizni kiriting.";
-        statusEl.style.color = '#ff6666';
-        return;
-    }
-
-    currentUserName = name;
-    sessionStorage.setItem('quizUserName', name);
-    btn.disabled = true;
     statusEl.style.color = '#999';
-    statusEl.textContent = "Tekshirilmoqda...";
-
+    statusEl.textContent = "Kirilmoqda...";
     try {
-        const res = await fetch(`${API_BASE}/check?name=${encodeURIComponent(name)}`);
-        const data = await res.json();
-        btn.disabled = false;
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const result = await auth.signInWithPopup(provider);
+        currentUserName = result.user.displayName || result.user.email;
+        currentUserEmail = result.user.email;
+        await checkExistingResult();
+    } catch (e) {
+        statusEl.style.color = '#ff9900';
+        statusEl.textContent = "Kirishda xatolik: " + e.message;
+        console.error(e);
+    }
+}
+
+/* ===== 0-QADAM: Kirilgach, avval ishlaganmi tekshirish (Firestore) ===== */
+async function checkExistingResult() {
+    const statusEl = document.getElementById('name-status');
+    statusEl.textContent = "Tekshirilmoqda...";
+    try {
+        const docSnap = await db.collection(RESULTS_COLLECTION).doc(currentUserEmail).get();
         statusEl.textContent = '';
 
-        if (data.exists) {
-            const r = data.result || {};
+        if (docSnap.exists) {
+            const r = docSnap.data();
             document.getElementById('already-result-text').innerHTML =
-                `Ism: <b>${name}</b><br>Natija: <b style="color:#00ff99;">${r.score ?? '-'} / ${r.total ?? '-'}</b>` +
+                `Ism: <b>${currentUserName}</b><br>Natija: <b style="color:#00ff99;">${r.score ?? '-'} / ${r.total ?? '-'}</b>` +
                 (r.stage ? `<br>Bosqich: ${r.stage}` : '') +
                 (r.timeSeconds ? `<br>Vaqt: ${formatTime(r.timeSeconds)}` : '');
             show('already-screen');
@@ -463,9 +471,8 @@ async function onSubmitName() {
             show('select-screen');
         }
     } catch (e) {
-        btn.disabled = false;
         statusEl.style.color = '#ff9900';
-        statusEl.textContent = "Serverga ulanib bo'lmadi. Iltimos, API_BASE manzilini tekshiring yoki internetni tekshiring.";
+        statusEl.textContent = "Ma'lumotni tekshirib bo'lmadi: " + e.message;
         console.error(e);
     }
 }
@@ -632,20 +639,22 @@ async function finalizeAndSubmit(finalScore, finalTotal, finalStage) {
     `;
 
     try {
-        await fetch(`${API_BASE}/submit`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: currentUserName,
-                score: finalScore,
-                total: finalTotal,
-                stage: finalStage,
-                timeSeconds: timeSeconds
-            })
+        await db.collection(RESULTS_COLLECTION).doc(currentUserEmail).set({
+            name: currentUserName,
+            score: finalScore,
+            total: finalTotal,
+            stage: finalStage,
+            timeSeconds: timeSeconds,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         document.getElementById('submit-status').textContent = "Natija muvaffaqiyatli saqlandi ✅";
         document.getElementById('submit-status').style.color = '#00ff99';
     } catch (e) {
+        document.getElementById('submit-status').textContent = "Natijani saqlab bo'lmadi: " + e.message;
+        document.getElementById('submit-status').style.color = '#ff9900';
+        console.error(e);
+    }
+}
         document.getElementById('submit-status').textContent = "Natijani saqlab bo'lmadi (server bilan bog'lanishda xatolik).";
         document.getElementById('submit-status').style.color = '#ff9900';
         console.error(e);
@@ -662,15 +671,17 @@ async function showLeaderboard() {
     statusEl.textContent = "Yuklanmoqda...";
 
     try {
-        const res = await fetch(`${API_BASE}/leaderboard`);
-        const data = await res.json();
+        const snapshot = await db.collection(RESULTS_COLLECTION).get();
 
-        if (!Array.isArray(data) || data.length === 0) {
+        if (snapshot.empty) {
             statusEl.textContent = "Hozircha hech kim test ishlamagan.";
             return;
         }
 
-        const sorted = [...data].sort((a, b) => {
+        const rows = [];
+        snapshot.forEach(doc => rows.push(doc.data()));
+
+        const sorted = rows.sort((a, b) => {
             if ((b.score ?? 0) !== (a.score ?? 0)) return (b.score ?? 0) - (a.score ?? 0);
             return (a.timeSeconds ?? 0) - (b.timeSeconds ?? 0);
         });
