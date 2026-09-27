@@ -1,1 +1,615 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>25 talik test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: radial-gradient(ellipse at 50% 0%, #161616, #0a0a0a 60%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
 
+        /* ===== Oltin dizayn elementlari ===== */
+        .gold-badge {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #2e2e2e, #0f0f0f 70%);
+            border: 3px solid #ffd700;
+            box-shadow: 0 0 18px rgba(255,215,0,0.55), 0 0 40px rgba(255,215,0,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 42px;
+            margin-bottom: -10px;
+            position: relative; z-index: 3;
+        }
+
+        /* ===== Tanlov (elegant, faqat 25 talik tugma) ekrani ===== */
+        #select-screen {
+            width: 100%; max-width: 560px;
+            display: flex; flex-direction: column; align-items: center;
+            gap: 22px;
+            padding: 55px 35px 45px 35px;
+            background: linear-gradient(160deg, rgba(16,16,16,0.55), rgba(10,10,10,0.55));
+            backdrop-filter: blur(1px);
+            border: 2px solid #ffd700;
+            border-radius: 30px;
+            box-shadow: 0 0 30px rgba(255,215,0,0.22), inset 0 0 40px rgba(255,215,0,0.03);
+            margin-top: 40px;
+            position: relative;
+            z-index: 2;
+        }
+        #select-screen h1 {
+            font-size: 24px; color: #ffffff; text-align: center;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+        #select-screen p { color: #999; font-size: 14px; text-align: center; line-height: 1.6; max-width: 400px; }
+
+        .start-25-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #1b1b1b, #262626);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            border-radius: 16px;
+            padding: 20px 0;
+            font-size: 19px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-shadow: 0 0 8px rgba(255,215,0,0.5);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        .start-25-btn::before {
+            content: ""; position: absolute; width: 200%; height: 200%;
+            background: linear-gradient(45deg,transparent,#ffd700,transparent);
+            top: -150%; left: -150%; transform: rotate(25deg); transition: 0.7s;
+            opacity: 0.35;
+        }
+        .start-25-btn:hover::before { top: 100%; left: 100%; }
+        .start-25-btn:hover {
+            background: #ffd700;
+            color: #050505;
+            box-shadow: 0 0 25px rgba(255,215,0,0.8);
+            transform: scale(1.02);
+        }
+
+        .clear-history-link {
+            color: #666;
+            font-size: 12px;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .clear-history-link:hover { color: #ff9900; }
+
+        /* ===== Funksiya tanlash ekrani ===== */
+        #mode-screen {
+            display: none;
+            width: 100%; max-width: 700px;
+            flex-direction: column; align-items: center;
+            gap: 25px; padding: 20px 0;
+        }
+
+        #mode-screen h1 {
+            font-size: 22px; color: #ffffff; text-align: center;
+            margin: 5px 0;
+            letter-spacing: 1px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+
+        .mode-wrapper {
+            width: 100%;
+            background: linear-gradient(160deg, rgba(16,16,16,0.55), rgba(10,10,10,0.55));
+            backdrop-filter: blur(1px);
+            border-radius: 26px;
+            padding: 30px 25px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255,215,0,0.22), inset 0 0 40px rgba(255,215,0,0.03);
+        }
+        .mode-grid {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .mode-card {
+            background: rgba(27, 27, 27, 0.85);
+            border-radius: 20px;
+            padding: 30px 15px;
+            text-align: center;
+            transition: 0.4s;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            font-size: 16px;
+            font-weight: bold;
+            backdrop-filter: blur(3px);
+        }
+        .mode-card::before {
+            content: ""; position: absolute; width: 200%; height: 200%;
+            background: linear-gradient(45deg,transparent,#ffd700,transparent);
+            top: -150%; left: -150%; transform: rotate(25deg); transition: 0.7s;
+            opacity: 0.35;
+        }
+        .mode-card:hover::before { top: 100%; left: 100%; }
+        .mode-card:hover { transform: translateY(-5px) scale(1.02); border-color: #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.3); }
+        @media(max-width:600px){ .mode-grid{ grid-template-columns: 1fr; } }
+
+        /* ===== Intro (countdown) ekran ===== */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            height: 100dvh;
+            background: #050505; display: none; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 5;
+            transition: opacity 0.8s ease;
+        }
+        #stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        #select-screen, #mode-screen, .quiz-box, #intro-screen .content-box, #intro-screen #countdown {
+            position: relative; z-index: 2;
+        }
+        .star {
+            position: absolute;
+            width: 2px; height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2.5s infinite ease-in-out;
+        }
+        .star.glow {
+            box-shadow: 0 0 6px 1px rgba(255, 215, 0, 0.5);
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.15; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.6); }
+        }
+        .content-box { text-align: center; margin-bottom: 50px; z-index: 1; position: relative; padding: 0 20px; }
+        #countdown {
+            position: absolute; bottom: 50px;
+            font-size: 80px; color: #00ff99; font-weight: bold;
+            animation: pulse 1s infinite;
+            z-index: 1;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.5; }
+        }
+
+        .quran-box {
+            display: block;
+            margin: 25px auto 0 auto;
+            padding: 20px 30px;
+            max-width: 550px;
+            border: 4px double #ffd700;
+            background: rgba(20, 16, 5, 0.6);
+            text-align: center;
+        }
+        .quran-ayat-text {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #f0f0f0;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .quran-meta {
+            display: inline-block;
+            font-size: 15px;
+            font-weight: bold;
+            color: #ffd700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            padding-top: 8px;
+            width: 100%;
+        }
+
+        /* ===== Quiz ekrani ===== */
+        .quiz-box {
+            display: none;
+            width: 100%; max-width: 600px; background: rgba(16,16,16,0.6); padding: 30px;
+            border-radius: 25px; box-shadow: 0 0 30px rgba(255,215,0,0.18);
+            border: 2px solid #ffd700;
+            backdrop-filter: blur(1px);
+            text-align: center; margin-top: 50px;
+        }
+        h2 { color: #00ff99; margin-bottom: 20px; font-size: 22px; }
+        .option {
+            display: block; width: 100%; padding: 15px; margin: 10px 0;
+            background: #2a2a2a; border: 2px solid #333; border-radius: 15px;
+            cursor: pointer; transition: 0.3s; text-align: left;
+        }
+        .option:hover { border-color: #00ff99; }
+        .correct {
+            background: #00ff99 !important; color: black; font-weight: bold;
+            animation: bubbleEffect 0.5s ease-out;
+        }
+        @keyframes bubbleEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        .wrong { background: #ff4d4d !important; color: white; }
+        .btn-finish {
+            width: 100%; padding: 15px; background: transparent; border: 2px solid #00ff99;
+            color: #00ff99; border-radius: 15px; cursor: pointer; margin-top: 20px;
+            font-weight: bold; transition: 0.3s;
+        }
+        .btn-finish:hover { background: #00ff99; color: black; }
+
+        .btn-again {
+            width: 100%; padding: 15px; background: transparent; border: 2px solid #ffd700;
+            color: #ffd700; border-radius: 15px; cursor: pointer; margin-top: 12px;
+            font-weight: bold; transition: 0.3s;
+        }
+        .btn-again:hover { background: #ffd700; color: black; }
+
+        .closed-input {
+            width: 100%; padding: 15px; margin-top: 10px; border: 2px solid #333;
+            border-radius: 12px; font-size: 17px; outline: none; background: #2a2a2a;
+            color: white;
+        }
+        .closed-input:focus { border-color: #00ff99; }
+        .btn-check {
+            width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #00ff99; border-radius: 15px;
+            background: transparent; color: #00ff99; font-weight: bold; cursor: pointer; font-size: 17px;
+            transition: 0.3s;
+        }
+        .btn-check:hover { background: #00ff99; color: black; }
+        #closed-result { margin-top: 15px; font-size: 18px; min-height: 30px; text-align: center; }
+
+
+        /* ===== Mobil to'liq ekran tuzatishlari ===== */
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            #select-screen { padding: 40px 20px 30px 20px; }
+            #select-screen h1 { font-size: 20px; }
+            .gold-badge { width: 70px; height: 70px; font-size: 32px; }
+            #mode-screen h1 { font-size: 19px; }
+            .mode-wrapper { padding: 20px 14px; }
+            .mode-card { padding: 22px 10px; font-size: 14px; }
+            .quiz-box { padding: 20px 16px; margin-top: 30px; }
+            h2 { font-size: 18px; }
+            .content-box h1 { font-size: 24px !important; }
+            .quran-ayat-text { font-size: 15px; }
+            #countdown { font-size: 60px; bottom: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="stars"></div>
+
+<!-- ===== TANLOV: elegant, faqat 25 talik test tugmasi ===== -->
+<div id="select-screen">
+    <div class="gold-badge">🎯</div>
+    <h1>Yosh Kitobxon — Tanlov</h1>
+    <p>Barcha savollar orasidan tasodifiy 25 tasi tanlanadi. Har safar bosganingizda oldin chiqmagan savollar tanlanadi.</p>
+    <button class="start-25-btn" onclick="start25()">🎲 25 talik testni boshlash</button>
+    <button class="clear-history-link" onclick="clearUsedHistory()">🔄 Ishlatilgan tarixni tozalash</button>
+</div>
+
+<div id="mode-screen">
+    <h1>Qaysi funksiyani xohlaysiz?</h1>
+    <div class="mode-wrapper">
+        <div class="mode-grid">
+            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
+            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
+            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
+            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
+        </div>
+    </div>
+</div>
+
+<div id="intro-screen">
+    <div class="content-box">
+        <h1 style="color:#00ff99; font-size: 32px;">🌙 25 talik test</h1>
+        <div id="random-ayat"></div>
+    </div>
+    <div id="countdown">3</div>
+</div>
+
+<div class="quiz-box" id="quiz">
+    <h2 id="question">Yuklanmoqda...</h2>
+    <div id="options"></div>
+    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
+</div>
+
+<script>
+/* ============================================================
+   QUIZ DATASI — o'zingizning savollaringizni shu yerga joylang
+   Format: { q: "Savol matni", correct: "To'g'ri javob", wrongs: ["Noto'g'ri1","Noto'g'ri2","Noto'g'ri3"] }
+   ============================================================ */
+const quizData = [
+
+];
+
+/* ============================================================
+   OYATLAR DATASI — kirish (intro) ekranida tasodifiy chiqadi
+   ============================================================ */
+const ayats = [
+    { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
+    { text: "Albatta bir qiyinchilik bilan osonchilik bordir.", meta: "Sharh 94:5" },
+    { text: "Yaratgan Robbing nomi bilan o'qi!", meta: "Alaq 96:1" },
+    { text: "O'qi, Robbing karamlilar karamlisidir.", meta: "Alaq 96:3" },
+    { text: "Va tezda Robbing senga ato qilur va sen rozi bo'lursan.", meta: "Zuho 93:5" },
+    { text: "Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.", meta: "Layl 92:5-7" },
+    { text: "Albatta hidoyatga boshlash Bizning zimmamizdadir.", meta: "Layl 92:12" },
+    { text: "Va albatta tezda rozi bo'ladir.", meta: "Layl 92:21" },
+    { text: "Seni oson yo'lga muyassar etamiz.", meta: "A'lo 87:8" },
+    { text: "Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.", meta: "Naba 78:39" },
+    { text: "Albatta Biz senga ochiq g'alaba berdik.", meta: "Fath 48:1" }
+];
+
+let activeQuiz = [];
+let currentQ = 0, score = 0, answered = 0;
+let quizMode = 'quiz';
+const QUESTIONS_PER_ROUND = 25;
+const USED_KEY = 'quizUsedIndices_25talik';
+
+function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+function getUsedIndices() {
+    try {
+        return JSON.parse(localStorage.getItem(USED_KEY) || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveUsedIndices(arr) {
+    localStorage.setItem(USED_KEY, JSON.stringify(arr));
+}
+
+function clearUsedHistory() {
+    localStorage.removeItem(USED_KEY);
+}
+
+function buildStars() {
+    const container = document.getElementById('stars');
+    container.innerHTML = '';
+    const count = 130;
+    for (let i = 0; i < count; i++) {
+        const s = document.createElement('div');
+        const isGlow = Math.random() > 0.8;
+        s.className = 'star' + (isGlow ? ' glow' : '');
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        const size = (isGlow ? (Math.random() * 1.5 + 2) : (Math.random() * 2 + 1)).toFixed(1);
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.animationDelay = (Math.random() * 2.5).toFixed(2) + 's';
+        s.style.animationDuration = (1.5 + Math.random() * 2).toFixed(2) + 's';
+        container.appendChild(s);
+    }
+}
+
+function showRandomAyat() {
+    const randomIdx = Math.floor(Math.random() * ayats.length);
+    const selectedAyat = ayats[randomIdx];
+    document.getElementById('random-ayat').innerHTML = `
+        <div class="quran-box">
+            <span class="quran-ayat-text">"${selectedAyat.text}"</span>
+            <span class="quran-meta">${selectedAyat.meta}</span>
+        </div>
+    `;
+}
+
+window.onload = function() {
+    buildStars();
+    showRandomAyat();
+};
+
+/* ===== 25 talik testni tanlash (takrorlanmasin, tugagach yangilanadi) ===== */
+function pickQuestions25() {
+    let used = getUsedIndices();
+    const allIndices = quizData.map((_, i) => i);
+    let unused = allIndices.filter(i => !used.includes(i));
+
+    // Ishlatilmagan savollar 25 tadan kam bo'lsa, tarix yangilanadi (yangi aylanish)
+    if (unused.length < QUESTIONS_PER_ROUND) {
+        used = [];
+        unused = allIndices;
+    }
+
+    const shuffledUnused = shuffle([...unused]);
+    const selected = shuffledUnused.slice(0, QUESTIONS_PER_ROUND);
+
+    used = [...used, ...selected];
+    saveUsedIndices(used);
+
+    const orderedSelected = [...selected].sort((a, b) => a - b);
+    activeQuiz = orderedSelected.map(i => quizData[i]);
+}
+
+function start25() {
+    pickQuestions25();
+    quizMode = 'quiz';
+    currentQ = 0; score = 0; answered = 0;
+    document.getElementById('select-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'flex';
+    document.getElementById('intro-screen').style.opacity = '1';
+    showRandomAyat();
+    startTimer();
+}
+
+function chooseMode(mode) {
+    quizMode = mode;
+    if (mode === 'quiz-aralash' || mode === 'yopiq-aralash') {
+        activeQuiz = shuffle([...activeQuiz]);
+    }
+    currentQ = 0; score = 0; answered = 0;
+    document.getElementById('mode-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'flex';
+    document.getElementById('intro-screen').style.opacity = '1';
+    showRandomAyat();
+    startTimer();
+}
+
+function startTimer() {
+    let count = 3;
+    let disp = document.getElementById("countdown");
+    disp.innerText = count;
+    let timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+            disp.innerText = count;
+        } else if (count === 0) {
+            disp.innerText = "Boshladik!";
+        } else {
+            clearInterval(timer);
+            document.getElementById("intro-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("intro-screen").style.display = "none";
+                document.getElementById("quiz").style.display = "block";
+                loadQ();
+            }, 800);
+        }
+    }, 1000);
+}
+
+function getOptionsFor(qData) {
+    return shuffle([qData.correct, ...qData.wrongs]);
+}
+
+function loadQ() {
+    const qData = activeQuiz[currentQ];
+    document.getElementById('question').innerText = `${currentQ + 1}/${activeQuiz.length}. ${qData.q}`;
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+
+    if (quizMode === 'yopiq' || quizMode === 'yopiq-aralash') {
+        loadClosedQ(qData, optDiv);
+    } else {
+        loadMultipleChoiceQ(qData, optDiv);
+    }
+}
+
+function loadMultipleChoiceQ(qData, optDiv) {
+    let shuffledOptions = getOptionsFor(qData);
+
+    shuffledOptions.forEach((opt) => {
+        const btn = document.createElement('div');
+        btn.className = 'option';
+        btn.innerText = opt;
+        btn.onclick = () => check(opt, btn, qData.correct);
+        optDiv.appendChild(btn);
+    });
+}
+
+function loadClosedQ(qData, optDiv) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'closed-input';
+    input.id = 'closed-answer';
+    input.placeholder = 'Javob yozing...';
+    input.onkeypress = (e) => { if (e.key === 'Enter') checkClosed(qData); };
+
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'btn-check';
+    checkBtn.innerText = 'Tekshirish';
+    checkBtn.onclick = () => checkClosed(qData);
+
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'closed-result';
+
+    optDiv.appendChild(input);
+    optDiv.appendChild(checkBtn);
+    optDiv.appendChild(resultDiv);
+
+    input.focus();
+}
+
+function checkClosed(qData) {
+    const inputEl = document.getElementById('closed-answer');
+    const resultDiv = document.getElementById('closed-result');
+    const user = inputEl.value.toLowerCase().trim();
+    const correct = qData.correct.toLowerCase().trim();
+
+    answered++;
+    inputEl.disabled = true;
+    document.querySelector('.btn-check').disabled = true;
+
+    if (user === correct) {
+        resultDiv.innerHTML = '<b style="color:#00ff99;">✅ To\'g\'ri</b>';
+        score++;
+    } else {
+        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: ' + qData.correct;
+    }
+
+    setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, 2000);
+}
+
+function check(selected, element, correct) {
+    const options = element.parentElement.querySelectorAll('.option');
+    options.forEach(opt => opt.style.pointerEvents = 'none');
+    answered++;
+
+    if (selected === correct) {
+        element.classList.add('correct');
+        score++;
+    } else {
+        element.classList.add('wrong');
+        options.forEach(opt => {
+            if (opt.innerText === correct) opt.classList.add('correct');
+        });
+    }
+    setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ();
+        else finishQuiz();
+    }, 1000);
+}
+
+function finishQuiz() {
+    let wrong = answered - score;
+    document.getElementById('quiz').innerHTML = `
+        <h2>Natijalar</h2>
+        <div style="line-height: 2.2; font-size: 19px;">
+            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
+            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+        </div>
+        <button class="btn-again" onclick="restartWith25()">🎲 Yana 25 ta test ishlash</button>
+    `;
+}
+
+/* ===== Test tugagach, yangi 25 ta savol bilan qayta boshlash ===== */
+function restartWith25() {
+    document.getElementById('quiz').style.display = 'none';
+    pickQuestions25();
+    quizMode = 'quiz';
+    currentQ = 0; score = 0; answered = 0;
+    document.getElementById('intro-screen').style.display = 'flex';
+    document.getElementById('intro-screen').style.opacity = '1';
+    showRandomAyat();
+    startTimer();
+}
+</script>
+</body>
+</html>
