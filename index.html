@@ -316,6 +316,55 @@
             word-break: break-word;
         }
 
+        /* ===== TANLOV: AJRALIB TURUVCHI TITLE-BOX ===== */
+        .title-box.tanlov-box {
+            position: relative;
+            background: linear-gradient(145deg, #241a3a, #1a1030);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(110deg, #b388ff, #ffe89b, #ffcc00, #b388ff) 1;
+            box-shadow: 0 0 18px rgba(179,136,255,0.55), 0 0 30px rgba(255,204,0,0.25);
+            animation: tanlovGlow 2.4s ease-in-out infinite;
+            overflow: visible;
+        }
+
+        @keyframes tanlovGlow {
+            0%, 100% { box-shadow: 0 0 14px rgba(179,136,255,0.45), 0 0 22px rgba(255,204,0,0.2); }
+            50% { box-shadow: 0 0 22px rgba(179,136,255,0.75), 0 0 36px rgba(255,204,0,0.4); }
+        }
+
+        .tanlov-ribbon {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(110deg, #8a6a12 0%, #ffe89b 22%, #fffceb 42%, #ffcc00 60%, #a8790a 82%, #ffe89b 100%);
+            background-size: 260% 100%;
+            color: #241a3a;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding: 4px 14px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(255,204,0,0.7);
+            animation: goldShimmer 2.6s linear infinite;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .tanlov-box p {
+            background: linear-gradient(110deg, #b388ff 0%, #ffe89b 30%, #ffcc00 55%, #b388ff 80%, #ffe89b 100%);
+            background-size: 260% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: goldShimmer 3.2s linear infinite;
+        }
+
+        .book.tanlov-book:hover {
+            border: 2px solid #ffcc00;
+            box-shadow: 0 0 26px rgba(255,204,0,0.45);
+        }
+
         /* ===== SOVG'A BO'LIMI (kitoblar ostida) ===== */
         .gift-section {
             position: relative;
@@ -509,9 +558,12 @@
                     <div class="title-box"><p>Xurshid Do'stmuhammad <br> Donishmand Sizif</p></div>
                 </a>
 
-                  <a href="bu yerda hamma narsa bo'lishi mumkin oyna.html" target="_blank" class="book">
+                  <a href="bu yerda hamma narsa bo'lishi mumkin oyna.html" target="_blank" class="book tanlov-book">
                     <img src="Bu.jpg" alt="Kitob muqovasi">
-                    <div class="title-box"><p>Jianni Molinari <br> Bu yerda hamma narsa bo'lishi mumkin </p></div>
+                    <div class="title-box tanlov-box">
+                        <span class="tanlov-ribbon">★ Tanlov</span>
+                        <p>Jianni Molinari <br> Bu yerda hamma narsa bo'lishi mumkin </p>
+                    </div>
                 </a>
 
                 <a href="Kiprikda qolgan tong oyna.html" target="_blank" class="book">
