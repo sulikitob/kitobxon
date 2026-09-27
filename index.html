@@ -429,6 +429,40 @@
             animation-iteration-count: infinite;
         }
 
+        .vip-icon-wrap {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse at center, rgba(255,204,0,0.22) 0%, rgba(179,136,255,0.14) 45%, transparent 75%),
+                linear-gradient(145deg, #2a1f0f, #1b1408);
+        }
+
+        .vip-icon-wrap .vip-glow-ring {
+            position: absolute;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,204,0,0.4) 0%, rgba(179,136,255,0.25) 55%, transparent 75%);
+            filter: blur(6px);
+            animation: giftPulse 2.6s ease-in-out infinite;
+        }
+
+        .vip-icon-emoji {
+            position: relative;
+            z-index: 2;
+            font-size: 88px;
+            line-height: 1;
+            display: block;
+            filter: drop-shadow(0 0 16px rgba(255,204,0,0.8)) drop-shadow(0 0 26px rgba(179,136,255,0.5));
+            animation: giftFloat 3.2s ease-in-out infinite;
+        }
+
         /* ===== SOVG'A BO'LIMI (kitoblar ostida) ===== */
         .gift-section {
             position: relative;
@@ -547,6 +581,10 @@
                 height: 220px;
             }
 
+            .vip-icon-wrap { height: 220px; }
+            .vip-icon-emoji { font-size: 64px; }
+            .vip-icon-wrap .vip-glow-ring { width: 100px; height: 100px; }
+
             header { 
                 font-size: 20px; 
                 padding: 16px 10px;
@@ -577,6 +615,8 @@
         @media(max-width:360px) {
             header { font-size: 17px; }
             .book img { height: 190px; }
+            .vip-icon-wrap { height: 190px; }
+            .vip-icon-emoji { font-size: 54px; }
         }
     </style>
 </head>
@@ -646,19 +686,22 @@
                 </a>
 
                 
-                     <a href="usta chiqish.html" target="_blank" class="book">
+                <a href="usta chiqish.html" target="_blank" class="book">
                     <img src="usta va margarita.jpg" alt="Kitob muqovasi">
                     <div class="title-box"><p>Mixail Bulgakov <br>Usta va Margarita </p></div>
-                         
-                    <a href="jalol chiqish.html" target="_blank" class="book">
+                </a>
+
+                <a href="jalol chiqish.html" target="_blank" class="book">
                     <img src="jalol.webp" alt="Kitob muqovasi">
                     <div class="title-box"><p>Jasorat <br>Jaloladdin Manguberdi </p></div>
-
-                         
                 </a>
 
                 <a href="25 talik test.html" target="_blank" class="book vip-book" id="vipCard">
                     <span class="vip-ribbon">👑 VIP</span>
+                    <div class="vip-icon-wrap">
+                        <div class="vip-glow-ring"></div>
+                        <span class="vip-icon-emoji">🏆</span>
+                    </div>
                     <div class="title-box vip-title-box">
                         <p>Yosh Kitobxon <br> 25 talik test — barcha asarlardan</p>
                     </div>
