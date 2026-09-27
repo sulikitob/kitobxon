@@ -699,14 +699,14 @@
                     <div class="title-box"><p>Jasorat <br>Jaloladdin Manguberdi </p></div>
                 </a>
 
-                <a href="vip.html" target="_blank" class="book vip-book" id="vipCard">
+                <a href="vip.html" target="_blank" class="book vip-book" id="vipCard" onclick="checkPremium(event)">
                     <span class="vip-ribbon">👑 VIP</span>
                     <div class="vip-icon-wrap">
                         <div class="vip-glow-ring"></div>
                         <span class="vip-icon-emoji">🏆</span>
                     </div>
                     <div class="title-box vip-title-box">
-                        <p>Yosh Kitobxon <br> 25 talik test — barcha asarlardan (DEMO) <br><span style="font-size:12px; opacity:0.9;">Faqat premium uchun</span></p>
+                        <p>Yosh Kitobxon <br> 25 talik test — barcha asarlardan</p>
                     </div>
                 </a>
             </div>
@@ -795,6 +795,12 @@
             }
         }
         addVipSparkles(document.getElementById('vipCard'), 18);
+
+        // ===== VIP kartaga bosilganda: bu demo va faqat premium obunachilar kira oladi =====
+        function checkPremium(e) {
+            e.preventDefault();
+            alert("Yosh Kitobxon tanlovi — barcha asarlardan demo test 🔒 Faqat premium obunachilar kira oladi. Obuna bo'lish uchun anonimkitobxon2026 telegram kanali adminiga murojaat qiling.");
+        }
 
         // ===== INTRO: GULLAR BO'RONI (1500 ta gul) =====
         const vortex = document.getElementById('vortex');
