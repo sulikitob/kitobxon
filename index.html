@@ -370,7 +370,10 @@
             position: relative;
             background: linear-gradient(145deg, #2a1f0f, #1b1408);
             box-shadow: 0 0 20px rgba(255,204,0,0.3), 0 0 32px rgba(179,136,255,0.22);
-            animation: vipGlow 2.6s ease-in-out infinite;
+        }
+
+        .book.vip-book.book-appear {
+            animation: bookFadeIn 0.8s ease forwards, vipGlow 2.6s ease-in-out infinite;
         }
 
         @keyframes vipGlow {
