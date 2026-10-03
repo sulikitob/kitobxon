@@ -188,7 +188,7 @@
     <div class="footer">zuhos.uz ©</div>
 </div>
 
-<!-- NARXLAR OYNASI: ⭐ kartalar bosilganda va bobni 2-marta ochganda chiqadi -->
+<!-- NARXLAR OYNASI (premium.html): ⭐ kartalar bosilganda va bobni 2-marta ochganda chiqadi -->
 <script>
 (function () {
     var FREE_KEY = 'zuho_bob_used';
@@ -200,12 +200,11 @@
         if (document.getElementById('zuho-pricing')) return;
         var o = document.createElement('div');
         o.id = 'zuho-pricing';
-        o.innerHTML = '<iframe src="narxlar.html"></iframe><button id="zuho-close">✕</button>';
+        o.innerHTML = '<iframe src="premium.html"></iframe><button id="zuho-close">✕</button>';
         document.body.appendChild(o);
         document.getElementById('zuho-close').onclick = function () { o.remove(); };
     }
 
-    // window darajasida, capture bosqichida: boshqa skriptlardan oldin ishlaydi
     window.addEventListener('click', function (e) {
         var card = e.target.closest && e.target.closest('a.card');
         if (!card || isPremium()) return;
