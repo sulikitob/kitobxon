@@ -2,7 +2,7 @@
 // <script type="module" src="auth-gate.js"></script>
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-         signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+         signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Firebase Console -> Project settings -> Your apps dagi configni shu yerga qo'ying
@@ -234,7 +234,7 @@ function buildModal() {
   document.getElementById('gateClose').onclick = closeModal;
   document.getElementById('gateLogin').onclick  = () => attempt(() => signInWithEmailAndPassword(auth, val('gateEmail'), val('gatePass')));
   document.getElementById('gateSignup').onclick = () => attempt(() => createUserWithEmailAndPassword(auth, val('gateEmail'), val('gatePass')));
-  document.getElementById('gateGoogle').onclick = () => attempt(() => signInWithPopup(auth, new GoogleAuthProvider()));
+  document.getElementById('gateGoogle').onclick = googleRequest;
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 }
 const val = id => document.getElementById(id).value.trim();
@@ -259,6 +259,9 @@ const ERRORS = {
   'auth/weak-password':        "Parol kamida 6 belgidan iborat bo'lsin.",
   'auth/invalid-email':        "Email noto'g'ri yozilgan.",
   'auth/popup-closed-by-user': "",
+  'auth/requires-recent-login':"Xavfsizlik uchun qaytadan Google orqali kiring.",
+  'auth/provider-already-linked':"Bu hisobga parol allaqachon o'rnatilgan.",
+  'auth/credential-already-in-use':"Bu email boshqa hisobga ulangan.",
   'auth/unauthorized-domain':  "Bu sayt Firebase'da ruxsat etilmagan (Authorized domains)."
 };
 
@@ -292,6 +295,65 @@ async function ensureProfile(user) {
   } catch (e) { /* profil keyin profile.html da yaratiladi */ }
 }
 
+// ---------- Google = faqat ariza. Admin login va parol bergandan keyin kiradi ----------
+// Parol (password provider) bor foydalanuvchi = admin tasdiqlagan hisob
+const isApproved = u => u.providerData.some(p => p.providerId === 'password');
+
+function showPending(email) {
+  closeModal();
+  let w = document.getElementById('gatePending');
+  if (!w) {
+    w = document.createElement('div');
+    w.id = 'gatePending';
+    w.style.cssText = 'display:none;position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.88);align-items:center;justify-content:center;padding:16px';
+    w.innerHTML = `
+      <div role="dialog" aria-modal="true" style="background:#1e1e1e;border:2px solid #ffcc00;border-radius:18px;padding:24px;width:340px;max-width:100%;text-align:center;font-family:Arial,sans-serif;color:#fff;box-shadow:0 0 30px rgba(255,204,0,.35)">
+        <h3 style="margin:0 0 10px;color:#2ee59d">✅ Arizangiz qabul qilindi</h3>
+        <p style="margin:0 0 6px;font-size:14px;color:#ccc;line-height:1.5">Adminga bildirishnoma yuborildi. Admin sizga login va parol beradi, shundan keyin shu login va parol bilan kira olasiz.</p>
+        <p id="pendingEmail" style="margin:8px 0 14px;font-size:13px;color:#ffcc00"></p>
+        <button id="pendingClose" style="width:100%;padding:11px;border:0;border-radius:30px;background:#ffcc00;color:#111;font-weight:bold;cursor:pointer">Yaxshi</button>
+      </div>`;
+    document.body.appendChild(w);
+    document.getElementById('pendingClose').onclick = () => { w.style.display = 'none'; };
+  }
+  document.getElementById('pendingEmail').textContent = email || '';
+  w.style.display = 'flex';
+}
+
+async function googleRequest() {
+  const err = document.getElementById('gateErr');
+  err.textContent = '';
+  try {
+    const cred = await signInWithPopup(auth, new GoogleAuthProvider());
+    const user = cred.user;
+
+    if (isApproved(user)) {                       // admin allaqachon parol bergan hisob
+      await ensureProfile(user);
+      await savePlan(user);
+      closeModal();
+      if (pendingHref) go(pendingHref);
+      return;
+    }
+
+    // Yangi ariza: adminga ko'rinadigan hujjat yozamiz
+    try {
+      await setDoc(doc(db, 'signupRequests', user.uid), {
+        email: user.email || '',
+        name: user.displayName || '',
+        plan: chosenPlan ? chosenPlan.plan : '',
+        price: chosenPlan ? chosenPlan.price : '',
+        status: 'pending',
+        requestedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (e) { /* Rules ruxsat bermasa ham, hisob Authentication ro'yxatida ko'rinadi */ }
+
+    await signOut(auth);                          // kirmaydi
+    showPending(user.email);
+  } catch (e) {
+    err.textContent = ERRORS[e.code] ?? (e.code || e.message);
+  }
+}
+
 function go(href) {
   const w = window.open(href, '_blank');
   if (!w) location.href = href;   // brauzer yangi oynani bloklasa, shu oynada ochamiz
@@ -310,7 +372,15 @@ document.addEventListener('click', async e => {
   e.preventDefault();
   await auth.authStateReady();                 // saqlangan loginni tiklab olguncha kutadi
 
-  if (auth.currentUser) { go(a.href); return; }
+  if (auth.currentUser) {
+    if (!isApproved(auth.currentUser)) {          // Google bilan kirgan, lekin admin hali tasdiqlamagan
+      const em = auth.currentUser.email;
+      await signOut(auth);
+      showPending(em);
+      return;
+    }
+    go(a.href); return;
+  }
 
   if (chapter) {
     const used = +localStorage.getItem('freeChapters') || 0;
