@@ -145,22 +145,6 @@ input:focus{border-color:#ffcc00;box-shadow:0 0 10px rgba(255,204,0,.35)}
     <p class="foot">Yarim yillik va yillik tariflarda narx chegirma bilan ko'rsatilgan · Yarim yillik va yillik tarifga — Word file bonus · Zuho.uz</p>
   </div>
 
-  <div id="step2" class="form">
-    <span class="badge">💎 ZUHO PREMIUM</span>
-    <h2>Ma'lumotlaringizni kiriting</h2>
-    <p class="chosen" id="chosen"></p>
-
-    <label for="email">Email</label>
-    <input type="email" id="email" placeholder="example@gmail.com" autocomplete="email">
-    <div class="err" id="errEmail"></div>
-
-    <label for="login">Login</label>
-    <input type="text" id="login" placeholder="Login yarating" autocomplete="username">
-    <div class="err" id="errLogin"></div>
-
-    <button class="btn" id="submit" style="margin-top:16px">Davom etish</button>
-    <button class="back" id="back">← Tariflarga qaytish</button>
-  </div>
 </div>
 
 <script>
@@ -168,32 +152,11 @@ for(let i=0;i<60;i++){const s=document.createElement('span');s.className='star';
 function addSparks(p,n,x){for(let i=0;i<n;i++){const s=document.createElement('span');s.className='spark'+(x?' '+x:'');s.style.top=Math.random()*96+'%';s.style.left=Math.random()*96+'%';s.style.animationDuration=(1+Math.random()*2)+'s';s.style.animationDelay=(Math.random()*3)+'s';p.appendChild(s);}}
 addSparks(document.querySelector('.box'),22);addSparks(document.body,18,'out');
 
-let selected=null;
-const $=id=>document.getElementById(id);
-
 document.querySelectorAll('[data-plan]').forEach(function(b){
   b.addEventListener('click',function(){
-    selected={plan:b.dataset.plan,price:b.dataset.price};
-    $('chosen').textContent=selected.plan+' — '+selected.price;
-    $('step1').style.display='none';
-    $('step2').style.display='block';
+    parent.postMessage({type:'zuho:plan-selected',plan:b.dataset.plan,price:b.dataset.price},'*');
   });
 });
-
-$('back').onclick=function(){
-  $('step2').style.display='none';
-  $('step1').style.display='block';
-};
-
-$('submit').onclick=function(){
-  const email=$('email').value.trim(), login=$('login').value.trim();
-  let ok=true;
-  $('errEmail').textContent='';$('errLogin').textContent='';
-  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)){$('errEmail').textContent="To'g'ri email kiriting";ok=false}
-  if(login.length<3){$('errLogin').textContent="Login kamida 3 ta belgidan iborat bo'lsin";ok=false}
-  if(!ok)return;
-  parent.postMessage({type:'zuho:plan-selected',plan:selected.plan,price:selected.price,email:email,login:login},'*');
-};
 
 $('haveLogin').onclick=function(e){e.preventDefault();parent.postMessage({type:'zuho:have-account'},'*');};
 </script>
@@ -227,12 +190,10 @@ function closePricing() {
 window.addEventListener('message', e => {
   if (!pricingFrame || e.source !== pricingFrame.contentWindow || !e.data) return;
   if (e.data.type === 'zuho:plan-selected') {
-    chosenPlan = { plan: e.data.plan, price: e.data.price, login: e.data.login || '' };
-    const email = e.data.email || '';
+    chosenPlan = { plan: e.data.plan, price: e.data.price };
     closePricing();
     openModal(pendingHref, pendingMsg + ' Tanlangan tarif: ' + chosenPlan.plan + ' (' + chosenPlan.price + ').');
-    document.getElementById('gateEmail').value = email;   // email oldindan yozilgan
-    document.getElementById('gatePass').focus();
+    document.getElementById('gateEmail').focus();
   } else if (e.data.type === 'zuho:have-account') {
     closePricing();
     openModal(pendingHref, pendingMsg);
@@ -244,7 +205,7 @@ async function savePlan(user) {
   if (!chosenPlan) return;
   try {
     await setDoc(doc(db, 'users', user.uid),
-      { plan: chosenPlan.plan, price: chosenPlan.price, login: chosenPlan.login || '', planChosenAt: serverTimestamp() },
+      { plan: chosenPlan.plan, price: chosenPlan.price, planChosenAt: serverTimestamp() },
       { merge: true });
   } catch (e) { /* ruxsat bo'lmasa, e'tiborsiz qoldiramiz */ }
 }
