@@ -126,6 +126,12 @@
        0%, 100% { opacity:0; transform:scale(0.4); }
        50% { opacity:1; transform:scale(1.3); }
    }
+
+   /* Narxlar oynasi */
+   #zuho-pricing{ position:fixed; inset:0; z-index:99999; background:rgba(0,0,0,.88); }
+   #zuho-pricing iframe{ width:100%; height:100%; border:0; }
+   #zuho-close{ position:absolute; top:14px; right:18px; width:38px; height:38px; border-radius:50%;
+       border:1px solid #ffcc00; background:#111; color:#ffcc00; font-size:20px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -182,7 +188,46 @@
     <div class="footer">zuhos.uz ©</div>
 </div>
 
-<!-- Login nazorati: ⭐ kartalar darhol, bob kartalari 1 marta bepul -->
+<!-- NARXLAR OYNASI: ⭐ kartalar bosilganda va bobni 2-marta ochganda chiqadi -->
+<script>
+(function () {
+    var FREE_KEY = 'zuho_bob_used';
+
+    // auth-gate.js dagi "premium / login qilgan" tekshiruvini shu yerga qo'ying
+    function isPremium() { return localStorage.getItem('zuho_premium') === '1'; }
+
+    function openPricing() {
+        if (document.getElementById('zuho-pricing')) return;
+        var o = document.createElement('div');
+        o.id = 'zuho-pricing';
+        o.innerHTML = '<iframe src="narxlar.html"></iframe><button id="zuho-close">✕</button>';
+        document.body.appendChild(o);
+        document.getElementById('zuho-close').onclick = function () { o.remove(); };
+    }
+
+    // window darajasida, capture bosqichida: boshqa skriptlardan oldin ishlaydi
+    window.addEventListener('click', function (e) {
+        var card = e.target.closest && e.target.closest('a.card');
+        if (!card || isPremium()) return;
+
+        if (card.classList.contains('premium')) {
+            e.preventDefault(); e.stopImmediatePropagation();
+            openPricing();
+            return;
+        }
+        if (card.classList.contains('card-green')) {
+            if (localStorage.getItem(FREE_KEY)) {
+                e.preventDefault(); e.stopImmediatePropagation();
+                openPricing();
+            } else {
+                localStorage.setItem(FREE_KEY, '1');
+            }
+        }
+    }, true);
+})();
+</script>
+
+<!-- Login nazorati -->
 <script type="module" src="auth-gate.js"></script>
 
 <script>
