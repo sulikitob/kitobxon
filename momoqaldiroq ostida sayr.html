@@ -193,7 +193,7 @@
 (function () {
     var FREE_KEY = 'zuho_bob_used';
 
-    // auth-gate.js dagi "premium / login qilgan" tekshiruvini shu yerga qo'ying
+    // Premium foydalanuvchini aniqlash (keyinchalik haqiqiy login tekshiruviga almashtiring)
     function isPremium() { return localStorage.getItem('zuho_premium') === '1'; }
 
     function openPricing() {
@@ -226,9 +226,6 @@
     }, true);
 })();
 </script>
-
-<!-- Login nazorati -->
-<script type="module" src="auth-gate.js"></script>
 
 <script>
 // Oltin kartalarga uzluksiz porillovchi yulduzchalar qo'shish
