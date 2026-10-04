@@ -18,6 +18,9 @@ const firebaseConfig = {
 // Login so'ramasdan nechta bobga kirish mumkin
 const FREE_CHAPTERS = 1;
 
+// Admin Telegram havolasi (bitta joyda o'zgartiriladi)
+const ADMIN_LINK = "https://t.me/dou_shen_peak";
+
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
@@ -158,7 +161,7 @@ document.querySelectorAll('[data-plan]').forEach(function(b){
   });
 });
 
-$('haveLogin').onclick=function(e){e.preventDefault();parent.postMessage({type:'zuho:have-account'},'*');};
+document.getElementById('haveLogin').onclick=function(e){e.preventDefault();parent.postMessage({type:'zuho:have-account'},'*');};
 </script>
 </body>
 </html>`;
@@ -311,12 +314,23 @@ function showPending(email) {
         <h3 style="margin:0 0 10px;color:#2ee59d">✅ Arizangiz qabul qilindi</h3>
         <p style="margin:0 0 6px;font-size:14px;color:#ccc;line-height:1.5">Adminga bildirishnoma yuborildi. Admin sizga login va parol beradi, shundan keyin shu login va parol bilan kira olasiz.</p>
         <p id="pendingEmail" style="margin:8px 0 14px;font-size:13px;color:#ffcc00"></p>
+        <a id="pendingAdmin" href="${ADMIN_LINK}" target="_blank" rel="noopener"
+           style="display:block;width:100%;padding:11px;margin:0 0 8px;border-radius:30px;background:#00aaff;color:#fff;font-weight:bold;text-decoration:none;font-size:14px;box-sizing:border-box">
+           📩 Meni adminga bildiring
+        </a>
         <button id="pendingClose" style="width:100%;padding:11px;border:0;border-radius:30px;background:#ffcc00;color:#111;font-weight:bold;cursor:pointer">Yaxshi</button>
       </div>`;
     document.body.appendChild(w);
     document.getElementById('pendingClose').onclick = () => { w.style.display = 'none'; };
   }
   document.getElementById('pendingEmail').textContent = email || '';
+
+  // Telegram xabarida foydalanuvchi emaili va tarifi avtomatik yoziladi
+  const text = "Assalomu alaykum, ariza yubordim. Gmail: " + (email || '') +
+               (chosenPlan ? ". Tarif: " + chosenPlan.plan + " (" + chosenPlan.price + ")" : "");
+  document.getElementById('pendingAdmin').href =
+    ADMIN_LINK + "?text=" + encodeURIComponent(text);
+
   w.style.display = 'flex';
 }
 
