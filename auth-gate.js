@@ -241,6 +241,8 @@ function injectGateStyles() {
   .gz-input:focus{border-color:#ffcc00;box-shadow:0 0 10px rgba(255,204,0,.35)}
   .gz-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
   .gz-err{color:#ff6b6b;font-size:13px;margin-top:10px;min-height:18px}
+  .gz-admin{display:block;margin-top:14px;color:#00aaff;font-size:14px;font-weight:bold;text-decoration:none;text-shadow:0 0 10px rgba(0,170,255,.5)}
+  .gz-admin:hover{text-decoration:underline}
   .gz-close{color:#888;cursor:pointer;margin-top:4px;font-size:13px}
   .gz-close:hover{color:#ffcc00}
   .gz-chip{display:inline-block;margin:4px 0 14px;padding:6px 14px;border:1px solid #1f7a55;background:#0e2a1f;color:#2ee59d;border-radius:20px;font-size:13px;word-break:break-all}
@@ -283,6 +285,8 @@ function buildModal() {
       <div class="gz-or">yoki</div>
 
       <button id="gateGoogle" class="gz-btn gz-google">${GOOGLE_SVG}<span>Google orqali kirish</span></button>
+
+      <a class="gz-admin" href="${ADMIN_LINK}" target="_blank" rel="noopener">Adminga murojaat qilish — Sulaymon</a>
 
       <div id="gateErr" class="gz-err"></div>
       <div id="gateClose" class="gz-close">Yopish</div>
