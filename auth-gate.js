@@ -15,9 +15,6 @@ const firebaseConfig = {
     appId: "1:53160446209:web:bd66a7ece7be8325d3f300"
 };
 
-// Login so'ramasdan nechta bobga kirish mumkin
-const FREE_CHAPTERS = 1;
-
 // Admin Telegram havolasi (bitta joyda o'zgartiriladi)
 const ADMIN_LINK = "https://t.me/dou_shen_peak";
 
@@ -397,9 +394,14 @@ document.addEventListener('click', async e => {
   }
 
   if (chapter) {
-    const used = +localStorage.getItem('freeChapters') || 0;
-    if (used < FREE_CHAPTERS) {
-      localStorage.setItem('freeChapters', used + 1);
+    // Har bir bob uchun alohida: birinchi marta bepul, ikkinchi marta to'lov
+    // Kalit sifatida karta matni olinadi (9 va 10-bob bir xil havolaga ega bo'lgani uchun)
+    const key = a.textContent.replace(/\s+/g, ' ').trim();
+    let used = [];
+    try { used = JSON.parse(localStorage.getItem('freeChapterList') || '[]'); } catch (_) {}
+    if (!used.includes(key)) {
+      used.push(key);
+      localStorage.setItem('freeChapterList', JSON.stringify(used));
       go(a.href);
       return;
     }
