@@ -142,7 +142,8 @@
             <a href="ot kishnagan oqshom 29-56.html" target="_blank" class="card card-green"><h2><br>29-56***<br></h2></a>
             <a href="ot kishnagan oqshom 57-85.html" target="_blank" class="card card-green"><h2><br>56-85***<br></h2></a>
 
-          <a href="" target="_blank" class="card card-red premium"><span class="icon">📝</span><h2>Umumiy quiz testlar</h2></a>
+          <!-- Umumiy quiz: havolasi hali bo'sh, shuning uchun data-soon (login so'ramaydi). Tayyor bo'lganda href yozib, data-soon ni olib tashlang -->
+          <a href="#" class="card card-red premium" data-soon><span class="icon">📝</span><h2>Umumiy quiz testlar</h2></a>
         </div>
 
         <h2 class="section-title">Kategoriyalar</h2>
@@ -169,16 +170,17 @@
 
     <div class="footer">zuhos.uz ©</div>
 </div>
-   
-<script>
-function checkPremium(e) {
-    e.preventDefault();
-    alert("Bu bo'lim premium obunachilar uchun mo'ljallangan 🔒 Murojat uchun anonimkitobxon2026 telegram kanali adminiga murojat qiling");
-}
 
-document.querySelectorAll('.premium').forEach(function (card) {
-    card.addEventListener('click', checkPremium);
-});
+<script>
+// "Jarayonda" kartalar (data-soon): auth-gate.js dan OLDIN ishlaydi va bosishni to'xtatadi,
+// shuning uchun login oynasi chiqmaydi va bepul bob hisobi sarflanmaydi.
+document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-soon]');
+    if (!a) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    alert("Bu bo'lim hozircha jarayonda ⏳");
+}, true);
 
 function addSparkles(card, count) {
     for (let i = 0; i < count; i++) {
@@ -196,6 +198,9 @@ document.querySelectorAll('.card-gold').forEach(function (card) {
     addSparkles(card, 10);
 });
 </script>
-   
+
+<!-- Login nazorati: ⭐ kartalar darhol, bob kartalari 1 marta bepul -->
+<script type="module" src="auth-gate.js"></script>
+
 </body>
 </html>
