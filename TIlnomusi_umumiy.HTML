@@ -344,20 +344,23 @@ body
        <a href="5.Bob.html" target="_blank" class="card card-green"><h2><br>5-Bob<br>Qalam ahlining jon ozig'i-til</h2></a>
        <a href="6-Bob.html" target="_blank" class="card card-green"><h2><br>6-Bob<br>Ma'naviy tahdid sharpasi</h2></a>
        <a href="7-Bob.html" target="_blank" class="card card-green"><h2><br>7-Bob<br>Adabiy asar til hodisasi</h2></a>
-       <a href="Tilnomusi.pdf" target="_blank" class="card card-green card-pdf"><span class="icon">📖</span><h2>Til nomusi pdf</h2></a>
 
-      <a href="Til nomusi umumiy test.html" target="_blank" class="card card-red premium" ><span class="icon">📝</span><h2>Umumiy quiz testlar</h2></a>
-      
+       <!-- PDF kartasi: card-green olib tashlandi, shuning uchun auth-gate uni bob deb hisoblamaydi (ochiq qoladi).
+            Premium qilmoqchi bo'lsangiz: class ga "premium" so'zini qo'shing -->
+       <a href="Tilnomusi.pdf" target="_blank" class="card card-pdf"><span class="icon">📖</span><h2>Til nomusi pdf</h2></a>
+
+      <a href="Til nomusi umumiy test.html" target="_blank" class="card card-red premium"><span class="icon">📝</span><h2>Umumiy quiz testlar</h2></a>
+
     </div>
 
 
     <!-- OLTIN BO'LIM — eng pastda, alohida ajratilgan -->
     <h2 class="section-title gold-section-title">✨ Maxsus bo'lim ✨</h2>
     <div class="menu-grid">
-       <a href="quiz.html" target="_blank" class="card card-gold premium" onclick="checkPremium(event)"><span class="icon">⭐</span><h2>Taqriz</h2></a>
-       <a href="Til nomusi mundarija.html" target="_blank" class="card card-gold premium" ><span class="icon">📖</span><h2>Mundarija va savollar soni</h2></a>
-       <a href="Til nomusi barcha ma'lumotlar.html" target="_blank" class="card card-gold premium" ><span class="icon">🏆</span><h2>Barcha ma'lumotlar</h2></a>
-       <a href="quiz.html" target="_blank" class="card card-gold premium" onclick="checkPremium(event)"><span class="icon">🎁</span><h2>Maxsus</h2></a>
+       <a href="quiz.html" target="_blank" class="card card-gold premium"><span class="icon">⭐</span><h2>Taqriz</h2></a>
+       <a href="Til nomusi mundarija.html" target="_blank" class="card card-gold premium"><span class="icon">📖</span><h2>Mundarija va savollar soni</h2></a>
+       <a href="Til nomusi barcha ma'lumotlar.html" target="_blank" class="card card-gold premium"><span class="icon">🏆</span><h2>Barcha ma'lumotlar</h2></a>
+       <a href="quiz.html" target="_blank" class="card card-gold premium"><span class="icon">🎁</span><h2>Maxsus</h2></a>
     </div>
 </div>
 
@@ -365,12 +368,10 @@ body
 
 </div>
 
-<script>
-function checkPremium(e) {
-    e.preventDefault();
-    alert("Bu bo'lim premium obunachilar uchun mo'ljallangan 🔒 Murojat uchun anonimkitobxon2026 telegram kanali adminiga murojat qiling");
-}
+<!-- Login nazorati: ⭐ kartalar darhol, bob kartalari 1 marta bepul -->
+<script type="module" src="auth-gate.js"></script>
 
+<script>
 // Yulduzchalarni kartaga qo'shish (rang klassi bilan)
 function addSparkles(card, count, starClass) {
     for (let i = 0; i < count; i++) {
