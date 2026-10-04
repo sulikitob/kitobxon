@@ -145,12 +145,13 @@
            <a href="Temur 3-Bob.html" target="_blank" class="card card-green"><h2>3-Bob<br>Zafar sha'mi togri tadbir nurida yonadi</h2></a>
            <a href="Temur 4-Bob.html" target="_blank" class="card card-green"><h2>4-Bob<br>Siyosiy qalqish,bo'ronlar aro buyuk davlat barpo etish maslagi</h2></a>
            <a href="Temur 5-Bob.html" target="_blank" class="card card-green"><h2>5-Bob<br>Adovat emas,adolat yengadi</h2></a>
-           <a href="#" onclick="showProgress(event)" class="card card-green"><h2>6-Bob<br>Buyuk bunyodkor,katta qalb va saxovat sohibi</h2></a>
+           <!-- 6-bob hozircha jarayonda: data-soon bo'lgani uchun login/bepul hisobga tegmaydi -->
+           <a href="#" class="card card-green" data-soon><h2>6-Bob<br>Buyuk bunyodkor,katta qalb va saxovat sohibi</h2></a>
            <a href="Temur 7-Bob.html" target="_blank" class="card card-green"><h2>7-Bob<br>Quyoshning qadri u botgandan so'ng bilinadi</h2></a>
            <a href="Temur 8-Bob.html" target="_blank" class="card card-green"><h2>8-Bob<br>Munosib vorislik mas'uliyati</h2></a>
            <a href="Temur 9-Bob.html" target="_blank" class="card card-green"><h2>9-Bob<br>Amir Temur Hikmatlari</h2></a>
            
-           <a href="Temur umumiy quiz test va savol-javoblar.html" target="_blank" class="card card-red premium" ><span class="icon">💬</span><h2>Umumiy quiz test va yopiq savol-javoblar</h2></a>
+           <a href="Temur umumiy quiz test va savol-javoblar.html" target="_blank" class="card card-red premium"><span class="icon">💬</span><h2>Umumiy quiz test va yopiq savol-javoblar</h2></a>
         </div>
 
 
@@ -158,10 +159,10 @@
         <!-- OLTIN BO'LIM — eng pastda, alohida ajratilgan -->
         <h2 class="section-title gold-title">✨ Maxsus bo'lim ✨</h2>
         <div class="menu-grid">
-           <a href="quiz.html" target="_blank" class="card card-gold premium" onclick="checkPremium(event)"><span class="icon">⭐</span><h2>Taqriz</h2></a>
-           <a href="Temur mundarija.html" target="_blank" class="card card-gold premium" ><span class="icon">📖</span><h2>Mundarija va savollar soni</h2></a>
-           <a href="Temur barcha ma'lumotlar.html" target="_blank" class="card card-gold premium" ><span class="icon">🏆</span><h2>Barcha ma'lumotlar</h2></a>
-           <a href="quiz.html" target="_blank" class="card card-gold premium" onclick="checkPremium(event)"><span class="icon">🎁</span><h2>Maxsus</h2></a>
+           <a href="quiz.html" target="_blank" class="card card-gold premium"><span class="icon">⭐</span><h2>Taqriz</h2></a>
+           <a href="Temur mundarija.html" target="_blank" class="card card-gold premium"><span class="icon">📖</span><h2>Mundarija va savollar soni</h2></a>
+           <a href="Temur barcha ma'lumotlar.html" target="_blank" class="card card-gold premium"><span class="icon">🏆</span><h2>Barcha ma'lumotlar</h2></a>
+           <a href="quiz.html" target="_blank" class="card card-gold premium"><span class="icon">🎁</span><h2>Maxsus</h2></a>
         </div>
     </div>
 
@@ -169,15 +170,15 @@
 </div>
 
 <script>
-function checkPremium(e) {
+// "Jarayonda" kartalar (data-soon): auth-gate.js dan OLDIN ishlaydi va bosishni to'xtatadi,
+// shuning uchun login oynasi chiqmaydi va bepul bob hisobi sarflanmaydi.
+document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-soon]');
+    if (!a) return;
     e.preventDefault();
-    alert("Bu bo'lim premium obunachilar uchun mo'ljallangan 🔒 Murojat uchun anonimkitobxon2026 telegram kanali adminiga murojat qiling");
-}
-
-function showProgress(e) {
-    e.preventDefault();
+    e.stopImmediatePropagation();
     alert("Bu bob hozircha jarayonda ⏳");
-}
+}, true);
 
 // Oltin kartalarga uzluksiz porillovchi yulduzchalar qo'shish
 function addSparkles(card, count) {
@@ -196,6 +197,9 @@ document.querySelectorAll('.card-gold').forEach(function (card) {
     addSparkles(card, 10);
 });
 </script>
+
+<!-- Login nazorati: ⭐ kartalar darhol, bob kartalari 1 marta bepul -->
+<script type="module" src="auth-gate.js"></script>
 
 </body>
 </html>
