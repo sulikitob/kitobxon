@@ -271,21 +271,18 @@ function buildModal() {
   wrap.style.zIndex = '99999';
   wrap.innerHTML = `
     <div class="gz-box" role="dialog" aria-modal="true">
-      <span class="gz-badge">🔐 ZUHO KIRISH</span>
-      <h3 class="gz-title">Xush kelibsiz, <span>kitobxon!</span></h3>
-      <p id="gateMsg" class="gz-msg"></p>
-
-      <button id="gateGoogle" class="gz-btn gz-google">${GOOGLE_SVG}<span>Google orqali ariza yuborish</span></button>
-      <div class="gz-remind">📢 Google orqali kirgach, <b>adminga bildirishni unutmang!</b> Admin sizga login va parol beradi.</div>
-
-      <div class="gz-or">yoki login va parol bilan</div>
+      <h3 class="gz-title"><span>Kirish</span></h3>
 
       <input id="gateEmail" class="gz-input" type="email" placeholder="Email" autocomplete="email">
-      <input id="gatePass" class="gz-input" type="password" placeholder="Parol (kamida 6 belgi)" autocomplete="current-password">
+      <input id="gatePass" class="gz-input" type="password" placeholder="Parol" autocomplete="current-password">
       <div class="gz-row">
         <button id="gateLogin" class="gz-btn gz-green">Kirish</button>
         <button id="gateSignup" class="gz-btn gz-gold">Ro'yxatdan o'tish</button>
       </div>
+
+      <div class="gz-or">yoki</div>
+
+      <button id="gateGoogle" class="gz-btn gz-google">${GOOGLE_SVG}<span>Google orqali kirish</span></button>
 
       <div id="gateErr" class="gz-err"></div>
       <div id="gateClose" class="gz-close">Yopish</div>
@@ -305,7 +302,6 @@ const val = id => document.getElementById(id).value.trim();
 function openModal(href, msg) {
   buildModal();
   pendingHref = href;
-  document.getElementById('gateMsg').textContent = msg;
   document.getElementById('gateErr').textContent = '';
   document.getElementById('gateModal').style.display = 'flex';
 }
