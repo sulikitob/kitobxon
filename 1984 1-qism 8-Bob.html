@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>I-Qism. VIII-Bob</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow-x:hidden}
+body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#050505,#121212,#1d1d1d);color:#fff;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh;min-height:100dvh}
+#select-screen{width:100%;max-width:700px;display:flex;flex-direction:column;align-items:center;gap:25px;padding:20px 0}
+#select-screen h1{font-size:26px;color:#00ff99;text-align:center}
+#select-screen p{color:#999;font-size:14px;text-align:center}
+.number-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(55px,1fr));gap:10px;width:100%;max-height:60vh;overflow-y:auto;padding:10px;background:#111;border-radius:20px;box-shadow:0 0 25px rgba(0,255,150,.15)}
+.number-grid::-webkit-scrollbar{width:8px}
+.number-grid::-webkit-scrollbar-thumb{background:#00ff99;border-radius:10px}
+.num-btn{background:#1b1b1b;border:2px solid #00ff99;color:#00ff99;border-radius:12px;padding:12px 0;font-size:15px;font-weight:bold;cursor:pointer;transition:.25s;text-shadow:0 0 8px rgba(0,255,153,.6)}
+.num-btn:hover{background:#00ff99;color:#050505;box-shadow:0 0 20px rgba(0,255,150,.8);transform:scale(1.08)}
+.num-btn.picked{background:#ff9900;border-color:#ff9900;color:#050505;box-shadow:0 0 20px rgba(255,153,0,.8)}
+#range-info{color:#ff9900;font-size:15px;font-weight:bold;min-height:22px}
+#mode-screen{display:none;width:100%;max-width:700px;flex-direction:column;align-items:center;gap:25px;padding:20px 0}
+#mode-screen h1{font-size:24px;color:#00ff99;text-align:center;margin:5px 0}
+.mode-wrapper{width:100%;background:rgba(5,5,5,.4);border-radius:20px;padding:25px}
+.mode-grid{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.mode-card{background:rgba(27,27,27,.85);border-radius:20px;padding:30px 15px;text-align:center;transition:.4s;color:#fff;position:relative;overflow:hidden;cursor:pointer;font-size:16px;font-weight:bold;backdrop-filter:blur(3px)}
+.mode-card::before{content:"";position:absolute;width:200%;height:200%;background:linear-gradient(45deg,transparent,#00ff99,transparent);top:-150%;left:-150%;transform:rotate(25deg);transition:.7s}
+.mode-card:hover::before{top:100%;left:100%}
+.mode-card:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 15px rgba(255,215,0,.2)}
+@media(max-width:600px){.mode-grid{grid-template-columns:repeat(2,1fr)}.mode-icon-top{display:flex;justify-content:center}.mode-icon-top img{width:85%;max-width:220px}}
+#intro-screen{position:fixed;top:0;left:0;width:100%;height:100dvh;background:#050505;display:none;flex-direction:column;justify-content:center;align-items:center;z-index:5;transition:opacity .8s ease}
+#stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+#select-screen,#mode-screen,.quiz-box,#intro-screen .content-box,#intro-screen #countdown{position:relative;z-index:2}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 2.5s infinite ease-in-out}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+.content-box{text-align:center;margin-bottom:50px;padding:0 20px}
+#countdown{position:absolute;bottom:50px;font-size:80px;color:#00ff99;font-weight:bold;animation:pulse 1s infinite}
+@keyframes pulse{0%{transform:scale(.9);opacity:.5}50%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:.5}}
+.quran-box{display:block;margin:25px auto 0;padding:20px 30px;max-width:550px;border:4px double #ffd700;background:rgba(20,16,5,.6);text-align:center}
+.quran-ayat-text{font-size:18px;line-height:1.6;color:#f0f0f0;margin-bottom:15px;display:block}
+.quran-meta{display:inline-block;font-size:15px;font-weight:bold;color:#ffd700;letter-spacing:1px;text-transform:uppercase;border-top:1px solid rgba(255,215,0,.3);padding-top:8px;width:100%}
+.quiz-box{display:none;width:100%;max-width:600px;background:#1b1b1b;padding:30px;border-radius:25px;box-shadow:0 0 35px rgba(0,255,150,.1);text-align:center;margin-top:50px}
+h2{color:#00ff99;margin-bottom:20px;font-size:22px}
+.option{display:block;width:100%;padding:15px;margin:10px 0;background:#2a2a2a;border:2px solid #333;border-radius:15px;cursor:pointer;transition:.3s;text-align:left}
+.option:hover{border-color:#00ff99}
+.correct{background:#00ff99!important;color:#000;font-weight:bold;animation:bubbleEffect .5s ease-out}
+@keyframes bubbleEffect{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.wrong{background:#ff4d4d!important;color:#fff}
+.btn-finish{width:100%;padding:15px;background:transparent;border:2px solid #00ff99;color:#00ff99;border-radius:15px;cursor:pointer;margin-top:20px;font-weight:bold;transition:.3s}
+.btn-finish:hover{background:#00ff99;color:#000}
+.closed-input{width:100%;padding:15px;margin-top:10px;border:2px solid #333;border-radius:12px;font-size:17px;outline:none;background:#2a2a2a;color:#fff}
+.closed-input:focus{border-color:#00ff99}
+.btn-check{width:100%;padding:15px;margin-top:15px;border:2px solid #00ff99;border-radius:15px;background:transparent;color:#00ff99;font-weight:bold;cursor:pointer;font-size:17px;transition:.3s}
+.btn-check:hover{background:#00ff99;color:#000}
+#closed-result{margin-top:15px;font-size:18px;min-height:30px;text-align:center}
+@media(max-width:480px){body{padding:12px}#select-screen h1{font-size:21px}#mode-screen h1{font-size:19px}.mode-card{padding:22px 10px;font-size:14px}.quiz-box{padding:20px 16px;margin-top:30px}h2{font-size:18px}.content-box h1{font-size:24px!important}.quran-ayat-text{font-size:15px}#countdown{font-size:60px;bottom:35px}.number-grid{grid-template-columns:repeat(auto-fill,minmax(48px,1fr))}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<div id="select-screen">
+    <h1>📖 VIII-Bob </h1>
+    <p>Savollar sonini belgilang</p>
+    <div id="range-info">Boshlang'ich raqamni tanlang</div>
+    <div class="number-grid" id="numberGrid"></div>
+</div>
+
+<div id="mode-screen">
+    <div class="mode-icon-top"><img src="1984.webp" alt="1984"></div>
+    <h1>Qaysi funksiyani xohlaysiz?</h1>
+    <div class="mode-wrapper">
+        <div class="mode-grid">
+            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
+            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
+            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
+            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
+        </div>
+    </div>
+</div>
+
+<div id="intro-screen">
+    <div class="content-box">
+        <h1 style="color:#00ff99;font-size:32px;">I-Qism. VIII-Bob</h1>
+        <div id="random-ayat"></div>
+    </div>
+    <div id="countdown">3</div>
+</div>
+
+<div class="quiz-box" id="quiz">
+    <h2 id="question">Yuklanmoqda...</h2>
+    <div id="options"></div>
+    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
+</div>
+
+<script>
+const D=[
+["Qaydandir, yo'lakning ichkarisidan qovurilgan nimaning ifori ko'chaga chiqayotgandi?","Qahvaning","Go'shtning","Kartoshkaning","Jin sharobning"],
+["Uch hafta ichida nechanchi marta Jamoat markazidagi uchrashuvga borolmayapti?","Ikkinchi","Birinchi","Uchinchi","To'rtinchi"],
+["Partiya a'zosi faqat qayerda yolg'iz qolishi mumkin?","To'shakda","Hammomda","Ish joyida","Ko'chada"],
+["Partiya a'zosi ishdan, taomlanishdan va uyqudan qolgan vaqtini qayerda o'tkazadi?","Ijtimoiy tadbirlarda","Uyida","Prollar orasida","Telekran oldida"],
+["Nima doim bir qadar xavfli?","Yolg'izlik istash, hatto hamrohsiz sayr qilish ham","Kundalik yuritish","Prollar bilan gaplashish","Kech uxlash"],
+["Yangitilda individualizm va tentaklikni anglatadigan so'z qaysi?","O'zhayot","Yolg'izfikr","O'zbilim","Shaxssiz"],
+["Vazirlikdan chiqayotganda qaysi oyning mayin havosi ta'sir qildi?","Aprelning","Martning","Mayning","Oktabrning"],
+["«Agar umid bo'lsa, – deb yozgandi Uinston, – umid kimlarda bo'ladi?»","Prollarda","Partiya a'zolarida","Ichki partiyada","Yoshlarda"],
+["Uinston boshida aylanib yurgan mistik haqiqat va ayon safsata qaysi gap edi?","Agar umid bo'lsa, umid prollarda bo'ladi","Katta og'a sizni kuzatmoqda","Urush – tinchlik","Erkinlik – qullik"],
+["Uinston qachondir qaysi bekatdan shimoli-sharqiy tomondagi xira, jigarrang xarobalar oldiga borib qolgandi?","Sent-Pankras","Peddington","Vaterlo","Kings-Kross"],
+["Bu ko'chalarda nimani kam ko'rishgan?","Partiya a'zosining ko'k korjomasini","Telekranni","Raketa tushishini","Politsiyani"],
+["Prollar negadir raketani nima deb atardi?","Parovoz","Samolyot","Ketmon","Momaqaldiroq"],
+["Prollar raketa tushishini qachon sezadiganday bo'lishardi?","Raketa uchib kelishidan bir necha soniya oldin","Sirena chalinganda","Raketa tushgandan keyin","Telekran xabar bergach"],
+["Nima tovushdan ham tez uchadi, deyishardi?","Raketalar","Samolyotlar","Vertolyotlar","Yorug'lik"],
+["Suvoq uyumida Uinston qip-qizil nimani ko'rdi?","Bilakdan uzilib tushgan qo'lni","Qizil bayroqni","Gilam bo'lagini","Qon izini"],
+["Soat kech sakkizga yaqinlashganda qaysi do'konlar prollarga liq to'lgan edi?","Ichimlik sotadigan do'konlar","Non do'konlari","Kitob do'konlari","Kiyim do'konlari"],
+["Prollar ichimlik sotadigan do'konlarni nima deb atashardi?","«Pablar»","«Barlar»","«Choyxonalar»","«Tavernalar»"],
+["Do'konlarning eshiklaridan ko'chaga qanday hid anqirdi?","Siydik, qirindi va achimsiq pivo","Tamaki va jin","Qahva va non","Karam va sovun"],
+["Bahsda: o'n to'rt oy mobaynida oxiri nechta bo'lgan biror raqam yutmagan?","Yetti","Besh","To'rt","Uch"],
+["Ikkinchi prol necha yillik hamma yutuqlarni yozib qo'yganini aytdi?","Ikki yillik","Bir yillik","Uch yillik","Besh yillik"],
+["Oxirgi yutgan raqam qanday edi (fevralning ikkinchi haftasida)?","To'rt yuzu yetti","Uch yuzu yetti","To'rt yuzu besh","Besh yuzu yetti"],
+["Har hafta katta yutuq ulashadigan nima prollarni qiziqtiradigan yagona ijtimoiy hodisa edi?","Lotereya","Futbol","Parad","Siyosat"],
+["Millionlab prollar hayoti uchun nima o'ta muhim, yashashi uchun yagona sabab edi?","Lotereya","Pivo","Mehnat","Oila"],
+["Nimalar sotishdan daromad oladigan to'dalar bor edi?","Tizimlar, bashoratlar va omad keltiruvchi tumorlar","Sigaret va jin","Kitob va gazeta","Atir va sovun"],
+["Lotereya bilan qaysi vazirlik shug'ullanardi?","Farovonlik","Haqiqat","Sevgi","Tinchlik"],
+["Uinston qaysi g'oyani mahkam tutish kerak, deb o'ylardi?","Agar umid bo'lsa, umid – prollardan bo'ladi","Katta og'a hamma narsani biladi","Partiya hech qachon adashmaydi","Ikki karra ikki – to'rt"],
+["Zinaning oldida yo'lakning narigi tomonida oynalarini chang qoplagan kichik nima bor edi?","Pivoxona","Do'kon","Dorixona","Sartaroshxona"],
+["Pivoxonaga kirgan chol kamida nechadan oshgan edi?","Saksondan","Oltmishdan","Yetmishdan","To'qsondan"],
+["Katta avlodning ko'pi nechanchi yillarning yalpi tozalashlarida yo'q qilindi?","Elliginchi va oltmishinchi","Yigirmanchi va o'ttizinchi","O'ttizinchi va qirqinchi","Qirqinchi va elliginchi"],
+["Asrning birinchi yarmi haqida haqiqatni so'zlab berishi mumkin bo'lgan tirik jon kim?","Prol","Ichki partiya a'zosi","Fikr politsiyasi xodimi","Telekran diktori"],
+["Kvartaning yarmi nima?","Pinta","Gallon","Litr","Stakan"],
+["To'rt kvarta nimaga teng?","Bir gallon","Bir pinta","Bir litr","Ikki gallon"],
+["Sotuvchi: «Sening zamoningda biz hali ... edik». Qayerda?","Daraxt shoxlarida","G'orlarda","Dalalarda","Kemalarda"],
+["Cholning yoshligida kuchsiz pivo nima deb atalgan?","«Pona»","«Yengil»","«Suv»","«Kvas»"],
+["Kuchsiz pivoning pintasi necha pensdan sotilardi?","To'rt","Ikki","Uch","Besh"],
+["Qayerda juda ko'plab odamlar tug'ilganidan to o'lgunicha hech qachon to'yib ovqat yemagan?","Londonda","Parijda","Nyu-Yorkda","Berlinda"],
+["Qanday musobaqalardan keyin juda dahshatli beboshliklar qilishardi?","Eshkakda suzish","Futbol","Ot poygasi","Boks"],
+["Chol oxirgi marta qaynsinglisining motamida nimani kiygan?","Silindrmonand shlyapani","Qora qo'lqopni","Frakni","Qalpoqni"],
+["Kapitalistlar, ruhoniylar, advokatlar va ularning ortidan non yegan boshqalar kim bo'lishgan?","Zaminning egasi","Partiya a'zosi","Prollarning do'sti","Jamiyat xizmatchisi"],
+["Sizlarni qanday qamchin bilan savalashni buyura olganlar?","Yettidumli","Uchdumli","Beshdumli","Dumsiz"],
+["Chol yakshanba kunlari qayerga borardi?","Gayd-parkka","Cherkovga","Bozorga","Teatrga"],
+["Chol burjuaziya malaylarini «sirtlonlar» bilan bir qatorda yana nima deb atardi?","Parazitlar","Qullar","Xo'jayinlar","Josuslar"],
+["Ziyolinamo chol so'zlarni aksariyat prollar singari uzuq-yuluq nima qilmasdi?","Talaffuz","Yozmasdi","Takrorlamasdi","Hazil"],
+["Qizlarga tuhfa qilinadigan rasm kitobining qog'ozini nima deb atashadi?","«Sarg'ish sog'inch»","«Oq qog'oz»","«Sariq tong»","«Eski xotira»"],
+["Hind ummonidan olingan bo'lsa kerak, avvalgi zamonda shisha orasiga quyilgan buyum nima?","Marjon","Injiq","Sadaf","Billur"],
+["Shunaqa zamonlar bo'lgandiki, bunaqa buyumga necha funt berishardi?","Sakkiz","To'rt","Ikki","O'n"],
+["Uinston darhol necha dollar to'ladi va antiqa o'yinchoqni cho'ntagiga soldi?","To'rt","Ikki","Sakkiz","Besh"],
+["Uni o'ziga tortgan narsa nima edi?","Hozirgi asrga o'xshamagan, o'zgacha davrning ifori","Buyumning go'zalligi","Buyumning arzonligi","Egasining ta'rifi"],
+["Mana bu ajoyib yotoq nimadan yasalgan?","Qizil yog'ochdan","Eman yog'ochidan","Qarag'aydan","Temirdan"],
+["Butun Okeaniyada qaysi yilgacha nashr etilgan biror dona kitob qolmagan bo'lsa kerak?","1960-yilgacha","1940-yilgacha","1950-yilgacha","1970-yilgacha"],
+["Adliya saroyi oldidagi bombalangan bino asli qaysi cherkov bo'lgan?","Avliyo Klement","Avliyo Martin","Avliyo Pavel","Avliyo Georgiy"],
+["Avliyo Martin cherkovi hozir qayerda turibdi?","G'alaba maydonida","Adliya saroyi yonida","Sent-Pankrasda","Gayd-parkda"],
+["Do'konning tepasidagi yozuvda Uiks deyilgan, aslida cholning ismi nima ekan?","Charrington","Charlston","Parsons","Smit"],
+["Janob Charrington necha yoshda?","Oltmish uch","Oltmish","Ellik besh","Yetmish"],
+["Janob Charrington necha yildan beri shu yerda yashaydi?","O'ttiz yildan","Yigirma yildan","O'n yildan","Ellik yildan"],
+["Uinstonning yuragi qo'rquvdan dukurlab ketdi: o'n metr narida ko'k korjomali kim unga tomon kelardi?","«Adabiyot bo'limi»dagi qiz, qo'ng'irsoch xonimcha","Ketrin","Parsons xonim","Qari fohisha"],
+["Inson qaltis vaziyatda tashqi dushman bilan emas, hamisha nima bilan kurashadi?","O'z vujudi bilan","Tashqi dushman bilan","Fikr politsiyasi bilan","Telekran bilan"],
+["O'Brayen aytgan qaysi so'zlarni Uinston esladi?","«Biz qorong'ilik bo'lmagan joyda uchrashamiz»","«Katta og'a seni kuzatmoqda»","«Biz haqiqat bor joyda uchrashamiz»","«Biz tun bo'lganda uchrashamiz»"],
+["Qorong'ilik yo'q joy nima?","Tasavvurdagi kelajak","Sevgi vazirligi","Charringtonning xonasi","Ichki partiya binosi"]
+];
+const quizData=D.map(a=>({q:a[0],correct:a[1],wrongs:a.slice(2)}));
+
+const ayats=[
+{text:"Robbing seni tark qilmadi va g'azab ham qilmadi.",meta:"Zuho 93:3"},
+{text:"Albatta bir qiyinchilik bilan osonchilik bordir.",meta:"Sharh 94:5"},
+{text:"Yaratgan Robbing nomi bilan o'qi!",meta:"Alaq 96:1"},
+{text:"O'qi, Robbing karamlilar karamlisidir.",meta:"Alaq 96:3"},
+{text:"Va tezda Robbing senga ato qilur va sen rozi bo'lursan.",meta:"Zuho 93:5"},
+{text:"Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.",meta:"Layl 92:5-7"},
+{text:"Albatta hidoyatga boshlash Bizning zimmamizdadir.",meta:"Layl 92:12"},
+{text:"Va albatta tezda rozi bo'ladir.",meta:"Layl 92:21"},
+{text:"Seni oson yo'lga muyassar etamiz.",meta:"A'lo 87:8"},
+{text:"Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.",meta:"Naba 78:39"},
+{text:"Albatta Biz senga ochiq g'alaba berdik.",meta:"Fath 48:1"}
+];
+
+let activeQuiz=[],currentQ=0,score=0,answered=0,rangeStart=null,quizMode='quiz';
+const shuffle=a=>a.sort(()=>Math.random()-.5);
+
+function buildStars(){
+    const c=document.getElementById('stars');c.innerHTML='';
+    for(let i=0;i<100;i++){
+        const s=document.createElement('div');s.className='star';
+        s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+        const z=(Math.random()*2+1).toFixed(1);s.style.width=z+'px';s.style.height=z+'px';
+        s.style.animationDelay=(Math.random()*2.5).toFixed(2)+'s';
+        s.style.animationDuration=(1.5+Math.random()*2).toFixed(2)+'s';
+        c.appendChild(s);
+    }
+}
+
+window.onload=function(){
+    const grid=document.getElementById('numberGrid');
+    for(let i=1;i<=quizData.length;i++){
+        const b=document.createElement('button');b.className='num-btn';b.innerText=i;
+        b.onclick=()=>pickNumber(i,b);grid.appendChild(b);
+    }
+    buildStars();
+    const a=ayats[Math.floor(Math.random()*ayats.length)];
+    document.getElementById('random-ayat').innerHTML=`<div class="quran-box"><span class="quran-ayat-text">"${a.text}"</span><span class="quran-meta">${a.meta}</span></div>`;
+};
+
+function pickNumber(num,btn){
+    const info=document.getElementById('range-info');
+    if(rangeStart===null){
+        rangeStart=num;btn.classList.add('picked');
+        info.innerText=`Boshlang'ich: ${num}. Endi oxirgi raqamni tanlang`;
+    }else{
+        let s=rangeStart,e=num;if(e<s){const t=s;s=e;e=t;}
+        btn.classList.add('picked');info.innerText=`Tanlandi: ${s} - ${e}`;
+        setTimeout(()=>startWithRange(s,e),400);
+    }
+}
+
+function startWithRange(s,e){
+    activeQuiz=quizData.slice(s-1,e);
+    document.getElementById('select-screen').style.display='none';
+    document.getElementById('mode-screen').style.display='flex';
+}
+
+function chooseMode(mode){
+    quizMode=mode;
+    if(mode==='quiz-aralash'||mode==='yopiq-aralash')activeQuiz=shuffle([...activeQuiz]);
+    document.getElementById('mode-screen').style.display='none';
+    const i=document.getElementById('intro-screen');i.style.display='flex';i.style.opacity='1';
+    startTimer();
+}
+
+function startTimer(){
+    let count=3;const d=document.getElementById("countdown");d.innerText=count;
+    const t=setInterval(()=>{
+        count--;
+        if(count>0)d.innerText=count;
+        else if(count===0)d.innerText="Boshladik!";
+        else{
+            clearInterval(t);
+            document.getElementById("intro-screen").style.opacity="0";
+            setTimeout(()=>{
+                document.getElementById("intro-screen").style.display="none";
+                document.getElementById("quiz").style.display="block";
+                loadQ();
+            },800);
+        }
+    },1000);
+}
+
+function loadQ(){
+    const q=activeQuiz[currentQ];
+    document.getElementById('question').innerText=`${currentQ+1}/${activeQuiz.length}. ${q.q}`;
+    const o=document.getElementById('options');o.innerHTML='';
+    if(quizMode==='yopiq'||quizMode==='yopiq-aralash')loadClosedQ(q,o);else loadMC(q,o);
+}
+
+function loadMC(q,o){
+    shuffle([q.correct,...q.wrongs]).forEach(opt=>{
+        const b=document.createElement('div');b.className='option';b.innerText=opt;
+        b.onclick=()=>check(opt,b,q.correct);o.appendChild(b);
+    });
+}
+
+function loadClosedQ(q,o){
+    const input=document.createElement('input');
+    input.type='text';input.className='closed-input';input.id='closed-answer';input.placeholder='Javob yozing...';
+    input.onkeypress=e=>{if(e.key==='Enter')checkClosed(q);};
+    const btn=document.createElement('button');
+    btn.className='btn-check';btn.innerText='Tekshirish';btn.onclick=()=>checkClosed(q);
+    const r=document.createElement('div');r.id='closed-result';
+    o.appendChild(input);o.appendChild(btn);o.appendChild(r);input.focus();
+}
+
+function checkClosed(q){
+    const inp=document.getElementById('closed-answer'),r=document.getElementById('closed-result');
+    const user=inp.value.toLowerCase().trim(),correct=q.correct.toLowerCase().trim();
+    answered++;inp.disabled=true;document.querySelector('.btn-check').disabled=true;
+    if(user===correct){r.innerHTML='<b style="color:#00ff99;">✅ To\'g\'ri</b>';score++;}
+    else r.innerHTML='<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: '+q.correct;
+    setTimeout(()=>{currentQ++;currentQ<activeQuiz.length?loadQ():finishQuiz();},2000);
+}
+
+function check(sel,el,correct){
+    const opts=el.parentElement.querySelectorAll('.option');
+    opts.forEach(o=>o.style.pointerEvents='none');answered++;
+    if(sel===correct){el.classList.add('correct');score++;}
+    else{el.classList.add('wrong');opts.forEach(o=>{if(o.innerText===correct)o.classList.add('correct');});}
+    setTimeout(()=>{currentQ++;currentQ<activeQuiz.length?loadQ():finishQuiz();},1000);
+}
+
+function finishQuiz(){
+    const wrong=answered-score;
+    document.getElementById('quiz').innerHTML=`
+        <h2>Natijalar</h2>
+        <div style="line-height:2.2;font-size:19px;">
+            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
+            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+        </div>
+        <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>`;
+}
+</script>
+</body>
+</html>
