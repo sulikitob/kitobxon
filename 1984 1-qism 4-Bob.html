@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>I-Qism. IV-Bob</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow-x:hidden}
+body{font-family:Arial,sans-serif;background:linear-gradient(135deg,#050505,#121212,#1d1d1d);color:#fff;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh;min-height:100dvh}
+#select-screen{width:100%;max-width:700px;display:flex;flex-direction:column;align-items:center;gap:25px;padding:20px 0}
+#select-screen h1{font-size:26px;color:#00ff99;text-align:center}
+#select-screen p{color:#999;font-size:14px;text-align:center}
+.number-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(55px,1fr));gap:10px;width:100%;max-height:60vh;overflow-y:auto;padding:10px;background:#111;border-radius:20px;box-shadow:0 0 25px rgba(0,255,150,.15)}
+.number-grid::-webkit-scrollbar{width:8px}
+.number-grid::-webkit-scrollbar-thumb{background:#00ff99;border-radius:10px}
+.num-btn{background:#1b1b1b;border:2px solid #00ff99;color:#00ff99;border-radius:12px;padding:12px 0;font-size:15px;font-weight:bold;cursor:pointer;transition:.25s;text-shadow:0 0 8px rgba(0,255,153,.6)}
+.num-btn:hover{background:#00ff99;color:#050505;box-shadow:0 0 20px rgba(0,255,150,.8);transform:scale(1.08)}
+.num-btn.picked{background:#ff9900;border-color:#ff9900;color:#050505;box-shadow:0 0 20px rgba(255,153,0,.8)}
+#range-info{color:#ff9900;font-size:15px;font-weight:bold;min-height:22px}
+#mode-screen{display:none;width:100%;max-width:700px;flex-direction:column;align-items:center;gap:25px;padding:20px 0}
+#mode-screen h1{font-size:24px;color:#00ff99;text-align:center;margin:5px 0}
+.mode-wrapper{width:100%;background:rgba(5,5,5,.4);border-radius:20px;padding:25px}
+.mode-grid{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.mode-card{background:rgba(27,27,27,.85);border-radius:20px;padding:30px 15px;text-align:center;transition:.4s;color:#fff;position:relative;overflow:hidden;cursor:pointer;font-size:16px;font-weight:bold;backdrop-filter:blur(3px)}
+.mode-card::before{content:"";position:absolute;width:200%;height:200%;background:linear-gradient(45deg,transparent,#00ff99,transparent);top:-150%;left:-150%;transform:rotate(25deg);transition:.7s}
+.mode-card:hover::before{top:100%;left:100%}
+.mode-card:hover{transform:translateY(-5px) scale(1.02);box-shadow:0 0 15px rgba(255,215,0,.2)}
+@media(max-width:600px){.mode-grid{grid-template-columns:repeat(2,1fr)}.mode-icon-top{display:flex;justify-content:center}.mode-icon-top img{width:85%;max-width:220px}}
+#intro-screen{position:fixed;top:0;left:0;width:100%;height:100dvh;background:#050505;display:none;flex-direction:column;justify-content:center;align-items:center;z-index:5;transition:opacity .8s ease}
+#stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+#select-screen,#mode-screen,.quiz-box,#intro-screen .content-box,#intro-screen #countdown{position:relative;z-index:2}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 2.5s infinite ease-in-out}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+.content-box{text-align:center;margin-bottom:50px;padding:0 20px}
+#countdown{position:absolute;bottom:50px;font-size:80px;color:#00ff99;font-weight:bold;animation:pulse 1s infinite}
+@keyframes pulse{0%{transform:scale(.9);opacity:.5}50%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:.5}}
+.quran-box{display:block;margin:25px auto 0;padding:20px 30px;max-width:550px;border:4px double #ffd700;background:rgba(20,16,5,.6);text-align:center}
+.quran-ayat-text{font-size:18px;line-height:1.6;color:#f0f0f0;margin-bottom:15px;display:block}
+.quran-meta{display:inline-block;font-size:15px;font-weight:bold;color:#ffd700;letter-spacing:1px;text-transform:uppercase;border-top:1px solid rgba(255,215,0,.3);padding-top:8px;width:100%}
+.quiz-box{display:none;width:100%;max-width:600px;background:#1b1b1b;padding:30px;border-radius:25px;box-shadow:0 0 35px rgba(0,255,150,.1);text-align:center;margin-top:50px}
+h2{color:#00ff99;margin-bottom:20px;font-size:22px}
+.option{display:block;width:100%;padding:15px;margin:10px 0;background:#2a2a2a;border:2px solid #333;border-radius:15px;cursor:pointer;transition:.3s;text-align:left}
+.option:hover{border-color:#00ff99}
+.correct{background:#00ff99!important;color:#000;font-weight:bold;animation:bubbleEffect .5s ease-out}
+@keyframes bubbleEffect{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.wrong{background:#ff4d4d!important;color:#fff}
+.btn-finish{width:100%;padding:15px;background:transparent;border:2px solid #00ff99;color:#00ff99;border-radius:15px;cursor:pointer;margin-top:20px;font-weight:bold;transition:.3s}
+.btn-finish:hover{background:#00ff99;color:#000}
+.closed-input{width:100%;padding:15px;margin-top:10px;border:2px solid #333;border-radius:12px;font-size:17px;outline:none;background:#2a2a2a;color:#fff}
+.closed-input:focus{border-color:#00ff99}
+.btn-check{width:100%;padding:15px;margin-top:15px;border:2px solid #00ff99;border-radius:15px;background:transparent;color:#00ff99;font-weight:bold;cursor:pointer;font-size:17px;transition:.3s}
+.btn-check:hover{background:#00ff99;color:#000}
+#closed-result{margin-top:15px;font-size:18px;min-height:30px;text-align:center}
+@media(max-width:480px){body{padding:12px}#select-screen h1{font-size:21px}#mode-screen h1{font-size:19px}.mode-card{padding:22px 10px;font-size:14px}.quiz-box{padding:20px 16px;margin-top:30px}h2{font-size:18px}.content-box h1{font-size:24px!important}.quran-ayat-text{font-size:15px}#countdown{font-size:60px;bottom:35px}.number-grid{grid-template-columns:repeat(auto-fill,minmax(48px,1fr))}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<div id="select-screen">
+    <h1>📖 IV-Bob</h1>
+    <p>Savollar sonini belgilang</p>
+    <div id="range-info">Boshlang'ich raqamni tanlang</div>
+    <div class="number-grid" id="numberGrid"></div>
+</div>
+
+<div id="mode-screen">
+    <div class="mode-icon-top"><img src="1984.webp" alt="1984"></div>
+    <h1>Qaysi funksiyani xohlaysiz?</h1>
+    <div class="mode-wrapper">
+        <div class="mode-grid">
+            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
+            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
+            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
+            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
+        </div>
+    </div>
+</div>
+
+<div id="intro-screen">
+    <div class="content-box">
+        <h1 style="color:#00ff99;font-size:32px;">I-Qism. IV-Bob</h1>
+        <div id="random-ayat"></div>
+    </div>
+    <div id="countdown">3</div>
+</div>
+
+<div class="quiz-box" id="quiz">
+    <h2 id="question">Yuklanmoqda...</h2>
+    <div id="options"></div>
+    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
+</div>
+
+<script>
+const D=[
+["Uinston pnevmatik quvurdan otilib chiqqan nechta qog'oz o'ramini tekislab, qistirgich bilan qotirib qo'ydi?","4 ta","2 ta","3 ta","5 ta"],
+["Uinston xonachasining devorlarida nechta tuynuk bor edi?","3 ta","2 ta","4 ta","5 ta"],
+["Ovozyozgichning o'ng tomonida nima bor edi?","Bosma topshiriqlar uchun kichik pnevmatik quvur","Gazetalar uchun katta quvur","Keraksiz qog'ozlar uchun tuynuk","Telekran"],
+["Ovozyozgichning so'l tomonidagi kattaroq quvur nima uchun mo'ljallangan edi?","Gazetalar uchun","Bosma topshiriqlar uchun","Keraksiz qog'ozlar uchun","Xotira tuynuklari uchun"],
+["Uinston qo'lini uzatsa yetadigan yondosh devordagi sim pardali katta tuynuk nima uchun edi?","Keraksiz qog'ozlar uchun","Gazetalar uchun","Bosma topshiriqlar uchun","Telekranni yashirish uchun"],
+["Vazirlikda minglab, o'n minglab bunday tuynuklar bor. Ularni nima deyishardi?","«Xotira tuynuklari»","«Haqiqat teshiklari»","«Axlat tuynuklari»","«Unutish quvurlari»"],
+["Har bir qog'ozdagi bir-ikki satrli topshiriq qanday tilda yozilgan edi (Yangitil emas, ammo Yangitil so'zlaridan iborat)?","Telegraf tilida","Eskitilda","Lotin tilida","Shifrlangan tilda"],
+["«Tayms»ning 17-martdagi xabariga ko'ra, Katta og'a qaysi jabhada sokinlik bo'lishini bashorat qilgan edi?","Janubiy Hind jabhasida","Shimoliy Afrika jabhasida","Sharqiy Yevropa jabhasida","Tinch okean jabhasida"],
+["Aslida yevrosiyoliklar qayerda hujumga o'tdilar?","Janubiy Hindistonda","Shimoliy Afrikada","Yaqin Sharqda","Sharqiy Yevropada"],
+["«Tayms» 19-dekabrdagi sonida 1983-yil 4-kvartalini nechanchi uch yillik rejaning oltinchi kvartali deb e'lon qilgan edi?","To'qqizinchi","Yettinchi","Sakkizinchi","O'ninchi"],
+["Farovonlik vazirligi shokolad ulushini qaysi yil davomida o'zgartirmaslikka va'da bergan edi?","1984-yil","1983-yil","1985-yil","1982-yil"],
+["Shu haftaning oxirida tarqatiladigan shokolad miqdori 30 grammdan necha grammga kamaytirildi?","20 gramm","10 gramm","15 gramm","25 gramm"],
+["Har kuni va hatto har daqiqa nima bugungi kunga muvofiqlashtiriladi?","O'tmish","Kelajak","Qonunlar","Narxlar"],
+
+["Partiyaning har qanday bashorati nima bilan tasdiqlanadi?","Hujjatlar bilan","Guvohlar bilan","Telekran bilan","Xotira bilan"],
+["Nimalarda kun ehtiyojiga zid bo'lgan birorta xabar, birorta fikr bo'lishi mumkin emas?","Yozuvlarda","Xotiralarda","Telekranda","Suhbatlarda"],
+["Nimani ko'hna teriga ishlov berganday har kuni qirtishlab tozalab, yangidan yozishadi?","Tarixni","Qonunlarni","Lug'atni","Xaritalarni"],
+["Farovonlik vazirligi to'rtinchi kvartalda necha million juft poyabzal ishlab chiqarishni rejalagan edi?","145 million","100 million","200 million","90 million"],
+["Haqiqiy hayotda necha million juft poyabzal ishlab chiqarilgan?","62 million","45 million","82 million","100 million"],
+["Uinston rejani qayta yozib, undagi raqamni necha millionga o'zgartiradi (reja oshirib bajarilgan bo'lishi lozim)?","57 million","62 million","90 million","100 million"],
+["Har kvartalda qog'ozda qanday sonlarda poyabzal ishlab chiqariladi?","Astronomik sonlarda","Juda kam sonlarda","O'rtacha sonlarda","Nolga yaqin sonlarda"],
+["Okeaniya aholisining qanchasi oyoqyalang yuradi?","Yarmi","Chorak qismi","Uchdan biri","Deyarli hammasi"],
+["Yo'lakning u tomonidagi shisha xonachada, qoramtir iyakli, saranjom-sarishta odamcha kim edi?","Tillotson","Amplfort","Parsons","Sayme"],
+["Qo'shni xonachadagi mallasoch pakana ayol kun bo'yi matbuotni varaqlab nima bilan shug'ullanardi?","Bug'latilgan, hech qachon yashamagan deb hisoblanadigan odamlarning nomlarini matbuotdan o'chirish bilan","Yangi shiorlar tuzish bilan","Xorijiy gazetalarni tarjima qilish bilan","Fotosuratlarni tahrirlash bilan"],
+["Mallasoch pakana ayolning eri necha yil avval bug'latib yuborilgan edi?","2 yil avval","1 yil avval","5 yil avval","10 yil avval"],
+["Uinstondan bir necha xona narida o'tiradigan kalta, beo'xshov, parishonxotir maxluqning ismi nima?","Amplfort","Tillotson","Parsons","Sayme"],
+["Amplfort nima bo'yicha usta edi?","Qofiya va hijolar bo'yicha","Rasm chizish bo'yicha","Musiqa bastalash bo'yicha","Siyosiy nutqlar yozish bo'yicha"],
+["Necha kishidan ziyod odam ishlaydigan bu yo'lak Hujjatlar bo'limining ostbo'limi edi?","50 dan ziyod","20 dan ziyod","100 dan ziyod","10 dan ziyod"],
+["Katta bosmaxonalar va mukammal jihozlangan studiyalar nimalarni soxtalashtirish bilan mashg'ul edi?","Fotosuratlarni","Pul belgilarini","Hujjat muhrlarini","Xaritalarni"],
+["Teledasturlar bo'limi qanday ovozlarni o'xshatish bilan mashg'ul edi?","Begona odamlarning ovozlarini","Hayvon ovozlarini","Tabiat ovozlarini","Musiqa asboblari ovozlarini"],
+["Qaydadir, qaydaligi noma'lum, siyosiy yo'nalishni anonim tarzda belgilab beradigan nima ishlardi?","Rahbariy miya","Fikr politsiyasi","Ichki partiya majlisi","Telekran markazi"],
+["Uinston kimni deyarli bilmasdi va u nima bilan mashg'ulligini ham tasavvur qilolmasdi?","Tillotsonni","Amplfortni","Parsonsni","Saymeni"],
+["Qaysi bo'lim xodimlari bir-biri bilan qilayotgan ishlari yuzasidan gaplashmasdi?","Hujjatlar bo'limi xodimlari","Adabiyot bo'limi xodimlari","Teledasturlar bo'limi xodimlari","Tasviriy bo'lim xodimlari"],
+["Derazasiz yo'lakda nechtadan ziyod odam yillar bo'yi birga ishlardiki, Uinston ularning ismini ham bilmasdi?","10 tadan ziyod","3 tadan ziyod","5 tadan ziyod","20 tadan ziyod"],
+["Taftish qilinadigan kitoblar va vaqtli matbuot ro'yxatini tuzish bilan band to'da kimlar edi?","Referentlar","Muharrirlar","Rejissyorlar","Tarjimonlar"],
+["Haqiqat vazirligining yirik tarkibiy qismi qaysi edi?","Yaxlit «Hujjatlar bo'limi»","Fikr politsiyasi bo'limi","Tarqatish bo'limi","Xavfsizlik xizmati"],
+["Vazirlikning bosh vazifasi o'tmishni qayta yaratishgina emas, balki yana nima edi?","Okeaniya aholisini barcha turdagi axborot va ko'ngilochar mahsulotlar bilan ta'minlash","Chet el matbuotini tarjima qilish","Fikr jinoyatchilarini fosh qilish","Harbiy harakatlarni rejalashtirish"],
+["Vazirlik saviyasi pastroq axborot mahsulotlarini kimga mo'ljallab tarqatardi?","Proletariatga","Tashqi partiyaga","Ichki partiyaga","Xorijiy davlatlarga"],
+["Proletariatga mo'ljallangan axborot mahsulotlari qaysilar?","Sariq gazetalar, besh sentlik novellalar, uyatsiz filmlar va mexanik yaratilgan sentimental qo'shiqlar","Partiya tarixi kitoblari va nutqlar to'plami","Ilmiy jurnallar va darsliklar","Yangitil lug'atlari va falsafiy asarlar"],
+["Yangitilda eng fahsh mavzularda pornografiya ishlab chiqaradigan bo'linma nima deb atalardi?","«Pornobo'lim»","«Seksbo'lim»","«Ko'ngilbo'lim»","«Romanbo'lim»"],
+["Uinstonning hayotdan oladigan eng katta zavqi nima edi?","Ishi","Kundalik yozish","Ichkilik","Yolg'iz sayr qilish"],
+["Uinstonga hatto qaysi gazetaning mutlaqo Yangitilda yozilgan bosh maqolalarini tuzatish ishonib topshirilardi?","«Tayms»","«Pravda»","«Krokodil»","«Daily Mail»"],
+["Eskitil qaysi til?","Odatiy ingliz tili","Fransuz tili","Lotin tili","Rus tili"],
+["«Tayms»ning qaysi sanadagi sonida Katta og'aning buyrug'i juda qoniqarsiz bayon etilgan edi?","1983-yil 3-dekabr","1983-yil 19-dekabr","1984-yil 3-dekabr","1984-yil 17-mart"],
+["Suzib yuruvchi qal'alar matroslarini sigaretalar va boshqa iste'mol mahsulotlari bilan ta'minlashga qaysi tashkilot mas'ul edi?","SQIM","Tinchlik vazirligi","Farovonlik vazirligi","Fikr politsiyasi"],
+["Ichki partiyaning ta'sirli arbobi, 2-darajali «Buyuk xizmatlari uchun» ordeni bilan taqdirlangan o'rtoq kim edi?","O'rtoq Uiders","O'rtoq Ogilvi","O'rtoq Amplfort","O'rtoq Tillotson"],
+["Uch oydan keyin, aytilmagan sabablarga ko'ra, qaysi tashkilot to'satdan tarqatib yuborildi?","SQIM","Josuslar","Seksga qarshi yoshlar ligasi","Hujjatlar bo'limi"],
+["Uinstonning ota-onasini aytmasa ham, qanchaga yaqin tanishi yo'qolgan?","30 ga yaqin","10 ga yaqin","20 ga yaqin","50 ga yaqin"],
+["Ehtimol, kamida necha kishi Katta og'a aslida nima demoqchi bo'lgani haqida turlicha taxminlarni ishlab chiqish bilan band?","10 kishi","3 kishi","50 kishi","100 kishi"],
+["Uidersning allaqachon o'lganini bildiruvchi yagona tayinli ishora qanday so'zlarda mujassam edi?","«Tilga olinganlar shaxslar emas»","«Buyruq qoniqarli»","«Tahrir qilinmasin»","«Arxivga topshirilsin»"],
+["Uinston to'qib chiqargan, kuni kecha janglarda qahramonona halok bo'lgan o'rtoq kim?","O'rtoq Ogilvi","O'rtoq Uiders","O'rtoq Parsons","O'rtoq Tillotson"],
+["Hayotda bo'lmagan bu o'rtoqni yashagan qilib ko'rsatish uchun nima yetarli edi?","Bir necha bosma satr va bir-ikki soxta fotosurat","Telekrandagi nutq va rasmiy buyruq","Ichki partiyaning guvohligi","Qabr toshi va yodgorlik"],
+["Ogilvi hayotidagi ibratli xislatlar ayni paytda nimaning asosiy tamoyillari hamdir?","Ingsotsning","Yangitilning","Birodarlikning","Fikr politsiyasining"],
+["O'rtoq Ogilvi necha yoshligidayoq do'mbira, avtomat va vertolyotdan boshqa barcha o'yinchoqlardan voz kechdi?","3 yoshligidayoq","5 yoshligidayoq","7 yoshligidayoq","9 yoshligidayoq"],
+["Ogilvi necha yoshida muddatidan bir yil avval «Josuslar»ga qabul qilindi?","6 yoshida","5 yoshida","7 yoshida","8 yoshida"],
+["Ogilvi necha yoshida tog'asining gaplaridan jinoiy g'oyalar isini sezib, Fikr politsiyasiga xabar berdi?","11 yoshida","9 yoshida","13 yoshida","14 yoshida"],
+["Ogilvi necha yoshida «Seksga qarshi yoshlar ligasi»ning tuman rahbari bo'ldi?","17 yoshida","15 yoshida","20 yoshida","13 yoshida"],
+["Ogilvi necha yoshida ixtiro qilgan granatasi Tinchlik vazirligi tomonidan qabul qilindi (birinchi portlatishdayoq 31 yevrosiyolik asirni yer tishlatdi)?","19 yoshida","17 yoshida","21 yoshida","23 yoshida"],
+["Ogilvi necha yoshida urushda halok bo'ldi?","23 yoshida","19 yoshida","25 yoshida","30 yoshida"],
+["Muhim ma'lumotlar bilan Hind okeani ustidan uchib borarkan, dushman qiruvchilari hujum qildi; o'z tanasiga pulemyotni va ma'lumotlarni bog'lab, suv tagiga cho'kib ketgan kim?","O'rtoq Ogilvi","O'rtoq Uiders","O'rtoq Tillotson","O'rtoq Parsons"],
+["Ichmas va chekmas, kunlik bir soat gimnastikadan boshqa ko'ngilochar mashg'ulot bilmas, toq o'tishga qaror qilgan, hayotiy maqsadi xoinlarni topishdan iborat bo'lgan kim?","O'rtoq Ogilvi","O'rtoq Uiders","O'rtoq Tillotson","O'rtoq Parsons"],
+["Ogilvi haqiqiyligi jihatidan qaysi tarixiy shaxslar bilan bir qatorga qo'yilardi?","Buyuk Karl va Yuliy Sezar","Napoleon va Aleksandr Makedonskiy","Katta og'a va Goldsteyn","Kolumb va Magellan"]
+];
+const quizData=D.map(a=>({q:a[0],correct:a[1],wrongs:a.slice(2)}));
+
+const ayats=[
+{text:"Robbing seni tark qilmadi va g'azab ham qilmadi.",meta:"Zuho 93:3"},
+{text:"Albatta bir qiyinchilik bilan osonchilik bordir.",meta:"Sharh 94:5"},
+{text:"Yaratgan Robbing nomi bilan o'qi!",meta:"Alaq 96:1"},
+{text:"O'qi, Robbing karamlilar karamlisidir.",meta:"Alaq 96:3"},
+{text:"Va tezda Robbing senga ato qilur va sen rozi bo'lursan.",meta:"Zuho 93:5"},
+{text:"Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.",meta:"Layl 92:5-7"},
+{text:"Albatta hidoyatga boshlash Bizning zimmamizdadir.",meta:"Layl 92:12"},
+{text:"Va albatta tezda rozi bo'ladir.",meta:"Layl 92:21"},
+{text:"Seni oson yo'lga muyassar etamiz.",meta:"A'lo 87:8"},
+{text:"Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.",meta:"Naba 78:39"},
+{text:"Albatta Biz senga ochiq g'alaba berdik.",meta:"Fath 48:1"}
+];
+
+let activeQuiz=[],currentQ=0,score=0,answered=0,rangeStart=null,quizMode='quiz';
+const shuffle=a=>a.sort(()=>Math.random()-.5);
+
+function buildStars(){
+    const c=document.getElementById('stars');c.innerHTML='';
+    for(let i=0;i<100;i++){
+        const s=document.createElement('div');s.className='star';
+        s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+        const z=(Math.random()*2+1).toFixed(1);s.style.width=z+'px';s.style.height=z+'px';
+        s.style.animationDelay=(Math.random()*2.5).toFixed(2)+'s';
+        s.style.animationDuration=(1.5+Math.random()*2).toFixed(2)+'s';
+        c.appendChild(s);
+    }
+}
+
+window.onload=function(){
+    const grid=document.getElementById('numberGrid');
+    for(let i=1;i<=quizData.length;i++){
+        const b=document.createElement('button');b.className='num-btn';b.innerText=i;
+        b.onclick=()=>pickNumber(i,b);grid.appendChild(b);
+    }
+    buildStars();
+    const a=ayats[Math.floor(Math.random()*ayats.length)];
+    document.getElementById('random-ayat').innerHTML=`<div class="quran-box"><span class="quran-ayat-text">"${a.text}"</span><span class="quran-meta">${a.meta}</span></div>`;
+};
+
+function pickNumber(num,btn){
+    const info=document.getElementById('range-info');
+    if(rangeStart===null){
+        rangeStart=num;btn.classList.add('picked');
+        info.innerText=`Boshlang'ich: ${num}. Endi oxirgi raqamni tanlang`;
+    }else{
+        let s=rangeStart,e=num;if(e<s){const t=s;s=e;e=t;}
+        btn.classList.add('picked');info.innerText=`Tanlandi: ${s} - ${e}`;
+        setTimeout(()=>startWithRange(s,e),400);
+    }
+}
+
+function startWithRange(s,e){
+    activeQuiz=quizData.slice(s-1,e);
+    document.getElementById('select-screen').style.display='none';
+    document.getElementById('mode-screen').style.display='flex';
+}
+
+function chooseMode(mode){
+    quizMode=mode;
+    if(mode==='quiz-aralash'||mode==='yopiq-aralash')activeQuiz=shuffle([...activeQuiz]);
+    document.getElementById('mode-screen').style.display='none';
+    const i=document.getElementById('intro-screen');i.style.display='flex';i.style.opacity='1';
+    startTimer();
+}
+
+function startTimer(){
+    let count=3;const d=document.getElementById("countdown");d.innerText=count;
+    const t=setInterval(()=>{
+        count--;
+        if(count>0)d.innerText=count;
+        else if(count===0)d.innerText="Boshladik!";
+        else{
+            clearInterval(t);
+            document.getElementById("intro-screen").style.opacity="0";
+            setTimeout(()=>{
+                document.getElementById("intro-screen").style.display="none";
+                document.getElementById("quiz").style.display="block";
+                loadQ();
+            },800);
+        }
+    },1000);
+}
+
+function loadQ(){
+    const q=activeQuiz[currentQ];
+    document.getElementById('question').innerText=`${currentQ+1}/${activeQuiz.length}. ${q.q}`;
+    const o=document.getElementById('options');o.innerHTML='';
+    if(quizMode==='yopiq'||quizMode==='yopiq-aralash')loadClosedQ(q,o);else loadMC(q,o);
+}
+
+function loadMC(q,o){
+    shuffle([q.correct,...q.wrongs]).forEach(opt=>{
+        const b=document.createElement('div');b.className='option';b.innerText=opt;
+        b.onclick=()=>check(opt,b,q.correct);o.appendChild(b);
+    });
+}
+
+function loadClosedQ(q,o){
+    const input=document.createElement('input');
+    input.type='text';input.className='closed-input';input.id='closed-answer';input.placeholder='Javob yozing...';
+    input.onkeypress=e=>{if(e.key==='Enter')checkClosed(q);};
+    const btn=document.createElement('button');
+    btn.className='btn-check';btn.innerText='Tekshirish';btn.onclick=()=>checkClosed(q);
+    const r=document.createElement('div');r.id='closed-result';
+    o.appendChild(input);o.appendChild(btn);o.appendChild(r);input.focus();
+}
+
+function checkClosed(q){
+    const inp=document.getElementById('closed-answer'),r=document.getElementById('closed-result');
+    const user=inp.value.toLowerCase().trim(),correct=q.correct.toLowerCase().trim();
+    answered++;inp.disabled=true;document.querySelector('.btn-check').disabled=true;
+    if(user===correct){r.innerHTML='<b style="color:#00ff99;">✅ To\'g\'ri</b>';score++;}
+    else r.innerHTML='<b style="color:#ff4444;">❌ Noto\'g\'ri.</b><br> Javob: '+q.correct;
+    setTimeout(()=>{currentQ++;currentQ<activeQuiz.length?loadQ():finishQuiz();},2000);
+}
+
+function check(sel,el,correct){
+    const opts=el.parentElement.querySelectorAll('.option');
+    opts.forEach(o=>o.style.pointerEvents='none');answered++;
+    if(sel===correct){el.classList.add('correct');score++;}
+    else{el.classList.add('wrong');opts.forEach(o=>{if(o.innerText===correct)o.classList.add('correct');});}
+    setTimeout(()=>{currentQ++;currentQ<activeQuiz.length?loadQ():finishQuiz();},1000);
+}
+
+function finishQuiz(){
+    const wrong=answered-score;
+    document.getElementById('quiz').innerHTML=`
+        <h2>Natijalar</h2>
+        <div style="line-height:2.2;font-size:19px;">
+            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            To'g'ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
+            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+        </div>
+        <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>`;
+}
+</script>
+</body>
+</html>
