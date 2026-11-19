@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yosh Kitobxon 2026-2027 — E'lon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: #111; font-family: Arial, sans-serif; color: white; position: relative; overflow-x: hidden; min-height: 100vh; }
+    #stars-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+    .star { position: absolute; background: white; border-radius: 50%; animation: twinkle var(--duration) infinite ease-in-out; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+    header { background: #1e1e1e; padding: 22px 12px; text-align: center; font-size: 30px; font-weight: bold; color: #00ff99; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+    header .site-name { font-size: 18px; color: #ffcc00; font-weight: normal; letter-spacing: 1px; }
+    .header-row { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .cally-badge { position: relative; display: inline-flex; align-items: center; font-family: 'Great Vibes', 'Segoe Script', 'Lucida Handwriting', cursive; font-size: 26px; line-height: 1; white-space: nowrap; background: linear-gradient(110deg, #8a6a12 0%, #ffe89b 22%, #fffceb 42%, #ffcc00 60%, #a8790a 82%, #ffe89b 100%); background-size: 260% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.55)); animation: goldShimmer 2.6s linear infinite; }
+    @keyframes goldShimmer { 0% { background-position: 0% center; } 100% { background-position: 260% center; } }
+    .cally-badge .sparkle-star { position: absolute; width: 3px; height: 3px; background: #fff8d6; border-radius: 50%; box-shadow: 0 0 6px 2px #ffcc00; pointer-events: none; animation: twinkle 1.4s ease-in-out infinite; }
+    @media(max-width: 800px) { .cally-badge { font-size: 18px; } }
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 30px 20px 40px; }
+    .content-grid { display: flex; flex-direction: column; align-items: center; gap: 40px; }
+    .covers-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: stretch; gap: 30px; width: 100%; }
+    .book-cover { background: #1e1e1e; border-radius: 20px; padding: 15px; box-shadow: 0 0 15px rgba(0,255,153,0.15); border: 2px solid transparent; transition: 0.4s; width: 260px; max-width: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .book-cover:hover { border: 2px solid #00ff99; box-shadow: 0 0 20px rgba(0,255,153,0.3); }
+    .book-cover img { width: 100%; height: 360px; object-fit: cover; border-radius: 12px; display: block; }
+    .book-cover .title-box { background: #222; margin-top: 15px; padding: 15px; border-radius: 10px; text-align: center; border-top: 3px solid #FFD700; }
+    .book-cover .title-box p { margin: 0; font-size: 15px; font-weight: bold; color: white; }
+    .timer-container { background: #1e1e1e; padding: 30px 20px; border-radius: 15px; text-align: center; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 100%; max-width: 500px; }
+    .timer-title { font-size: 20px; color: #00c2ff; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+    .status-badge { display: inline-block; background: #222; padding: 15px 40px; border-radius: 8px; border-bottom: 3px solid #ffcc00; font-size: 32px; font-weight: bold; color: #ffcc00; letter-spacing: 1px; animation: statusPulse 1.8s ease-in-out infinite; }
+    @keyframes statusPulse { 0%, 100% { opacity: 0.6; box-shadow: 0 0 0 rgba(255,204,0,0); } 50% { opacity: 1; box-shadow: 0 0 18px rgba(255,204,0,0.45); } }
+    @media(max-width: 800px) { header { font-size: 22px; } .status-badge { font-size: 24px; padding: 12px 28px; } .book-cover { width: 45%; } .book-cover img { height: 220px; } }
+</style>
+</head>
+<body>
+
+    <div id="stars-layer"></div>
+
+    <header>
+        <div class="header-row">
+            <span class="cally-badge" id="cally-left">✦Yaratgan Robbing</span>
+            📚 Yosh kitobxon 2026-2027 (20-30 yosh toifasi)
+            <span class="cally-badge" id="cally-right">nomi bilan o'qi ✦</span>
+        </div>
+        <span class="site-name">Zuho.uz</span>
+    </header>
+
+    <div class="container">
+        <div class="content-grid">
+
+            <div class="covers-row">
+                <div class="book-cover">
+                    <img src="1984.webp" alt="1984">
+                    <div class="title-box">
+                        <p>1984 <br> Jorj Oruell</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timer-container">
+                <div class="timer-title">Holati:</div>
+                <div class="status-badge">⏳ Jarayonda</div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function addSparkles(el, count) {
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('span');
+                star.className = 'sparkle-star';
+                star.style.top = Math.random() * 80 + '%';
+                star.style.left = Math.random() * 80 + '%';
+                star.style.animationDuration = (0.8 + Math.random() * 1.4) + 's';
+                star.style.animationDelay = (Math.random() * 1.5) + 's';
+                el.appendChild(star);
+            }
+        }
+        addSparkles(document.getElementById('cally-left'), 3);
+        addSparkles(document.getElementById('cally-right'), 3);
+
+        const starsLayer = document.getElementById('stars-layer');
+        for (let i = 0; i < 150; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + "%";
+            star.style.top = Math.random() * 100 + "%";
+            const size = Math.random() * 2 + 1;
+            star.style.width = size + "px";
+            star.style.height = size + "px";
+            star.style.setProperty('--duration', (Math.random() * 3 + 2) + "s");
+            star.style.animationDelay = Math.random() * 5 + "s";
+            starsLayer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
