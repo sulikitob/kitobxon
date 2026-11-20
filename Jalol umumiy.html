@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200, initial-scale=0.2, maximum-scale=1.0, user-scalable=yes">
+<title>Jaloliddin Manguberdi</title>
+<style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family: Arial; background: url('https://i.pinimg.com/originals/3a/ac/9e/3aac9eee8ff49b3c44d7800323b74333.jpg?nii=t') no-repeat center center fixed; background-size: cover; margin: 0; }
+    .wrapper { background: #1b1b1b; max-width: 1300px; margin: auto; min-height: 100vh; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+    .hero { width: 100%; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; text-align: center; }
+    .hero img { width: 220px; height: 300px; object-fit: cover; border-radius: 15px; }
+    .floating-text h1{ font-size:45px; color: white; }
+    .container{ padding:20px; }
+    .section-title { text-align: center; margin-top: 50px; margin-bottom: 25px; font-size: 32px; color: white; }
+    .section-title small { display:block; font-size:16px; color:#999; margin-top:6px; font-weight:normal; }
+    .menu-grid{ display:flex; flex-wrap:wrap; justify-content:center; gap:30px; margin-bottom: 50px; }
+    .menu-grid .card{ width:calc(25% - 23px); min-width:200px; }
+    .card{ background:#1b1b1b; border-radius:25px; padding:30px 20px; text-align:center; transition:0.4s; text-decoration:none; color:white; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; gap:10px; cursor: pointer; }
+    .card:active { animation: electric-shake 0.2s infinite; border: 1px solid #00ff99; }
+    .card-green { box-shadow:0 0 20px rgba(0,255,150,0.1); }
+    .card-green::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#00ff99,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-green:hover::before{ top:100%; left:100%; }
+    .card-green:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 35px rgba(0,255,150,0.5); }
+    .card-red { box-shadow:0 0 20px rgba(255,50,50,0.1); }
+    .card-red::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#ff3232,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-red:hover::before{ top:100%; left:100%; }
+    .card-red:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 35px rgba(255,50,50,0.5); }
+    .card-gold { box-shadow:0 0 20px rgba(255,204,0,0.15); border: 1px solid #ffcc00; }
+    .card-gold::before{ content:""; position:absolute; width:200%; height:200%; background:linear-gradient(45deg,transparent,#ffcc00,transparent); top:-150%; left:-150%; transform:rotate(25deg); transition:0.7s; }
+    .card-gold:hover::before{ top:100%; left:100%; }
+    .card-gold:hover{ transform:translateY(-12px) scale(1.03); box-shadow:0 0 45px rgba(255,204,0,0.6); }
+    .card-gold h2 { color: #ffcc00 !important; }
+    .card h2{ position:relative; z-index:2; font-size:20px; color: white !important; }
+    .card .pg{ position:relative; z-index:2; font-size:13px; color:#999; }
+    .icon { position:relative; z-index:2; font-size: 35px; margin-bottom: 5px; }
+    .footer{ text-align:center; padding:30px; color:#999; }
+    @media(max-width:1000px){ .menu-grid .card{ width:calc(50% - 15px); } }
+    @media(max-width:600px){ .menu-grid .card{ width:100%; } .floating-text h1{ font-size:24px; } }
+    .premium { position: relative; }
+    .premium::after { content: "⭐"; position: absolute; top: 12px; right: 12px; font-size: 20px; color: #b388ff; text-shadow: 0 0 10px #b388ff, 0 0 20px #7c4dff; z-index: 3; }
+    .gold-section-title{ color: #ffcc00 !important; text-shadow: 0 0 12px rgba(255,204,0,0.7); }
+    .sparkle-star{ position:absolute; width:3px; height:3px; background:#fff8d6; border-radius:50%; box-shadow:0 0 6px 2px #ffcc00; pointer-events:none; z-index:1; animation-name: twinkle; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+    @keyframes twinkle{ 0%, 100% { opacity:0; transform:scale(0.4); } 50% { opacity:1; transform:scale(1.3); } }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="hero">
+        <img src="jalol.webp" alt="Jaloliddin Manguberdi">
+        <div class="floating-text"><h1>📚 Jaloliddin Manguberdi</h1></div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">So‘zboshi</h2>
+        <div class="menu-grid">
+           <a href="sozboshi.html" target="_blank" class="card card-green"><h2><br>So‘zboshi</h2><span class="pg">4-bet</span></a>
+        </div>
+
+        <h2 class="section-title">Kirish<small>14-bet</small></h2>
+        <div class="menu-grid">
+           <a href="kirish-1.html" target="_blank" class="card card-green"><h2>1.<br>Manguberdimi yoxud Mangburni?</h2><span class="pg">14-bet</span></a>
+           <a href="kirish-2.html" target="_blank" class="card card-green"><h2>2.<br>Jaloliddin Manguberdi faoliyatiga oid asosiy yozma manbalar</h2><span class="pg">24-bet</span></a>
+        </div>
+
+        <h2 class="section-title">1-Bob. Tarixiy tagzamin<small>33-bet</small></h2>
+        <div class="menu-grid">
+           <a href="bob-1-1.html" target="_blank" class="card card-green"><h2>1.1.<br>Ko‘chmanchi va o‘troq xalqlar munosabatlari tarixidan</h2><span class="pg">33-bet</span></a>
+           <a href="bob-1-2.html" target="_blank" class="card card-green"><h2>1.2.<br>Sayroqi o‘qlar</h2><span class="pg">48-bet</span></a>
+        </div>
+
+        <h2 class="section-title">2-Bob. «Shafqatsiz asr»<small>69-bet</small></h2>
+        <div class="menu-grid">
+           <a href="bob-2-1.html" target="_blank" class="card card-green"><h2>2.1.<br>Mo‘g‘ullar bosqini</h2><span class="pg">70-bet</span></a>
+           <a href="bob-2-2.html" target="_blank" class="card card-green"><h2>2.2.<br>Mangulikka muhrlangan muhorabalar</h2><span class="pg">91-bet</span></a>
+        </div>
+
+        <h2 class="section-title">3-Bob. Jaloliddin Manguberdi shaxsiyatiga chizgilar<small>119-bet</small></h2>
+        <div class="menu-grid">
+           <a href="bob-3-1.html" target="_blank" class="card card-green"><h2>3.1.<br>Mohir sarkarda va qo‘rqmas jangchi, biroq bo‘sh siyosatchi</h2><span class="pg">119-bet</span></a>
+           <a href="bob-3-2.html" target="_blank" class="card card-green"><h2>3.2.<br>Ikkinchi hayot</h2><span class="pg">145-bet</span></a>
+        </div>
+
+        <div class="menu-grid">
+           <a href="Manguberdi umumiy quiz.html" target="_blank" class="card card-red premium"><span class="icon">📝</span><h2>Umumiy quiz testlar</h2></a>
+        </div>
+
+        <!-- OLTIN BO'LIM — eng pastda, alohida ajratilgan -->
+        <h2 class="section-title gold-section-title">✨ Maxsus bo‘lim ✨</h2>
+        <div class="menu-grid">
+           <a href="Manguberdi taqriz.html" target="_blank" class="card card-gold premium"><span class="icon">⭐</span><h2>Taqriz</h2></a>
+           <a href="Manguberdi mundarija va savollar statistikasi.html" target="_blank" class="card card-gold premium"><span class="icon">📖</span><h2>Mundarija va savollar soni</h2></a>
+           <a href="Manguberdi barcha ma'lumotlar.html" target="_blank" class="card card-gold premium"><span class="icon">🏆</span><h2>Barcha ma’lumotlar</h2></a>
+           <a href="Manguberdi maxsus.html" target="_blank" class="card card-gold premium"><span class="icon">🎁</span><h2>Maxsus</h2></a>
+        </div>
+    </div>
+
+    <div class="footer">zuhos.uz ©</div>
+</div>
+
+<!-- Login nazorati -->
+<script type="module" src="auth-gate.js"></script>
+
+<script>
+// Oltin kartalarga uzluksiz porillovchi yulduzchalar qo'shish
+function addSparkles(card, count) {
+    for (let i = 0; i < count; i++) {
+        const star = document.createElement('span');
+        star.className = 'sparkle-star';
+        star.style.top = Math.random() * 85 + '%';
+        star.style.left = Math.random() * 90 + '%';
+        star.style.animationDuration = (0.8 + Math.random() * 1.5) + 's';
+        star.style.animationDelay = (Math.random() * 2) + 's';
+        card.appendChild(star);
+    }
+}
+document.querySelectorAll('.card-gold').forEach(function (card) { addSparkles(card, 10); });
+</script>
+
+</body>
+</html>
