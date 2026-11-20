@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kirish. Manguberdimi yoxud Mangburni?</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow-x:hidden}
+body{font-family:'Arial',sans-serif;background:linear-gradient(135deg,#050505,#121212,#1d1d1d);color:#fff;display:flex;flex-direction:column;align-items:center;padding:20px;min-height:100vh;min-height:100dvh;padding-top:max(20px,env(safe-area-inset-top,0px));padding-bottom:max(20px,env(safe-area-inset-bottom,0px))}
+#select-screen{width:100%;max-width:700px;display:flex;flex-direction:column;align-items:center;gap:25px;padding:20px 0}
+#select-screen h1{font-size:26px;color:#00ff99;text-align:center}
+#select-screen p{color:#999;font-size:14px;text-align:center}
+.number-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(55px,1fr));gap:10px;width:100%;max-height:60vh;overflow-y:auto;padding:10px;background:#111;border-radius:20px;box-shadow:0 0 25px rgba(0,255,150,.15)}
+.number-grid::-webkit-scrollbar{width:8px}
+.number-grid::-webkit-scrollbar-thumb{background:#00ff99;border-radius:10px}
+.num-btn{background:#1b1b1b;border:2px solid #00ff99;color:#00ff99;border-radius:12px;padding:12px 0;font-size:15px;font-weight:bold;cursor:pointer;transition:.25s;text-shadow:0 0 8px rgba(0,255,153,.6)}
+.num-btn:hover{background:#00ff99;color:#050505;box-shadow:0 0 20px rgba(0,255,150,.8);transform:scale(1.08)}
+.num-btn.picked{background:#ff9900;border-color:#ff9900;color:#050505;box-shadow:0 0 20px rgba(255,153,0,.8)}
+#range-info{color:#ff9900;font-size:15px;font-weight:bold;min-height:22px}
+#mode-screen{display:none;width:100%;max-width:700px;flex-direction:column;align-items:center;gap:25px;padding:20px 0}
+#mode-screen h1{font-size:24px;color:#00ff99;text-align:center;margin:5px 0}
+.mode-wrapper{width:100%;background:rgba(5,5,5,.4);border-radius:20px;padding:25px}
+.mode-grid{width:100%;display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.mode-card{background:rgba(27,27,27,.85);border-radius:20px;padding:30px 15px;text-align:center;transition:.4s;color:#fff;position:relative;overflow:hidden;cursor:pointer;font-size:16px;font-weight:bold;backdrop-filter:blur(3px)}
+.mode-card::before{content:"";position:absolute;width:200%;height:200%;background:linear-gradient(45deg,transparent,#00ff99,transparent);top:-150%;left:-150%;transform:rotate(25deg);transition:.7s}
+.mode-card:hover::before{top:100%;left:100%}
+.mode-card:hover{transform:translateY(-5px) scale(1.02);border-color:#ffd700;box-shadow:0 0 15px rgba(255,215,0,.2)}
+@media(max-width:600px){.mode-grid{grid-template-columns:repeat(2,1fr)}.mode-icon-top{display:flex;justify-content:center}.mode-icon-top img{width:85%;max-width:220px}}
+#intro-screen{position:fixed;top:0;left:0;width:100%;height:100%;height:100dvh;background:#050505;display:none;flex-direction:column;justify-content:center;align-items:center;z-index:5;transition:opacity .8s ease}
+#stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+#select-screen,#mode-screen,.quiz-box,#intro-screen .content-box,#intro-screen #countdown{position:relative;z-index:2}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 2.5s infinite ease-in-out}
+@keyframes twinkle{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:1;transform:scale(1.6)}}
+.content-box{text-align:center;margin-bottom:50px;z-index:1;position:relative;padding:0 20px}
+#countdown{position:absolute;bottom:50px;font-size:80px;color:#00ff99;font-weight:bold;animation:pulse 1s infinite;z-index:1}
+@keyframes pulse{0%{transform:scale(.9);opacity:.5}50%{transform:scale(1);opacity:1}100%{transform:scale(.9);opacity:.5}}
+.quran-box{display:block;margin:25px auto 0;padding:20px 30px;max-width:550px;border:4px double #ffd700;background:rgba(20,16,5,.6);text-align:center}
+.quran-ayat-text{font-size:18px;line-height:1.6;color:#f0f0f0;margin-bottom:15px;display:block}
+.quran-meta{display:inline-block;font-size:15px;font-weight:bold;color:#ffd700;letter-spacing:1px;text-transform:uppercase;border-top:1px solid rgba(255,215,0,.3);padding-top:8px;width:100%}
+.quiz-box{display:none;width:100%;max-width:600px;background:#1b1b1b;padding:30px;border-radius:25px;box-shadow:0 0 35px rgba(0,255,150,.1);text-align:center;margin-top:50px}
+h2{color:#00ff99;margin-bottom:20px;font-size:22px}
+.option{display:block;width:100%;padding:15px;margin:10px 0;background:#2a2a2a;border:2px solid #333;border-radius:15px;cursor:pointer;transition:.3s;text-align:left}
+.option:hover{border-color:#00ff99}
+.correct{background:#00ff99!important;color:#000;font-weight:bold;animation:bubbleEffect .5s ease-out}
+@keyframes bubbleEffect{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+.wrong{background:#ff4d4d!important;color:#fff}
+.btn-finish{width:100%;padding:15px;background:transparent;border:2px solid #00ff99;color:#00ff99;border-radius:15px;cursor:pointer;margin-top:20px;font-weight:bold;transition:.3s}
+.btn-finish:hover{background:#00ff99;color:#000}
+.closed-input{width:100%;padding:15px;margin-top:10px;border:2px solid #333;border-radius:12px;font-size:17px;outline:none;background:#2a2a2a;color:#fff}
+.closed-input:focus{border-color:#00ff99}
+.btn-check{width:100%;padding:15px;margin-top:15px;border:2px solid #00ff99;border-radius:15px;background:transparent;color:#00ff99;font-weight:bold;cursor:pointer;font-size:17px;transition:.3s}
+.btn-check:hover{background:#00ff99;color:#000}
+#closed-result{margin-top:15px;font-size:18px;min-height:30px;text-align:center}
+@media(max-width:480px){body{padding:12px}#select-screen h1{font-size:21px}#mode-screen h1{font-size:19px}.mode-card{padding:22px 10px;font-size:14px}.quiz-box{padding:20px 16px;margin-top:30px}h2{font-size:18px}.content-box h1{font-size:24px!important}.quran-ayat-text{font-size:15px}#countdown{font-size:60px;bottom:35px}.number-grid{grid-template-columns:repeat(auto-fill,minmax(48px,1fr))}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+
+<div id="select-screen">
+    <h1>🌙 Kirish. Manguberdimi yoxud Mangburni?</h1>
+    <p>Savollar sonini belgilang</p>
+    <div id="range-info">Boshlang‘ich raqamni tanlang</div>
+    <div class="number-grid" id="numberGrid"></div>
+</div>
+
+<div id="mode-screen">
+    <div class="mode-icon-top"><img src="sayr.jpg" alt="" onerror="this.style.display='none'"></div>
+    <h1>Qaysi funksiyani xohlaysiz?</h1>
+    <div class="mode-wrapper">
+        <div class="mode-grid">
+            <div class="mode-card" onclick="chooseMode('quiz')">Quiz testlar</div>
+            <div class="mode-card" onclick="chooseMode('quiz-aralash')">Quiz aralash</div>
+            <div class="mode-card" onclick="chooseMode('yopiq')">Yopiq savol-javob</div>
+            <div class="mode-card" onclick="chooseMode('yopiq-aralash')">Yopiq savol-javob aralash</div>
+        </div>
+    </div>
+</div>
+
+<div id="intro-screen">
+    <div class="content-box">
+        <h1 style="color:#00ff99;font-size:32px;">Kirish</h1>
+        <div id="random-ayat"></div>
+    </div>
+    <div id="countdown">3</div>
+</div>
+
+<div class="quiz-box" id="quiz">
+    <h2 id="question">Yuklanmoqda...</h2>
+    <div id="options"></div>
+    <button class="btn-finish" onclick="finishQuiz()">Testni yakunlash</button>
+</div>
+
+<script>
+const quizData = [
+{q:`O‘rganilayotgan davrda yaratilgan yozma manbalarning barisida (Manguberdi shaklida emas) bu ism arab yozuvida qaysi ko‘rinishda bitilgan?`,correct:`MNKBRNI`,wrongs:[`MNKBRDI`,`MNGBRDI`,`MNKPRNI`]},
+{q:`Ayrim qo‘lyozmalarda qaysi shakl ham uchragani bois tadqiqotchilar uni «Manguberti» deb o‘qishgan?`,correct:`MNKBRTI`,wrongs:[`MNGBRTI`,`MNKPRTI`,`MNKBRDI`]},
+{q:`Hukmdorlar ism-u unvonlarini eng aniq aks ettiruvchi manba – bu nimalar hisoblanadi?`,correct:`Ular zarb ettirgan tangalar`,wrongs:[`Ularning vasiyatnomalari`,`Saroy tarixchilari yozuvlari`,`Elchilar xatlari`]},
+{q:`«mang» (yoki «meng») so‘zi qanday ma’noni bildiradi?`,correct:`«Xol»`,wrongs:[`«Qo‘rg‘on»`,`«Jasorat»`,`«Tog‘»`]},
+{q:`Shunga asoslanib, tadqiqotchilar bu ismni qanday ma’noda talqin etishadi?`,correct:`«Burnida xoli bor»`,wrongs:[`«Burni katta»`,`«Xoli qalin odam»`,`«Burni egri»`]},
+{q:`Jaloliddin otining dastlabki qismini qanday ma’nodagi «mangu» yoki hatto «ming» so‘zidan keltirib chiqaruvchi, ikkinchi bo‘lagini esa «berni», «barni» kabi ko‘rinishlarda sharhlovchilar ham bor?`,correct:`«Xudo»`,wrongs:[`«Bobo»`,`«Podsho»`,`«Sulton»`]},
+{q:`Misol uchun, aytishicha, uning ayrim yurtdoshlari bu ism «Mingbirli» ekanini, 1001 marta jang qilgani uchun Jaloliddinga shunday ot qo‘yilganini uqtirishgan ekan. Bu fikrni kim aytgan eronlik zamonaviy olim?`,correct:`Mirza Muhammad Qazviniy`,wrongs:[`Rashididdin Fazlulloh`,`Ibn al-Asir`,`Vasiliy Bartold`]},
+{q:`Eronlik zamonaviy olim Mirza Muhammad Qazviniyning aytishicha, uning ayrim yurtdoshlari bu ism «Mingbirli» ekanini va nima uchun Jaloliddinga shunday ot qo‘yilganini uqtirishgan ekan?`,correct:`1001 marta jang qilgani uchun`,wrongs:[`1000 marta g‘alaba qozongani uchun`,`Ming kishini qutqargani uchun`,`Ming askarga boshliq bo‘lgani uchun`]},
+{q:`Shu olimning o‘zi va britaniyalik sharqshunos kim butunlay yangi va kutilmagan taxminni ilgari surishgan?`,correct:`Piter Jekson`,wrongs:[`Piter Golden`,`Devid Morgan`,`Denis Sinor`]},
+{q:`Shu olimning o‘zi va britaniyalik sharqshunos Piter Jekson butunlay yangi va kutilmagan taxminni ilgari surishgan. Unga ko‘ra, bu ism turkiy «ming» hamda «eran» («er, mard») so‘zlaridan tashkil topgan bo‘lib, uni «Mingerani» tarzida o‘qish kerak, shunda u qanday ma’no kasb etadi?`,correct:`«ming kishining o‘rniga o‘tuvchi jasur jangchi»`,wrongs:[`«ming kishilik qo‘shin sarkardasi»`,`«ming yil yashovchi mard»`,`«ming jang qilgan er»`]},
+{q:`Mingerani qadimda Eronda keng qo‘llanilgan qaysi sharafli laqabining naq turkiy muqobili bo‘lib chiqadi?`,correct:`«Hazormarda»`,wrongs:[`«Shirmarda»`,`«Sadmarda»`,`«Hazorbaxt»`]},
+{q:`Tarixiy musulmoncha ismlar, odatda, quyidagi tarkibiy qismlardan iborat bo‘ladi: kunya. Erkaklar ismi oldiga Abu (qisqa shakli – Bu) so‘zi qo‘shiladi, uning ma’nosi nima?`,correct:`Ota`,wrongs:[`Bola`,`Aka`,`Hukmdor`]},
+{q:`Ayollar ismi oldiga esa Umm so‘zini qo‘shish orqali yasaladi. Umm so‘zining ma’nosi nima?`,correct:`Ona`,wrongs:[`Qiz`,`Opa`,`Xonim`]},
+{q:`Kunyaning yana bitta, ta’bir joiz bo‘lsa, siyosiy turi mavjud. U asosan podsholar ismi tarkibida uchraydi va odatda qaysi artikl yordamida yasaladi?`,correct:`«al-»`,wrongs:[`«ibn-»`,`«abu-»`,`«ad-din»`]},
+{q:`«al-» artikli yordamida yasalgan bunday so‘zlar qanday ma’nolarni o‘z ichiga oladi?`,correct:`«G‘alaba», «g‘olib», «zabt etish»`,wrongs:[`«Donolik», «ilm», «hikmat»`,`«Adolat», «ehson», «saxovat»`,`«Qudrat», «mol-mulk», «boylik»`]},
+{q:`Bu kunya keyingi davrlarda, ayniqsa, nechanchi asrdan keyin keng muomalaga kirgan?`,correct:`XVI asrdan keyin`,wrongs:[`XII asrdan keyin`,`XIV asrdan keyin`,`XIX asrdan keyin`]},
+{q:`Ammo mashhur tarixchi, Xiva xoni Abulg‘oziyga bu ot, uning o‘zi guvohlik berishicha, g‘ayridin kimlar ustidan quchilgan zafar sharafiga chaqaloqligida berilgan ekan?`,correct:`Kazaklar`,wrongs:[`Qalmoqlar`,`Ruslar`,`Eronliklar`]},
+{q:`Alouddin Muhammad Xorazmshoh G‘uriylar davlati ustidan g‘alabaga erishilgan yili tug‘ilgani tufayli bir o‘g‘liga nima deb ot qo‘ygan?`,correct:`G‘ursanchti`,wrongs:[`Jaloliddin`,`Ozlogshoh`,`Temurmalik`]},
+{q:`Zahiriddin Muhammad Bobur ham o‘g‘lini hindlar qo‘shini ustidan erishilgan g‘alaba sharafiga kim deb atagani yaxshi ma’lum?`,correct:`Hindol`,wrongs:[`Humoyun`,`Kamron`,`Askariy`]},
+{q:`Yaxshi e’tibor berilsa, turkiy va mo‘g‘ul sulolalarining ilk va o‘rta vakillari ismi ko‘pincha turkiycha yo mo‘g‘ulcha bo‘ladi, bora-bora «musulmoncha», aniqrog‘i, qanday otlar paydo bo‘la boshlaydi va vaqt o‘tgan sayin ularning salmog‘i orta boradi?`,correct:`Arabcha`,wrongs:[`Xitoycha`,`Forscha`,`Hindcha`]},
+{q:`Odatda faqat ota ismidan iborat bo‘ladi, lekin ayrim hollarda bir necha ajdodni qamrab olishi ham mumkin. Bu ismning qaysi tarkibiy qismi?`,correct:`Nasab`,wrongs:[`Nisba`,`Kunya`,`Laqab`]},
+{q:`«Ibn» so‘zining qisqa shakli nima?`,correct:`Bin`,wrongs:[`Abu`,`Umm`,`Bint`]},
+{q:`«Ibn» so‘zining ayollar uchun shakli nima?`,correct:`Bint`,wrongs:[`Umm`,`Bin`,`Abu`]},
+{q:`«Ibn» (qisqa shakli – bin; ayollar uchun – bint) va qaysi so‘zlar vositasida beriladi?`,correct:`«Valad», «o‘g‘li»`,wrongs:[`«Abu», «otasi»`,`«Bint», «qizi»`,`«Nisba», «xon»`]},
+{q:`Fors tilida esa nasab nima orqali ham ifodalanishi mumkin? (masalan, Rustami Zol – Zolning o‘g‘li Rustam degani)`,correct:`Izofa`,wrongs:[`Nisba`,`Kunya`,`Laqab`]},
+{q:`Kishi tug‘ilgan yoki keyin yashab qolgan joy, u mansub bo‘lgan mazhab, qabila yo urug‘, kasb-kor bilan bog‘liq bo‘ladigan ismning tarkibiy qismi nima?`,correct:`Nisba`,wrongs:[`Nasab`,`Kunya`,`Laqab`]},
+{q:`Qaysi tarkibiy qismni shartli ravishda ikkiga ajratsa bo‘ladi?`,correct:`Laqabni`,wrongs:[`Kunyani`,`Nasabni`,`Nisbani`]},
+{q:`Laqabni shartli ravishda ikkiga ajratsa bo‘ladi. Birinchisi, qanday laqablar bo‘lib, ular podsholar, amaldorlar, olimlar, adiblar va boshqa yuqori martabali shaxslarda bo‘ladi?`,correct:`Sharafli`,wrongs:[`Jismoniy`,`Nisbiy`,`Oilaviy`]},
+{q:`Sharafli laqablar kimlarda bo‘ladi?`,correct:`Podsholar, amaldorlar, olimlar, adiblar va boshqa yuqori martabali shaxslarda`,wrongs:[`Faqat dehqonlar va hunarmandlarda`,`Faqat ayollar va bolalarda`,`Faqat askarlar va qullarda`]},
+{q:`Sharafli laqablar tarkibida ko‘pincha qanday unsurlar uchraydi?`,correct:`«Din», «davla», «mulk», «dunyo», «milla»`,wrongs:[`«Quyosh», «oy», «yulduz», «osmon»`,`«Qilich», «nayza», «qalqon», «o‘q»`,`«Ota», «ona», «farzand», «avlod»`]},
+{q:`Ayrim hollarda bir laqab mazkur unsurlarning ikkitasini va hatto uchtasini o‘z ichiga olishi ham mumkin. Shuning uchun manbalarda, aytaylik, Manguberdining laqabi qanday shaklda yoziladi?`,correct:`«Jalol ad-Din va-d-Dunyo»`,wrongs:[`«Jalol ad-Din ibn Alouddin»`,`«Abulmuzaffar Jaloliddin»`,`«Jalol ad-Din al-Xorazmiy»`]},
+{q:`Jaloliddinning otasi Muhammad shahzodalik davrida qanday laqabga ega bo‘lgan?`,correct:`«Qutbiddin»`,wrongs:[`«Nosiriddin»`,`«Shihobiddin»`,`«Nizomiddin»`]},
+{q:`Jaloliddinning otasi Muhammad shahzodalik davrida «Qutbiddin» laqabiga ega bo‘lgan, taxtga o‘tirgandan keyin esa nima laqabini olgan?`,correct:`«Alouddin»`,wrongs:[`«Nosiriddin»`,`«Shihobiddin»`,`«Jaloliddin»`]},
+{q:`Laqabning ikkinchi turi biz bilgan ma’nodagi va kishining jismoniy yoxud boshqa biror xususiyatidan kelib chiquvchi laqablar (cho‘loq, tentak kabi) bo‘ladi. Bunday laqablar odatda ismning qayerida keladi?`,correct:`Ism oxirida`,wrongs:[`Ism boshida`,`Ism o‘rtasida`,`Nasabdan oldin`]},
+{q:`Biz o‘rganayotgan davrda butun musulmon olamida dunyoviy hokimiyat egalariga beriladigan eng yuqori laqab qaysi hisoblangan?`,correct:`«Sulton»`,wrongs:[`«Xon»`,`«Amir»`,`«Malik»`]},
+{q:`Biz o‘rganayotgan davrda butun musulmon olamida dunyoviy hokimiyat egalariga beriladigan eng yuqori laqab «sulton» hisoblangan (keyinchalik ayrim yerlarda, xususan, Oltin O‘rdada «sulton» deb kimlarga aytilgan)?`,correct:`Shahzodalarga`,wrongs:[`Vazirlarga`,`Sarkardalarga`,`Elchilarga`]},
+{q:`Aksar hollarda bu unvon hukmdorlarga kimlar tomonidan rasmiy ravishda in’om etilgan?`,correct:`Bag‘dod xalifalari`,wrongs:[`Saljuqiy sultonlar`,`Qoraxitoy gurxonlari`,`Ulamolar kengashi`]},
+{q:`Anushteginiylardan birinchi bo‘lib bu unvonni Otsiz Xorazmshoh (1127–1156)ga kim ato qilgan?`,correct:`Xalifa al-Muktafi (1136–1160)`,wrongs:[`Xalifa an-Nosir`,`Xalifa al-Mustazhir`,`Xalifa al-Mustansir`]},
+{q:`Xalifa Otsiz bilan uning syuzereni, Buyuk Saljuqiylarning so‘nggi vakili kim (1117–1157)ning oralarini buzishni ko‘zlagan?`,correct:`Sulton Sanjar`,wrongs:[`Sulton Malikshoh`,`Sulton Alp Arslon`,`Sulton Muhammad Tapar`]},
+{q:`Anushteginiylardan birinchi bo‘lib bu unvonni Otsiz Xorazmshoh (1127–1156)ga xalifa al-Muktafi (1136–1160) ato qilgan. Xalifa buni nima maqsadda qilgan?`,correct:`Otsiz bilan uning syuzereni, Buyuk Saljuqiylarning so‘nggi vakili Sulton Sanjar (1117–1157)ning oralarini buzish maqsadida`,wrongs:[`Otsizni Bag‘dodga chaqirib olish maqsadida`,`Otsiz bilan Qoraxitoylar oralarini buzish maqsadida`,`Xorazmni G‘uriylarga topshirish maqsadida`]},
+{q:`Keyinchalik bu unvonga Jaloliddinning bobosi kim munosib topilgan?`,correct:`Tekish (1172–1200)`,wrongs:[`Alouddin Muhammad`,`Otsiz`,`Il-Arslon`]},
+{q:`Jaloliddin Manguberdining kunyasi nima bo‘lgan?`,correct:`«Abulmuzaffar»`,wrongs:[`«Abulfath»`,`«Abu Ali»`,`«Abu Hafs»`]},
+{q:`Ism komponentlaridan ba’zilari nimaga aylanishi mumkin (arabchada «mashhur» so‘zi bilan o‘zagi bir)? Shaxs asosan o‘sha tarkibiy qism(lar) ostida taniladi.`,correct:`Shuhraga`,wrongs:[`Nisbaga`,`Unvonga`,`Nasabga`]},
+{q:`Abu Ali ibn Sino ismida kunya va nasab qaysi?`,correct:`Kunyasi: Abu Ali. Nasabi: ibn Sino.`,wrongs:[`Kunyasi: ibn Sino. Nasabi: Abu Ali.`,`Kunyasi: Abu Ali. Nisbasi: ibn Sino.`,`Kunyasi: Sino. Nasabi: Abu Ali.`]},
+{q:`Ilohiyot olimi Moturudiyning nisbasi nima?`,correct:`Moturudiy`,wrongs:[`Samarqandiy`,`Hanafiy`,`Buxoriy`]},
+{q:`Saljuqiylarning nomdor vaziri kim?`,correct:`Nizomulmulk`,wrongs:[`Shihobiddin Nasaviy`,`Muhammad Juvayniy`,`Rashididdin Fazlulloh`]},
+{q:`Ism arabcha boshqa atama bilan aytganda nima deyiladi?`,correct:`Alam`,wrongs:[`Nasab`,`Kunya`,`Tarjima`]}
+];
+
+const ayats = [
+    { text: "Robbing seni tark qilmadi va g'azab ham qilmadi.", meta: "Zuho 93:3" },
+    { text: "Albatta bir qiyinchilik bilan osonchilik bordir.", meta: "Sharh 94:5" },
+    { text: "Yaratgan Robbing nomi bilan o'qi!", meta: "Alaq 96:1" },
+    { text: "O'qi, Robbing karamlilar karamlisidir.", meta: "Alaq 96:3" },
+    { text: "Va tezda Robbing senga ato qilur va sen rozi bo'lursan.", meta: "Zuho 93:5" },
+    { text: "Ammo kimki ato bersa va taqvo qilsa, va yaxshiliklarni tasdiq qilsa, bas, Biz uni osonga muyassar etamiz.", meta: "Layl 92:5-7" },
+    { text: "Albatta hidoyatga boshlash Bizning zimmamizdadir.", meta: "Layl 92:12" },
+    { text: "Va albatta tezda rozi bo'ladir.", meta: "Layl 92:21" },
+    { text: "Seni oson yo'lga muyassar etamiz.", meta: "A'lo 87:8" },
+    { text: "Bas, kim xohlasa Parvardigori tomon qaytadigan yo'lni tutar.", meta: "Naba 78:39" },
+    { text: "Albatta Biz senga ochiq g'alaba berdik.", meta: "Fath 48:1" }
+];
+
+let activeQuiz = [];
+let currentQ = 0, score = 0, answered = 0;
+
+function shuffle(array) { return array.sort(() => Math.random() - 0.5); }
+
+function buildStars() {
+    const container = document.getElementById('stars');
+    container.innerHTML = '';
+    for (let i = 0; i < 100; i++) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        const size = (Math.random() * 2 + 1).toFixed(1);
+        s.style.width = size + 'px';
+        s.style.height = size + 'px';
+        s.style.animationDelay = (Math.random() * 2.5).toFixed(2) + 's';
+        s.style.animationDuration = (1.5 + Math.random() * 2).toFixed(2) + 's';
+        container.appendChild(s);
+    }
+}
+
+let rangeStart = null;
+let numButtons = [];
+
+window.onload = function() {
+    const grid = document.getElementById('numberGrid');
+    for (let i = 1; i <= quizData.length; i++) {
+        const btn = document.createElement('button');
+        btn.className = 'num-btn';
+        btn.innerText = i;
+        btn.onclick = () => pickNumber(i, btn);
+        grid.appendChild(btn);
+        numButtons.push(btn);
+    }
+    buildStars();
+    const a = ayats[Math.floor(Math.random() * ayats.length)];
+    document.getElementById('random-ayat').innerHTML = `
+        <div class="quran-box">
+            <span class="quran-ayat-text">"${a.text}"</span>
+            <span class="quran-meta">${a.meta}</span>
+        </div>`;
+};
+
+function pickNumber(num, btnEl) {
+    const info = document.getElementById('range-info');
+    if (rangeStart === null) {
+        rangeStart = num;
+        btnEl.classList.add('picked');
+        info.innerText = `Boshlang‘ich: ${num}. Endi oxirgi raqamni tanlang`;
+    } else {
+        let start = rangeStart, end = num;
+        if (end < start) { const t = start; start = end; end = t; }
+        btnEl.classList.add('picked');
+        info.innerText = `Tanlandi: ${start} - ${end}`;
+        setTimeout(() => startWithRange(start, end), 400);
+    }
+}
+
+function startWithRange(start, end) {
+    activeQuiz = quizData.slice(start - 1, end);
+    document.getElementById('select-screen').style.display = 'none';
+    document.getElementById('mode-screen').style.display = 'flex';
+}
+
+let quizMode = 'quiz';
+
+function chooseMode(mode) {
+    quizMode = mode;
+    if (mode === 'quiz-aralash' || mode === 'yopiq-aralash') activeQuiz = shuffle([...activeQuiz]);
+    document.getElementById('mode-screen').style.display = 'none';
+    document.getElementById('intro-screen').style.display = 'flex';
+    document.getElementById('intro-screen').style.opacity = '1';
+    startTimer();
+}
+
+function startTimer() {
+    let count = 3;
+    let disp = document.getElementById("countdown");
+    disp.innerText = count;
+    let timer = setInterval(() => {
+        count--;
+        if (count > 0) disp.innerText = count;
+        else if (count === 0) disp.innerText = "Boshladik!";
+        else {
+            clearInterval(timer);
+            document.getElementById("intro-screen").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("intro-screen").style.display = "none";
+                document.getElementById("quiz").style.display = "block";
+                loadQ();
+            }, 800);
+        }
+    }, 1000);
+}
+
+function getOptionsFor(qData) { return shuffle([qData.correct, ...qData.wrongs]); }
+
+function loadQ() {
+    const qData = activeQuiz[currentQ];
+    document.getElementById('question').innerText = `${currentQ + 1}/${activeQuiz.length}. ${qData.q}`;
+    const optDiv = document.getElementById('options');
+    optDiv.innerHTML = '';
+    if (quizMode === 'yopiq' || quizMode === 'yopiq-aralash') loadClosedQ(qData, optDiv);
+    else loadMultipleChoiceQ(qData, optDiv);
+}
+
+function loadMultipleChoiceQ(qData, optDiv) {
+    getOptionsFor(qData).forEach((opt) => {
+        const btn = document.createElement('div');
+        btn.className = 'option';
+        btn.innerText = opt;
+        btn.onclick = () => check(opt, btn, qData.correct);
+        optDiv.appendChild(btn);
+    });
+}
+
+function loadClosedQ(qData, optDiv) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'closed-input';
+    input.id = 'closed-answer';
+    input.placeholder = 'Javob yozing...';
+    input.onkeypress = (e) => { if (e.key === 'Enter') checkClosed(qData); };
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'btn-check';
+    checkBtn.innerText = 'Tekshirish';
+    checkBtn.onclick = () => checkClosed(qData);
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'closed-result';
+    optDiv.appendChild(input);
+    optDiv.appendChild(checkBtn);
+    optDiv.appendChild(resultDiv);
+    input.focus();
+}
+
+function checkClosed(qData) {
+    const inputEl = document.getElementById('closed-answer');
+    const resultDiv = document.getElementById('closed-result');
+    const user = inputEl.value.toLowerCase().trim();
+    const correct = qData.correct.toLowerCase().trim();
+    answered++;
+    inputEl.disabled = true;
+    document.querySelector('.btn-check').disabled = true;
+    if (user === correct) {
+        resultDiv.innerHTML = '<b style="color:#00ff99;">✅ To‘g‘ri</b>';
+        score++;
+    } else {
+        resultDiv.innerHTML = '<b style="color:#ff4444;">❌ Noto‘g‘ri.</b><br> Javob: ' + qData.correct;
+    }
+    setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ(); else finishQuiz();
+    }, 2000);
+}
+
+function check(selected, element, correct) {
+    const options = element.parentElement.querySelectorAll('.option');
+    options.forEach(opt => opt.style.pointerEvents = 'none');
+    answered++;
+    if (selected === correct) {
+        element.classList.add('correct');
+        score++;
+    } else {
+        element.classList.add('wrong');
+        options.forEach(opt => { if (opt.innerText === correct) opt.classList.add('correct'); });
+    }
+    setTimeout(() => {
+        currentQ++;
+        if (currentQ < activeQuiz.length) loadQ(); else finishQuiz();
+    }, 1000);
+}
+
+function finishQuiz() {
+    let wrong = answered - score;
+    document.getElementById('quiz').innerHTML = `
+        <h2>Natijalar</h2>
+        <div style="line-height: 2.2; font-size: 19px;">
+            Jami savollar: <b>${activeQuiz.length} ta</b><br>
+            To‘g‘ri javoblar: <span style="color:#00ff99;">${score} ta</span><br>
+            Xato javoblar: <span style="color:#ff4d4d;">${wrong} ta</span>
+        </div>
+        <button class="btn-finish" onclick="location.reload()">Qaytadan boshlash</button>`;
+}
+</script>
+</body>
+</html>
